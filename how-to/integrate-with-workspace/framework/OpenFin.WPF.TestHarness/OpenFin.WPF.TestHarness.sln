@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenFin.WPF.TestHarness", "OpenFin.WPF.TestHarness.csproj", "{B2F1A60F-3A7F-41AB-9D9E-3FD18466B17B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenFin.Shared.WorkspaceManagement", "..\..\shared\OpenFin.Shared.WorkspaceManagement\OpenFin.Shared.WorkspaceManagement.csproj", "{BF69AEA4-FA69-4FCD-AB21-A82D87C95309}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B2F1A60F-3A7F-41AB-9D9E-3FD18466B17B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2F1A60F-3A7F-41AB-9D9E-3FD18466B17B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2F1A60F-3A7F-41AB-9D9E-3FD18466B17B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2F1A60F-3A7F-41AB-9D9E-3FD18466B17B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF69AEA4-FA69-4FCD-AB21-A82D87C95309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF69AEA4-FA69-4FCD-AB21-A82D87C95309}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF69AEA4-FA69-4FCD-AB21-A82D87C95309}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF69AEA4-FA69-4FCD-AB21-A82D87C95309}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {844E3CB4-10B6-4569-9662-71A8C05F1072}
+	EndGlobalSection
+EndGlobal

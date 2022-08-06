@@ -1,0 +1,41 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+
+namespace OpenFin.WPF.TestHarness.ChildForms
+{
+    internal class WindowDirectory
+    {
+        List<OpenFinApp> apps = new List<OpenFinApp>();
+
+        public WindowDirectory()
+        {
+            GenerateApps();
+        }
+
+        public List<OpenFinApp> GetAllWindows()
+        {
+            return apps.ToList();
+        }
+
+        public Window? GetWindowInstance(string id)
+        {
+            var app = apps.Find(x => x.appId == id);
+
+            if (app == null)
+            {
+                return null;
+            }
+
+            return app.GetAppInstance();
+        }
+
+        private void GenerateApps()
+        {
+            apps.Add(new OpenFinApp(Settings.UUID, "WPF App 1", "wpfapp1", "OpenFin .NET 6 WPF Test Harness", () => new App1(), "wpf"));          
+        }
+    }
+}
