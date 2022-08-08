@@ -1,4 +1,6 @@
-﻿using OpenFin.Shared.WorkspaceManagement;
+﻿using System.Configuration;
+using System.Collections.Specialized;
+using OpenFin.Shared.WorkspaceManagement;
 using OpenFin.WPF.TestHarness.ChildForms;
 using System;
 using System.Collections.Generic;
@@ -17,8 +19,15 @@ namespace OpenFin.WPF.TestHarness
         {
             dispatch = dispatcher;
             windowDirectory = new WindowDirectory();
-            WorkspaceOptions workspaceOptions = new WorkspaceOptions() { WorkspaceChannelId = "workspace-connection", WorkspaceManifestUrl = "http://localhost:8080/manifest.fin.json"};
-            ConnectionOptions connectionOptions = new ConnectionOptions("openfin-demo-license-key", Settings.UUID);
+            NameValueCollection appSettings = ConfigurationManager.AppSettings;
+            bool workspaceAutoConnect = bool.Parse(appSettings.Get("workspaceAutoConnect") ?? Settings.DefaultWorkspaceAutoConnect);
+            string workspaceChannelId = appSettings.Get("workspaceChannelId") ?? Settings.DefaultWorkspaceChannelId;
+            string workspaceManifestUrl = appSettings.Get("workspaceManifestUrl") ?? Settings.DefaultWorkspaceManifestUrl;
+            string uuid = appSettings.Get("uuid") ?? Settings.DefaultUUID;
+            string licenseKey = appSettings.Get("licenseKey") ?? Settings.DefaultLicenseKey;
+            
+            WorkspaceOptions workspaceOptions = new WorkspaceOptions() { WorkspaceChannelId = workspaceChannelId, WorkspaceManifestUrl = workspaceManifestUrl, WorkspaceAutoConnect = workspaceAutoConnect };
+            ConnectionOptions connectionOptions = new ConnectionOptions("openfin-demo-license-key", uuid);
             workspace = new Workspace(GetApps, LaunchApp, this, connectionOptions, workspaceOptions);
         }
 

@@ -30,7 +30,10 @@ namespace OpenFin.Shared.WorkspaceManagement
             {
                 try
                 {
-                    var platform = await _connectionOptions.ConnectedRuntime.System.LaunchManifestAsync<JObject>(_workspaceOptions.WorkspaceManifestUrl);
+                    if (_workspaceOptions.WorkspaceAutoConnect)
+                    {
+                        var platform = await _connectionOptions.ConnectedRuntime.System.LaunchManifestAsync<JObject>(_workspaceOptions.WorkspaceManifestUrl);
+                    }
                 }
                 catch
                 {

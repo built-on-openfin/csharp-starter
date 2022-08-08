@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Configuration;
+using System.Collections.Specialized;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +12,13 @@ namespace OpenFin.WPF.TestHarness.ChildForms
     internal class WindowDirectory
     {
         List<OpenFinApp> apps = new List<OpenFinApp>();
+        string uuid;
 
         public WindowDirectory()
         {
+            NameValueCollection appSettings = ConfigurationManager.AppSettings;
+            uuid = appSettings.Get("uuid") ?? Settings.DefaultUUID;
+
             GenerateApps();
         }
 
@@ -35,7 +41,7 @@ namespace OpenFin.WPF.TestHarness.ChildForms
 
         private void GenerateApps()
         {
-            apps.Add(new OpenFinApp(Settings.UUID, "WPF App 1", "wpfapp1", "OpenFin .NET 6 WPF Test Harness", () => new App1(), "wpf"));          
+            apps.Add(new OpenFinApp(uuid ?? "openfin-dotnet6-wpf-test-harness", "WPF App 1", "wpfapp1", "OpenFin .NET 6 WPF Test Harness", () => new App1(), "wpf"));          
         }
     }
 }
