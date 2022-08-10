@@ -54,5 +54,15 @@ namespace OpenFin.WindowsForm.TestHarness
         {
             workspaceManagement.HideStore();
         }
+
+        private void showToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            workspaceManagement.ShowDock();
+        }
+
+        private void minimizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            workspaceManagement.MinimizeDock();
+        }
     }
 }

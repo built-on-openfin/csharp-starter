@@ -69,21 +69,41 @@ namespace OpenFin.WindowsForm.TestHarness
 
         public void ShowHome()
         {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.ShowHome);
+            Console.WriteLine("Can show home", result);
             workspace.ShowHome();
         }
 
         public void ShowStore()
         {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.ShowStore);
+            Console.WriteLine("Can show store", result);
             workspace.ShowStore();
+        }
+        public void ShowDock()
+        {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.ShowDock);
+            Console.WriteLine("Can show dock", result);
+            workspace.ShowDock();
         }
 
         public void HideHome()
         {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.HideHome);
+            Console.WriteLine("Can hide home", result);
             workspace.HideHome();
         }
         public void HideStore()
         {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.HideStore);
+            Console.WriteLine("Can hide store", result);
             workspace.HideStore();
+        }
+        public void MinimizeDock()
+        {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.MinimizeDock);
+            Console.WriteLine("Can minimize dock", result);
+            workspace.MinimizeDock();
         }
 
         public void Disconnect()

@@ -10,6 +10,8 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Apps">
                 <MenuItem Header="_App1" Click="MenuItem_LaunchApp1"/>
+                <MenuItem Header="_App2" Click="MenuItem_LaunchApp2"/>
+                <MenuItem Header="_App3" Click="MenuItem_LaunchApp3"/>
             </MenuItem>
             <MenuItem Header="_Workspace">
                 <MenuItem Header="_Home">
@@ -24,7 +26,13 @@
                     <MenuItem Header="_Hide" Click="MenuItem_HideStore">
                     </MenuItem>
                 </MenuItem>
-  
+                <MenuItem Header="_Dock">
+                    <MenuItem Header="_Show" Click="MenuItem_ShowDock">
+                    </MenuItem>
+                    <MenuItem Header="_Minimize" Click="MenuItem_MinimizeDock">
+                    </MenuItem>
+                </MenuItem>
+
             </MenuItem>
         </Menu>
        

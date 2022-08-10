@@ -12,6 +12,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="ChildForms\App3.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="ChildForms\App2.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="ChildForms\App1.xaml">
       <SubType>Designer</SubType>
     </Page>

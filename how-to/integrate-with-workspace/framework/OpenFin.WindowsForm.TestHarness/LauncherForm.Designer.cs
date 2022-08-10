@@ -40,6 +40,9 @@
             this.storeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.hideToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.dockToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.minimizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,7 +55,6 @@
             this.workspaceManagementToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(6, 2, 0, 2);
             this.menuStrip1.Size = new System.Drawing.Size(1276, 33);
             this.menuStrip1.TabIndex = 3;
             this.menuStrip1.Text = "menuStrip1";
@@ -70,21 +72,21 @@
             // app1MenuItem
             // 
             this.app1MenuItem.Name = "app1MenuItem";
-            this.app1MenuItem.Size = new System.Drawing.Size(270, 34);
+            this.app1MenuItem.Size = new System.Drawing.Size(158, 34);
             this.app1MenuItem.Text = "App1";
             this.app1MenuItem.Click += new System.EventHandler(this.app1MenuItem_Click);
             // 
             // app2MenuItem
             // 
             this.app2MenuItem.Name = "app2MenuItem";
-            this.app2MenuItem.Size = new System.Drawing.Size(270, 34);
+            this.app2MenuItem.Size = new System.Drawing.Size(158, 34);
             this.app2MenuItem.Text = "App2";
             this.app2MenuItem.Click += new System.EventHandler(this.app2MenuItem_Click);
             // 
             // app3MenuItem
             // 
             this.app3MenuItem.Name = "app3MenuItem";
-            this.app3MenuItem.Size = new System.Drawing.Size(270, 34);
+            this.app3MenuItem.Size = new System.Drawing.Size(158, 34);
             this.app3MenuItem.Text = "App3";
             this.app3MenuItem.Click += new System.EventHandler(this.app3MenuItem_Click);
             // 
@@ -92,7 +94,8 @@
             // 
             this.workspaceManagementToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.homeToolStripMenuItem,
-            this.storeToolStripMenuItem});
+            this.storeToolStripMenuItem,
+            this.dockToolStripMenuItem});
             this.workspaceManagementToolStripMenuItem.Name = "workspaceManagementToolStripMenuItem";
             this.workspaceManagementToolStripMenuItem.Size = new System.Drawing.Size(225, 29);
             this.workspaceManagementToolStripMenuItem.Text = "Workspace Management";
@@ -143,6 +146,29 @@
             this.hideToolStripMenuItem1.Text = "Hide";
             this.hideToolStripMenuItem1.Click += new System.EventHandler(this.hideToolStripMenuItem1_Click);
             // 
+            // dockToolStripMenuItem
+            // 
+            this.dockToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showToolStripMenuItem2,
+            this.minimizeToolStripMenuItem});
+            this.dockToolStripMenuItem.Name = "dockToolStripMenuItem";
+            this.dockToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.dockToolStripMenuItem.Text = "Dock";
+            // 
+            // showToolStripMenuItem2
+            // 
+            this.showToolStripMenuItem2.Name = "showToolStripMenuItem2";
+            this.showToolStripMenuItem2.Size = new System.Drawing.Size(270, 34);
+            this.showToolStripMenuItem2.Text = "Show";
+            this.showToolStripMenuItem2.Click += new System.EventHandler(this.showToolStripMenuItem2_Click);
+            // 
+            // minimizeToolStripMenuItem
+            // 
+            this.minimizeToolStripMenuItem.Name = "minimizeToolStripMenuItem";
+            this.minimizeToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.minimizeToolStripMenuItem.Text = "Minimize";
+            this.minimizeToolStripMenuItem.Click += new System.EventHandler(this.minimizeToolStripMenuItem_Click);
+            // 
             // LauncherForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -174,6 +200,9 @@
         private System.Windows.Forms.ToolStripMenuItem storeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem hideToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem dockToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem minimizeToolStripMenuItem;
     }
 }
 

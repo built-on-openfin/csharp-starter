@@ -88,6 +88,12 @@ namespace OpenFin.WPF.TestHarness
             Console.WriteLine("Can show store", result);
             workspace.ShowStore();
         }
+        public void ShowDock()
+        {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.ShowDock);
+            Console.WriteLine("Can show dock", result);
+            workspace.ShowDock();
+        }
 
         public void HideHome()
         {
@@ -100,6 +106,12 @@ namespace OpenFin.WPF.TestHarness
             System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.HideStore);
             Console.WriteLine("Can hide store", result);
             workspace.HideStore();
+        }
+        public void MinimizeDock()
+        {
+            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.MinimizeDock);
+            Console.WriteLine("Can minimize dock", result);
+            workspace.MinimizeDock();
         }
 
         public void Disconnect()

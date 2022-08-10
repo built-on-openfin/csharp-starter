@@ -23,4 +23,24 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="ChildForms\App3.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ChildForms\App2.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="ChildForms\App3.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="ChildForms\App2.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

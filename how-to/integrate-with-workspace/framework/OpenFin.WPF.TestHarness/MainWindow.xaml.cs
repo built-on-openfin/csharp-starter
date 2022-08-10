@@ -33,6 +33,14 @@ namespace OpenFin.WPF.TestHarness
         {
             workspaceManagement.LaunchView("wpfapp1");
         }
+        private void MenuItem_LaunchApp2(object sender, RoutedEventArgs e)
+        {
+            workspaceManagement.LaunchView("wpfapp2");
+        }
+        private void MenuItem_LaunchApp3(object sender, RoutedEventArgs e)
+        {
+            workspaceManagement.LaunchView("wpfapp3");
+        }
 
         private void MenuItem_ShowHome(object sender, RoutedEventArgs e)
         {
@@ -52,6 +60,14 @@ namespace OpenFin.WPF.TestHarness
         private void MenuItem_HideStore(object sender, RoutedEventArgs e)
         {
             workspaceManagement.HideStore();
+        }
+        private void MenuItem_ShowDock(object sender, RoutedEventArgs e)
+        {
+            workspaceManagement.ShowDock();
+        }
+        private void MenuItem_MinimizeDock(object sender, RoutedEventArgs e)
+        {
+            workspaceManagement.MinimizeDock();
         }
     }
 }
