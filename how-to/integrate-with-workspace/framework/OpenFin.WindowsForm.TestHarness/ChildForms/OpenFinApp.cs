@@ -9,9 +9,9 @@ namespace OpenFin.WindowsForm.TestHarness.ChildForms
     public class OpenFinApp: App
     {
         private Func<Form> _getAppInstance;
-        public OpenFinApp(string title, string id, Func<Form> getInstance, string tag1 = null, string tag2 = null, string description = null)
+        public OpenFinApp(string uuid, string title, string id, string publisher, Func<Form> getInstance, string tag1 = null, string tag2 = null, string description = null)
         {
-            publisher = Process.GetCurrentProcess().ProcessName.ToLower();
+            this.publisher = publisher;
             appId = id;
             this.title = title;
             if (description != null)
@@ -23,11 +23,10 @@ namespace OpenFin.WindowsForm.TestHarness.ChildForms
                 this.description = title;
             }
             _getAppInstance = getInstance;
-            manifestType = "channel";
-            manifest = id;
+            manifestType = "connection";
+            manifest = uuid;
             tags = new List<string>();
-            tags.Add("native");
-            if(tag1 != null)
+            if (tag1 != null)
             {
                 tags.Add(tag1);
             }
@@ -39,7 +38,6 @@ namespace OpenFin.WindowsForm.TestHarness.ChildForms
             contactEmail = "support@openfin.co";
             icons.Add(new Image { src = "https://www.openfin.co/favicon.ico" });
         }
-
         public Form GetAppInstance()
         {
             return _getAppInstance();

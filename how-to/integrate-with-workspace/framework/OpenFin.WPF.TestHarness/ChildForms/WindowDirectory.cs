@@ -41,7 +41,7 @@ namespace OpenFin.WPF.TestHarness.ChildForms
 
         private void GenerateApps()
         {
-            apps.Add(new OpenFinApp(uuid ?? "openfin-dotnet6-wpf-test-harness", "WPF App 1", "wpfapp1", "OpenFin .NET 6 WPF Test Harness", () => new App1(), "wpf"));          
+            apps.Add(new OpenFinApp(uuid, "WPF App 1", "wpfapp1", "OpenFin .NET 6 WPF Test Harness", () => new App1(), "wpf", "native"));          
         }
     }
 }

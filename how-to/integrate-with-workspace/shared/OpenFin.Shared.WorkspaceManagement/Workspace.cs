@@ -35,9 +35,9 @@ namespace OpenFin.Shared.WorkspaceManagement
                         var platform = await _connectionOptions.ConnectedRuntime.System.LaunchManifestAsync<JObject>(_workspaceOptions.WorkspaceManifestUrl);
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
-
+                    Console.WriteLine("Error trying to launch manifest: " + _workspaceOptions.WorkspaceManifestUrl, ex);
                 }
 
                 try

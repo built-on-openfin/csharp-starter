@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -53,257 +54,23 @@
   <ItemGroup>
     <Compile Include="ChildForms\FormDirectory.cs" />
     <Compile Include="ChildForms\OpenFinApp.cs" />
-    <Compile Include="ChildForms\OFTraderInternalOrderBook.cs">
+    <Compile Include="ChildForms\App1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ChildForms\OFTraderInternalOrderBook.Designer.cs">
-      <DependentUpon>OFTraderInternalOrderBook.cs</DependentUpon>
+    <Compile Include="ChildForms\App1.Designer.cs">
+      <DependentUpon>App1.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChildForms\OFDeskBrokers.cs">
+    <Compile Include="ChildForms\App2.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ChildForms\OFDeskBrokers.Designer.cs">
-      <DependentUpon>OFDeskBrokers.cs</DependentUpon>
+    <Compile Include="ChildForms\App2.Designer.cs">
+      <DependentUpon>App2.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChildForms\OFDeskCalendars.cs">
+    <Compile Include="ChildForms\App3.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ChildForms\OFDeskCalendars.Designer.cs">
-      <DependentUpon>OFDeskCalendars.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskClients.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskClients.Designer.cs">
-      <DependentUpon>OFDeskClients.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskCounterparties.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskCounterparties.Designer.cs">
-      <DependentUpon>OFDeskCounterparties.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskCountries.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskCountries.Designer.cs">
-      <DependentUpon>OFDeskCountries.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskExchanges.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskExchanges.Designer.cs">
-      <DependentUpon>OFDeskExchanges.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskFXRates.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskFXRates.Designer.cs">
-      <DependentUpon>OFDeskFXRates.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskInstrumentGroups.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskInstrumentGroups.Designer.cs">
-      <DependentUpon>OFDeskInstrumentGroups.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskInstrumentLookup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskInstrumentLookup.Designer.cs">
-      <DependentUpon>OFDeskInstrumentLookup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskUsers.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFDeskUsers.Designer.cs">
-      <DependentUpon>OFDeskUsers.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderAckView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderAckView.Designer.cs">
-      <DependentUpon>OFTraderAckView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderAggregationView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderAggregationView.Designer.cs">
-      <DependentUpon>OFTraderAggregationView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderAllocationRequestView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderAllocationRequestView.Designer.cs">
-      <DependentUpon>OFTraderAllocationRequestView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderBenchmarks.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderBenchmarks.Designer.cs">
-      <DependentUpon>OFTraderBenchmarks.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderCharts.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderCharts.Designer.cs">
-      <DependentUpon>OFTraderCharts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderCrossOrderView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderCrossOrderView.Designer.cs">
-      <DependentUpon>OFTraderCrossOrderView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderDerivativeWatch.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderDerivativeWatch.Designer.cs">
-      <DependentUpon>OFTraderDerivativeWatch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderErrorTrades.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderErrorTrades.Designer.cs">
-      <DependentUpon>OFTraderErrorTrades.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderExecutions.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderExecutions.Designer.cs">
-      <DependentUpon>OFTraderExecutions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderExternalOrderBook.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderExternalOrderBook.Designer.cs">
-      <DependentUpon>OFTraderExternalOrderBook.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderInstrumentDetails.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderInstrumentDetails.Designer.cs">
-      <DependentUpon>OFTraderInstrumentDetails.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderInstrumentExecutions.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderInstrumentExecutions.Designer.cs">
-      <DependentUpon>OFTraderInstrumentExecutions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderInstrumentWatch.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderInstrumentWatch.Designer.cs">
-      <DependentUpon>OFTraderInstrumentWatch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderIntradayTrades.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderIntradayTrades.Designer.cs">
-      <DependentUpon>OFTraderIntradayTrades.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderListMultipleOrdersCreation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderListMultipleOrdersCreation.Designer.cs">
-      <DependentUpon>OFTraderListMultipleOrdersCreation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderMarketDepth.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderMarketDepth.Designer.cs">
-      <DependentUpon>OFTraderMarketDepth.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderMarketOrders.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderMarketOrders.Designer.cs">
-      <DependentUpon>OFTraderMarketOrders.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOffExchangeTrades.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOffExchangeTrades.Designer.cs">
-      <DependentUpon>OFTraderOffExchangeTrades.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOrderBook.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOrderBook.Designer.cs">
-      <DependentUpon>OFTraderOrderBook.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOrderDetails.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOrderDetails.Designer.cs">
-      <DependentUpon>OFTraderOrderDetails.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOrderHistory.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderOrderHistory.Designer.cs">
-      <DependentUpon>OFTraderOrderHistory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderProfitAndLoss.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderProfitAndLoss.Designer.cs">
-      <DependentUpon>OFTraderProfitAndLoss.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderQuoteTicker.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderQuoteTicker.Designer.cs">
-      <DependentUpon>OFTraderQuoteTicker.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderRequestView.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderRequestView.Designer.cs">
-      <DependentUpon>OFTraderRequestView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderSearchOrders.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderSearchOrders.Designer.cs">
-      <DependentUpon>OFTraderSearchOrders.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderSearchTrades.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderSearchTrades.Designer.cs">
-      <DependentUpon>OFTraderSearchTrades.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderStrategyCreation.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderStrategyCreation.Designer.cs">
-      <DependentUpon>OFTraderStrategyCreation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderStrategyCreationNew.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderStrategyCreationNew.Designer.cs">
-      <DependentUpon>OFTraderStrategyCreationNew.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderTradeHistorySearch.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderTradeHistorySearch.Designer.cs">
-      <DependentUpon>OFTraderTradeHistorySearch.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderTradeTicker.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderTradeTicker.Designer.cs">
-      <DependentUpon>OFTraderTradeTicker.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderVWAPCalculator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ChildForms\OFTraderVWAPCalculator.Designer.cs">
-      <DependentUpon>OFTraderVWAPCalculator.cs</DependentUpon>
+    <Compile Include="ChildForms\App3.Designer.cs">
+      <DependentUpon>App3.cs</DependentUpon>
     </Compile>
     <Compile Include="LauncherForm.cs">
       <SubType>Form</SubType>
@@ -311,135 +78,19 @@
     <Compile Include="LauncherForm.Designer.cs">
       <DependentUpon>LauncherForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="View.cs" />
     <Compile Include="WorkspaceManagement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ChildForms\OFDeskBrokers.resx">
-      <DependentUpon>OFDeskBrokers.cs</DependentUpon>
+    <EmbeddedResource Include="ChildForms\App1.resx">
+      <DependentUpon>App1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskCalendars.resx">
-      <DependentUpon>OFDeskCalendars.cs</DependentUpon>
+    <EmbeddedResource Include="ChildForms\App2.resx">
+      <DependentUpon>App2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskClients.resx">
-      <DependentUpon>OFDeskClients.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskCounterparties.resx">
-      <DependentUpon>OFDeskCounterparties.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskCountries.resx">
-      <DependentUpon>OFDeskCountries.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskExchanges.resx">
-      <DependentUpon>OFDeskExchanges.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskFXRates.resx">
-      <DependentUpon>OFDeskFXRates.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskInstrumentGroups.resx">
-      <DependentUpon>OFDeskInstrumentGroups.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskInstrumentLookup.resx">
-      <DependentUpon>OFDeskInstrumentLookup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFDeskUsers.resx">
-      <DependentUpon>OFDeskUsers.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderAckView.resx">
-      <DependentUpon>OFTraderAckView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderAggregationView.resx">
-      <DependentUpon>OFTraderAggregationView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderAllocationRequestView.resx">
-      <DependentUpon>OFTraderAllocationRequestView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderBenchmarks.resx">
-      <DependentUpon>OFTraderBenchmarks.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderCharts.resx">
-      <DependentUpon>OFTraderCharts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderCrossOrderView.resx">
-      <DependentUpon>OFTraderCrossOrderView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderDerivativeWatch.resx">
-      <DependentUpon>OFTraderDerivativeWatch.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderErrorTrades.resx">
-      <DependentUpon>OFTraderErrorTrades.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderExecutions.resx">
-      <DependentUpon>OFTraderExecutions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderExternalOrderBook.resx">
-      <DependentUpon>OFTraderExternalOrderBook.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderInstrumentDetails.resx">
-      <DependentUpon>OFTraderInstrumentDetails.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderInstrumentExecutions.resx">
-      <DependentUpon>OFTraderInstrumentExecutions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderInstrumentWatch.resx">
-      <DependentUpon>OFTraderInstrumentWatch.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderInternalOrderBook.resx">
-      <DependentUpon>OFTraderInternalOrderBook.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderIntradayTrades.resx">
-      <DependentUpon>OFTraderIntradayTrades.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderListMultipleOrdersCreation.resx">
-      <DependentUpon>OFTraderListMultipleOrdersCreation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderMarketDepth.resx">
-      <DependentUpon>OFTraderMarketDepth.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderMarketOrders.resx">
-      <DependentUpon>OFTraderMarketOrders.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderOffExchangeTrades.resx">
-      <DependentUpon>OFTraderOffExchangeTrades.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderOrderBook.resx">
-      <DependentUpon>OFTraderOrderBook.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderOrderDetails.resx">
-      <DependentUpon>OFTraderOrderDetails.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderOrderHistory.resx">
-      <DependentUpon>OFTraderOrderHistory.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderProfitAndLoss.resx">
-      <DependentUpon>OFTraderProfitAndLoss.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderQuoteTicker.resx">
-      <DependentUpon>OFTraderQuoteTicker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderRequestView.resx">
-      <DependentUpon>OFTraderRequestView.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderSearchOrders.resx">
-      <DependentUpon>OFTraderSearchOrders.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderSearchTrades.resx">
-      <DependentUpon>OFTraderSearchTrades.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderStrategyCreation.resx">
-      <DependentUpon>OFTraderStrategyCreation.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderStrategyCreationNew.resx">
-      <DependentUpon>OFTraderStrategyCreationNew.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderTradeHistorySearch.resx">
-      <DependentUpon>OFTraderTradeHistorySearch.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderTradeTicker.resx">
-      <DependentUpon>OFTraderTradeTicker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ChildForms\OFTraderVWAPCalculator.resx">
-      <DependentUpon>OFTraderVWAPCalculator.cs</DependentUpon>
+    <EmbeddedResource Include="ChildForms\App3.resx">
+      <DependentUpon>App3.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LauncherForm.resx">
       <DependentUpon>LauncherForm.cs</DependentUpon>

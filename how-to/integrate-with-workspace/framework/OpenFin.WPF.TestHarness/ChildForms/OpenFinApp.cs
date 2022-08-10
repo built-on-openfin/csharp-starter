@@ -26,7 +26,6 @@ namespace OpenFin.WPF.TestHarness.ChildForms
             manifestType = "connection";
             manifest = uuid;
             tags = new List<string>();
-            tags.Add("native");
             if (tag1 != null)
             {
                 tags.Add(tag1);

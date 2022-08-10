@@ -2,6 +2,8 @@
 using OpenFin.WindowsForm.TestHarness.ChildForms;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
@@ -18,7 +20,16 @@ namespace OpenFin.WindowsForm.TestHarness
         {
             dispatch = dispatcher;
             formDirectory = new FormDirectory();
-            workspace = new Workspace(GetApps, LaunchApp, this, "customize-workspace", "workspace-management-winform", "http://localhost:8080/manifest.fin.json");
+            NameValueCollection appSettings = ConfigurationManager.AppSettings;
+            bool workspaceAutoConnect = bool.Parse(appSettings.Get("workspaceAutoConnect") ?? Settings.DefaultWorkspaceAutoConnect);
+            string workspaceChannelId = appSettings.Get("workspaceChannelId") ?? Settings.DefaultWorkspaceChannelId;
+            string workspaceManifestUrl = appSettings.Get("workspaceManifestUrl") ?? Settings.DefaultWorkspaceManifestUrl;
+            string uuid = appSettings.Get("uuid") ?? Settings.DefaultUUID;
+            string licenseKey = appSettings.Get("licenseKey") ?? Settings.DefaultLicenseKey;
+
+            WorkspaceOptions workspaceOptions = new WorkspaceOptions() { WorkspaceChannelId = workspaceChannelId, WorkspaceManifestUrl = workspaceManifestUrl, WorkspaceAutoConnect = workspaceAutoConnect };
+            ConnectionOptions connectionOptions = new ConnectionOptions("openfin-demo-license-key", uuid);
+            workspace = new Workspace(GetApps, LaunchApp, this, connectionOptions, workspaceOptions);
         }
 
         private List<App> GetApps()
@@ -31,7 +42,7 @@ namespace OpenFin.WindowsForm.TestHarness
         {
             dispatch.Invoke(new Action(() =>
             {
-                LaunchView(app.manifest);
+                LaunchView(app.appId);
             }), null);
             return true;
         }
@@ -97,7 +108,7 @@ namespace OpenFin.WindowsForm.TestHarness
                 activeViews.Clear();
                 snapshot.Views.ForEach(viewInfo =>
                 {
-                    LaunchView(viewInfo.Manifest, viewInfo);
+                    LaunchView(viewInfo.AppId, viewInfo);
                 });
             }), null);
         }

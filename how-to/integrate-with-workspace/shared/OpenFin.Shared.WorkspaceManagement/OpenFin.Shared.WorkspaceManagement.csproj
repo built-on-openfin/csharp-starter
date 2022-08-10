@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenfinDesktop" Version="17.2.1-alpha3" />
+    <PackageReference Include="OpenfinDesktop" Version="17.4.0" />
   </ItemGroup>
 
 </Project>

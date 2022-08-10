@@ -10,7 +10,7 @@ namespace OpenFin.WindowsForm.TestHarness
 {
     internal class View
     {
-        public View(string manifest, Form instance, ViewInfo info = null)
+        public View(string appId, Form instance, ViewInfo info = null)
         {
 
             Instance = instance;
@@ -22,14 +22,14 @@ namespace OpenFin.WindowsForm.TestHarness
             else
             {
                 InstanceId = Guid.NewGuid();
-                Manifest = manifest;
+                AppId = appId;
                 Instance.Show();
             }
         }
 
         public Form Instance { get; private set; }
 
-        public string Manifest { get; private set; }
+        public string AppId { get; private set; }
 
         public Guid InstanceId { get; private set; }
 
@@ -43,7 +43,7 @@ namespace OpenFin.WindowsForm.TestHarness
                 Height = Instance.Size.Height,
                 WindowState = Instance.WindowState.ToString(),
                 InstanceId = InstanceId,
-                Manifest = Manifest
+                AppId = AppId
             };
             return info;
         }
@@ -51,7 +51,7 @@ namespace OpenFin.WindowsForm.TestHarness
         private void SetInfo(ViewInfo info)
         {
             InstanceId = info.InstanceId;
-            Manifest = info.Manifest;
+            AppId = info.AppId;
             Instance.StartPosition = FormStartPosition.Manual;
             Instance.Location = new System.Drawing.Point(Convert.ToInt32(info.LocationX), Convert.ToInt32(info.LocationY));
             Instance.Size = new System.Drawing.Size(Convert.ToInt32(info.Width), Convert.ToInt32(info.Height));
