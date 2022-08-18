@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace OpenFin.Shared.WorkspaceManagement
 {
-    public class App
+    public class App : App<string>
+    {
+    }
+    public class App<T>
     {
         /**
          * Unique identifier for an application.
@@ -20,7 +23,7 @@ namespace OpenFin.Shared.WorkspaceManagement
         /**
          * URL to application manifest.
          */
-        public string manifest;
+        public T manifest;
         /**
          * UI friendly description for an application.
          */

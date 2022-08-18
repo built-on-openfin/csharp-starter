@@ -37,32 +37,32 @@ namespace OpenFin.WindowsForm.TestHarness
 
         private void showToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            workspaceManagement.ShowHome();
+            workspaceManagement.ShowHomeAsync();
         }
 
         private void hideToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            workspaceManagement.HideHome();
+            workspaceManagement.HideHomeAsync();
         }
 
         private void showToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            workspaceManagement.ShowStore();
+            workspaceManagement.ShowStoreAsync();
         }
 
         private void hideToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            workspaceManagement.HideStore();
+            workspaceManagement.HideStoreAsync();
         }
 
         private void showToolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            workspaceManagement.ShowDock();
+            workspaceManagement.ShowDockAsync();
         }
 
         private void minimizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            workspaceManagement.MinimizeDock();
+            workspaceManagement.MinimizeDockAsync();
         }
     }
 }

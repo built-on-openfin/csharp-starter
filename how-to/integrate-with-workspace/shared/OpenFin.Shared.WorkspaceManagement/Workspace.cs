@@ -1,9 +1,12 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Openfin.Desktop;
 using Openfin.Desktop.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenFin.Shared.WorkspaceManagement
@@ -15,7 +18,34 @@ namespace OpenFin.Shared.WorkspaceManagement
         private readonly Func<List<App>> _onAppsRequested;
         private ChannelClient _connectionService;
         private Func<App, bool> _onAppSelected;
-        public Workspace(Func<List<App>> onAppsRequested, Func<App, bool> onAppSelected, ISnapShotProvider<ApplicationSnapshot> snapsShotProvider, ConnectionOptions connectionOptions, WorkspaceOptions workspaceOptions)
+        
+        private ApplicationSnapshot GetInitSnapshot()
+        {
+
+            if(_workspaceOptions.CommandLineSnapshotArg != null && _workspaceOptions.CommandLineSnapshotArg.Length > 0)
+            {
+                string[] arguments = Environment.GetCommandLineArgs();
+
+                string snapshot = null;
+
+                for (var i = 0; i < arguments.Length; i++)
+                {
+                    if (arguments[i].StartsWith(_workspaceOptions.CommandLineSnapshotArg)) 
+                    {
+                        string[] snapshotArg = arguments[i].Split('=');
+                        snapshot = snapshotArg[1].Trim();
+                    }
+                }
+
+                if (snapshot != null)
+                {
+                    return ApplicationSnapshotConverter.FromBase64JsonEncodedString(snapshot);
+                }
+            }
+
+            return null;
+        }
+        public Workspace(Func<List<App>> onAppsRequested, Func<App, bool> onAppSelected, ISnapShotProvider<ApplicationSnapshot> snapShotProvider, ConnectionOptions connectionOptions, WorkspaceOptions workspaceOptions)
         {
             _onAppsRequested = onAppsRequested;
             _onAppSelected = onAppSelected;
@@ -56,7 +86,14 @@ namespace OpenFin.Shared.WorkspaceManagement
                         return _onAppSelected(app);
                     });
 
-                    await _connectionOptions.ConnectedRuntime.SnapshotSource.InitSnapshotSourceProviderAsync<ApplicationSnapshot>(_connectionOptions.ConnectedRuntime.Options.UUID, snapsShotProvider);
+                    await _connectionOptions.ConnectedRuntime.SnapshotSource.InitSnapshotSourceProviderAsync<ApplicationSnapshot>(_connectionOptions.ConnectedRuntime.Options.UUID, snapShotProvider);
+
+                    var initSnapshot = GetInitSnapshot();
+
+                    if(initSnapshot != null)
+                    {
+                        snapShotProvider.ApplySnapshot(initSnapshot);
+                    }
                 }
                 catch (Exception ex)
                 {

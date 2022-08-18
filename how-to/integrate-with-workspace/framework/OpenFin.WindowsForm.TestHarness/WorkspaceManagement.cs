@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
@@ -15,6 +16,8 @@ namespace OpenFin.WindowsForm.TestHarness
         Workspace workspace;
         Dispatcher dispatch;
         FormDirectory formDirectory;
+        WorkspaceOptions workspaceOptions;
+        ConnectionOptions connectionOptions;
 
         public WorkspaceManagement(Dispatcher dispatcher)
         {
@@ -26,9 +29,9 @@ namespace OpenFin.WindowsForm.TestHarness
             string workspaceManifestUrl = appSettings.Get("workspaceManifestUrl") ?? Settings.DefaultWorkspaceManifestUrl;
             string uuid = appSettings.Get("uuid") ?? Settings.DefaultUUID;
             string licenseKey = appSettings.Get("licenseKey") ?? Settings.DefaultLicenseKey;
-
-            WorkspaceOptions workspaceOptions = new WorkspaceOptions() { WorkspaceChannelId = workspaceChannelId, WorkspaceManifestUrl = workspaceManifestUrl, WorkspaceAutoConnect = workspaceAutoConnect };
-            ConnectionOptions connectionOptions = new ConnectionOptions("openfin-demo-license-key", uuid);
+            string commandLineSnapshotArg = appSettings.Get("commandLineSnapshotArg") ?? "";
+            workspaceOptions = new WorkspaceOptions() { WorkspaceChannelId = workspaceChannelId, WorkspaceManifestUrl = workspaceManifestUrl, WorkspaceAutoConnect = workspaceAutoConnect, CommandLineSnapshotArg = commandLineSnapshotArg };
+            connectionOptions = new ConnectionOptions("openfin-demo-license-key", uuid);
             workspace = new Workspace(GetApps, LaunchApp, this, connectionOptions, workspaceOptions);
         }
 
@@ -67,41 +70,41 @@ namespace OpenFin.WindowsForm.TestHarness
             }
         }
 
-        public void ShowHome()
+        public async Task ShowHomeAsync()
         {
-            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.ShowHome);
+            bool result = await workspace.CanExecuteAction(AvailableActions.ShowHome);
             Console.WriteLine("Can show home", result);
             workspace.ShowHome();
         }
 
-        public void ShowStore()
+        public async Task ShowStoreAsync()
         {
-            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.ShowStore);
+            bool result = await workspace.CanExecuteAction(AvailableActions.ShowStore);
             Console.WriteLine("Can show store", result);
             workspace.ShowStore();
         }
-        public void ShowDock()
+        public async Task ShowDockAsync()
         {
-            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.ShowDock);
+            bool result = await workspace.CanExecuteAction(AvailableActions.ShowDock);
             Console.WriteLine("Can show dock", result);
             workspace.ShowDock();
         }
 
-        public void HideHome()
+        public async Task HideHomeAsync()
         {
-            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.HideHome);
+            bool result = await workspace.CanExecuteAction(AvailableActions.HideHome);
             Console.WriteLine("Can hide home", result);
             workspace.HideHome();
         }
-        public void HideStore()
+        public async Task HideStoreAsync()
         {
-            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.HideStore);
+            bool result = await workspace.CanExecuteAction(AvailableActions.HideStore);
             Console.WriteLine("Can hide store", result);
             workspace.HideStore();
         }
-        public void MinimizeDock()
+        public async Task MinimizeDockAsync()
         {
-            System.Threading.Tasks.Task<bool> result = workspace.CanExecuteAction(AvailableActions.MinimizeDock);
+            bool result = await workspace.CanExecuteAction(AvailableActions.MinimizeDock);
             Console.WriteLine("Can minimize dock", result);
             workspace.MinimizeDock();
         }
@@ -140,7 +143,25 @@ namespace OpenFin.WindowsForm.TestHarness
             List<ViewInfo> views = new List<ViewInfo>();
 
             activeViews.ForEach(view => views.Add(view.GetInfo()));
-            return new ApplicationSnapshot { SnapShotId = guid, Version = version, Views = views };
+            var snapshot = new ApplicationSnapshot { SnapShotId = guid, Version = version, Views = views };
+
+            if (workspaceOptions.CommandLineSnapshotArg != null && workspaceOptions.CommandLineSnapshotArg.Length > 0)
+            {                
+                var base64Snapshot = ApplicationSnapshotConverter.ToBase64JsonEncodedString(snapshot);
+
+                if(base64Snapshot != null)
+                {
+                    var hostApp = new MainApp();
+                    string commandLineArgs = workspaceOptions.CommandLineSnapshotArg + "=" + base64Snapshot;
+                    hostApp.manifestType = "inline-external";
+                    hostApp.manifest = new ExternalProcessRequestType() { arguments = commandLineArgs, path = System.Reflection.Assembly.GetExecutingAssembly().Location };
+                    hostApp.appId = connectionOptions.UUID;
+                    hostApp.title = "OpenFin WindowsForm TestHarness";
+                    snapshot.App = hostApp;
+                }
+            }
+
+            return snapshot;
         }
     }
 }

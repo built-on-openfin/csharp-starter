@@ -29,7 +29,7 @@ namespace OpenFin.Shared.WorkspaceManagement
                 Version = "stable",
                 LicenseKey = licenseKey
             };
-
+            this.UUID = dotNetUuid;
             this.ConnectToRuntime(runtimeOptions);
         }
         public ConnectionOptions(RuntimeOptions runtimeOptions)
@@ -42,6 +42,7 @@ namespace OpenFin.Shared.WorkspaceManagement
             this.ConnectedRuntime = runtime;
         }
 
+        public string UUID { get; private set; }
         public Runtime ConnectedRuntime { get; set; }
 
         public event EventHandler RuntimeConnected;
