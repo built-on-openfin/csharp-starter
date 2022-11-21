@@ -1,0 +1,12 @@
+{
+  "runtime": {
+    "arguments": "--v=1 --inspect",
+    "version": "26.102.71.7"
+  },
+  "platform": {
+    "uuid": "openfin-dotnet-web-platform",
+    "autoShow": true,
+    "icon": "http://localhost:4040/favicon.ico",
+    "providerUrl": "http://localhost:4040/views/app.html"
+  }
+}
