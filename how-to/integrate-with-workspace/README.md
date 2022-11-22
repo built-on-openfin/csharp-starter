@@ -1,7 +1,10 @@
-# OpenFin Native Applications
+# How To - Integrate with Workspace
 
-A repo for demonstrating interop with native applications.
+An example of interop with native applications and a workspace platform.
 
+This example connects two different native applications to a workspace platform. The implementation of the workspace platform is on our workspace starter repo: <https://github.com/built-on-openfin/workspace-starter/tree/main/how-to/customize-workspace>.
+
+It shows how a native application and a workspace platform could work together so that the native applications could provide a list of apps to a platform, issues commands against a workspace platform (show home etc) and provide information so that the native application can be part of a saved workspace.
 ## Windows Forms .NET 4.8 Test Harness
 
 Open:
@@ -38,4 +41,6 @@ Capabilities:
 * Hitting enter launches the selected app
 * typing /store will let you launch the store which will let you browse your available applications.
 
-If the two main windows are closed then the workspace platform will close and so will OpenFin Workspace. If either of the applications are still running then the workspace platform is running and the available applications from the remaining native app are available.
+You can save a workspace by using the workspace menu in the OpenFin Workspace Browser or you can type the following into home /w myworkspace.
+
+The Native applications connect to a specific channel api exposed by the workspace platform. This is configured in the workspace platform's manifest file and defined in the App.config files of the native applications. 

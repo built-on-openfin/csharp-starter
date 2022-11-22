@@ -139,6 +139,7 @@ namespace OpenFin.Shared.WorkspaceManagement
 
         public async void Disconnect()
         {
+            await _connectionService.DispatchAsync("disconnect");
             await _connectionService.DisconnectAsync();
         }
     }
