@@ -26,6 +26,10 @@ namespace OpenFin.WindowsForm.TestHarness
             NameValueCollection appSettings = ConfigurationManager.AppSettings;
             bool workspaceAutoConnect = bool.Parse(appSettings.Get("workspaceAutoConnect") ?? Settings.DefaultWorkspaceAutoConnect);
             string workspaceChannelId = appSettings.Get("workspaceChannelId") ?? Settings.DefaultWorkspaceChannelId;
+            if(workspaceChannelId == null || workspaceChannelId == "")
+            {
+                workspaceChannelId = Prompt.ShowDialog("Enter WorkSpace ID:", "Openfin WorkSpace Adapter");
+            }
             string workspaceManifestUrl = appSettings.Get("workspaceManifestUrl") ?? Settings.DefaultWorkspaceManifestUrl;
             string uuid = appSettings.Get("uuid") ?? Settings.DefaultUUID;
             string licenseKey = appSettings.Get("licenseKey") ?? Settings.DefaultLicenseKey;

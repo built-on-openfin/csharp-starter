@@ -52,6 +52,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChildForms\Prompt.cs" />
     <Compile Include="ChildForms\FormDirectory.cs" />
     <Compile Include="ChildForms\OpenFinApp.cs" />
     <Compile Include="ChildForms\App1.cs">
