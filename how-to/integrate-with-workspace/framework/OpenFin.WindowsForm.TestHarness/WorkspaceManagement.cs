@@ -32,7 +32,7 @@ namespace OpenFin.WindowsForm.TestHarness
                 string[] arguments = Environment.GetCommandLineArgs();
                 for (var i = 0; i < arguments.Length; i++)
                 {
-                    if (arguments[i].StartsWith("--workspaceChannelId"))
+                    if (arguments[i].StartsWith("workspaceChannelId="))
                     {
                         string[] workspaceChannelIdArg = arguments[i].Split('=');
                         workspaceChannelId = workspaceChannelIdArg[1].Trim();
