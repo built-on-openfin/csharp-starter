@@ -1,0 +1,26 @@
+﻿<Window x:Class="Channels.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Channels"
+        mc:Ignorable="d"
+        Title="Channels Sample" Height="450" Width="800">
+    <StackPanel Orientation="Vertical">
+        <Border HorizontalAlignment="Stretch" Background="Red">
+            <Label x:Name="status" FontSize="16" Foreground="White" HorizontalAlignment="Center">Status</Label>
+        </Border>
+        <Button x:Name="connect"  Click="connect_Click">Connect To Runtime</Button>
+        <Button x:Name="disconnect"  Click="disconnect_Click">Disconnect From Runtime</Button>
+
+        <Button x:Name="ChannelClassicProviderCreate"  Click="ChannelClassicProviderCreate_Click">Channels Provider Create</Button>
+
+        <Button x:Name="ProviderBroadcast"  Click="ProviderBroadcast_Click">Provider Broadcast</Button>
+
+        <Button x:Name="ChannelsConnectToClassicChannel"  Click="ChannelsConnectToClassicChannel_Click">Connect to Channel</Button>
+
+        <Button x:Name="ChannelsProviderSend"  Click="ChannelsProviderSend_Click">Send to provider</Button>
+
+
+    </StackPanel>
+</Window>

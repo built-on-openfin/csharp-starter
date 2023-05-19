@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+	<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+	  <IsPackable>false</IsPackable>
+	  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter.Extensions.DesktopSystem\OpenFin.Net.Adapter.Extensions.DesktopSystem.csproj" />
+    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter.Extensions.Snapshots\OpenFin.Net.Adapter.Extensions.Snapshots.csproj" />
+    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter.Logs.Serilog\OpenFin.Net.Adapter.Logs.Serilog.csproj" />
+    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter\OpenFin.Net.Adapter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>

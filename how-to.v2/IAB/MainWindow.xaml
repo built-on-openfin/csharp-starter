@@ -1,0 +1,20 @@
+﻿<Window x:Class="IAB.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IAB"
+        mc:Ignorable="d"
+        Title="IAB Sample" Height="450" Width="800">
+    <StackPanel Orientation="Vertical">
+        <Border HorizontalAlignment="Stretch" Background="Red">
+            <Label x:Name="status" FontSize="16" Foreground="White" HorizontalAlignment="Center">Status</Label>
+        </Border>
+        <Button x:Name="connect"  Click="connect_Click">Connect</Button>
+        <Button x:Name="disconnect"  Click="disconnect_Click">Disconnect</Button>
+        <Button x:Name="IABSubscribe"  Click="IABSubscribe_Click">IAB Subscribe</Button>
+        <Button x:Name="IABPublish"  Click="IABPublish_Click">IAB Publish</Button>
+        <Button x:Name="IABUnsubscribe"  Click="IABUnsubscribe_Click">IAB Unsubscribe</Button>
+
+    </StackPanel>
+</Window>
