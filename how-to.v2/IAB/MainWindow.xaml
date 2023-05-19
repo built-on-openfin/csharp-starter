@@ -6,15 +6,15 @@
         xmlns:local="clr-namespace:IAB"
         mc:Ignorable="d"
         Title="IAB Sample" Height="450" Width="800">
-    <StackPanel Orientation="Vertical">
-        <Border HorizontalAlignment="Stretch" Background="Red">
+    <DockPanel>
+        <Border HorizontalAlignment="Stretch" Background="Red" DockPanel.Dock="Top">
             <Label x:Name="status" FontSize="16" Foreground="White" HorizontalAlignment="Center">Status</Label>
         </Border>
-        <Button x:Name="connect"  Click="connect_Click">Connect</Button>
-        <Button x:Name="disconnect"  Click="disconnect_Click">Disconnect</Button>
-        <Button x:Name="IABSubscribe"  Click="IABSubscribe_Click">IAB Subscribe</Button>
-        <Button x:Name="IABPublish"  Click="IABPublish_Click">IAB Publish</Button>
-        <Button x:Name="IABUnsubscribe"  Click="IABUnsubscribe_Click">IAB Unsubscribe</Button>
-
-    </StackPanel>
+        <Button x:Name="connect"  Click="connect_Click" DockPanel.Dock="Top">Connect</Button>
+        <Button x:Name="disconnect"  Click="disconnect_Click" DockPanel.Dock="Top">Disconnect</Button>
+        <Button x:Name="IABSubscribe"  Click="IABSubscribe_Click" DockPanel.Dock="Top">IAB Subscribe</Button>
+        <Button x:Name="IABPublish"  Click="IABPublish_Click" DockPanel.Dock="Top">IAB Publish</Button>
+        <Button x:Name="IABUnsubscribe"  Click="IABUnsubscribe_Click" DockPanel.Dock="Top">IAB Unsubscribe</Button>
+        <TextBlock x:Name="txtMessages" TextWrapping="Wrap" Text="TextBlock" />
+    </DockPanel>
 </Window>
