@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\OpenFin.Net.Adapter\OpenFin.Net.Adapter.csproj" />
+    <PackageReference Include="OpenFin.Net.Adapter" Version="29.2.0" />
   </ItemGroup>
 
 </Project>

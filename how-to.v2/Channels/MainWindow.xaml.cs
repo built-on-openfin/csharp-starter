@@ -25,6 +25,7 @@ namespace Channels
         public MainWindow()
         {
             InitializeComponent();
+            txtMessages.Text = "";
         }
 
 
@@ -61,11 +62,13 @@ namespace Channels
             runtime.Disconnected += Runtime_Disconnected;
 
             status.Content = "Connected";
+            txtMessages.Text += "Connected" + Environment.NewLine;
         }
 
         private void Runtime_Disconnected(object? sender, EventArgs e)
         {
             Debug.WriteLine("Disconnected Event");
+            txtMessages.Text += "Disconnected" + Environment.NewLine;
         }
 
         private void Runtime_Connected(object? sender, EventArgs e)
@@ -85,11 +88,13 @@ namespace Channels
         private async void ProviderBroadcast_Click(object sender, RoutedEventArgs e)
         {
             await provider.BroadcastAsync("test", "Hello World!");
+
+            txtMessages.Text += "Message Sent" + Environment.NewLine;
         }
 
         private async void ChannelClassicProviderCreate_Click(object sender, RoutedEventArgs e)
         {
-            provider = channels.CreateProvider(new ChannelProviderOptions("andy"));
+            provider = channels.CreateProvider(new ChannelProviderOptions("testChannel"));
 
             provider.ClientConnected += (object? sender, ChannelConnectedEventArgs e) =>
             {
@@ -108,22 +113,32 @@ namespace Channels
                 {
                     Debug.WriteLine($"Register Topic Response: [{payload}]");
 
+                    Dispatcher.Invoke(
+                        new ThreadStart(
+                            () => txtMessages.Text += $"Register Topic Response: [{payload}]" + Environment.NewLine
+                            )
+                        );
+
                     return 51;
                 });
 
                 Debug.WriteLine("Provider Opened");
+                status.Content = "Provider Opened";
+                txtMessages.Text += "Provider/Channel Created" + Environment.NewLine;
 
             }
-            catch
+            catch (Exception ex)
             {
-
+                showError("Create Channel Failed", ex.Message);
+                Debug.WriteLine($"Error on channel create: {ex.Message}");
             }
             
         }
 
         private async void ChannelsConnectToClassicChannel_Click(object sender, RoutedEventArgs e)
         {
-            channelClient = channels.CreateClient( "andy");
+            channelClient = channels.CreateClient( "testChannel");
+            txtMessages.Text += "Client Created" + Environment.NewLine;
             channelClient.Opened += (s, e) =>
             {
                 Debug.WriteLine("Client Opened");
@@ -133,6 +148,9 @@ namespace Channels
                 {
                     Debug.WriteLine($"Got a message - {payload}");
 
+                    Dispatcher.Invoke(
+                        new ThreadStart(() => txtMessages.Text += $"Got a message - {payload}" + Environment.NewLine));                    
+
                     return "coming back at ya";
                 });
             };
@@ -141,18 +159,39 @@ namespace Channels
             {
                 await channelClient.ConnectAsync();
                 Debug.WriteLine("Client - After Connect");
+                status.Content = "Client Connected";
+                txtMessages.Text += "Client Connected" + Environment.NewLine;
             }
-            catch
+            catch (Exception ex)
             {
                 Debug.WriteLine("Client Failed");
+                showError("Client Connect Failed", ex.Message);
             }
         }
 
         private async void ChannelsProviderSend_Click(object sender, RoutedEventArgs e)
         {
-            var result = await channelClient.DispatchAsync<int>("test", "hello world!");
+            try
+            {
+                var result = await channelClient.DispatchAsync<int>("test", "hello world!");
 
-            Debug.WriteLine($"Result {result}");
+                Debug.WriteLine($"Result {result}");
+                txtMessages.Text += "ProviderMessage Sent" + Environment.NewLine;
+            }
+            catch(Exception ex)
+            {
+                showError("Provider Message Send Failed", ex.Message);
+            }
+        }
+
+        private void showError(string errCaption, string errMsg)
+        {
+            string messageBoxText = errMsg;
+            string caption = errCaption;
+            MessageBoxButton button = MessageBoxButton.OK;
+            MessageBoxImage icon = MessageBoxImage.Error;
+
+            MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
         }
     }
 }

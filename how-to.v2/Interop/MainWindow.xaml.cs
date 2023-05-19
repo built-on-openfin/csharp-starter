@@ -39,7 +39,7 @@ namespace Interop
             status.Content = "Connecting...";
 
             runtime.Connected += Runtime_Connected;
-            await runtime.Connect();
+            await runtime.ConnectAsync();
 
             interop = runtime.GetService<IInterop>();
 
@@ -62,22 +62,22 @@ namespace Interop
         {
             status.Content = "Disconnecting...";
 
-            await runtime.Disconnect();
+            await runtime.DisconnectAsync();
 
             status.Content = "Disconnected";
         }
 
         private async void ConnectToBroker_Click(object sender, RoutedEventArgs e)
         {
-            interopClient = await interop.Connect("support-context-and-intents").ConfigureAwait(true);
+            interopClient = await interop.ConnectAsync("support-context-and-intents").ConfigureAwait(true);
 
-            var contextGroups = await interopClient.GetContextGroups();
+            var contextGroups = await interopClient.GetContextGroupsAsync();
 
-            await interopClient.AddContextHandler(ctx => {
+            await interopClient.AddContextHandlerAsync(ctx => {
                 Debug.WriteLine($"Interop Context Received! {ctx.Name}");
             });
 
-            await interopClient.JoinContextGroup("green");
+            await interopClient.JoinContextGroupAsync("green");
         }
 
         private async void FireIntent_Click(object sender, RoutedEventArgs e)
@@ -98,7 +98,7 @@ namespace Interop
 
             try
             {
-                var result = await interopClient.FireIntent(intent);
+                var result = await interopClient.FireIntentAsync(intent);
             }
             catch
             {

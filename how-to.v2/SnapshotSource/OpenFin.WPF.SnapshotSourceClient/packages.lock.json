@@ -2,6 +2,43 @@
   "version": 1,
   "dependencies": {
     "net6.0-windows7.0": {
+      "OpenFin.Net.Adapter": {
+        "type": "Direct",
+        "requested": "[29.2.0, )",
+        "resolved": "29.2.0",
+        "contentHash": "f+vd6gpuSssu+udm+NUP3XzLOUHP36I8f0ibhC/RP5pYRKahtKVV8copX1yRCT6CAe947i2j/JulUZw3jsXrvg=="
+      },
+      "OpenFin.Net.Adapter.Extensions.DesktopSystem": {
+        "type": "Direct",
+        "requested": "[29.2.0, )",
+        "resolved": "29.2.0",
+        "contentHash": "zBrqAH7jDlf+glbW2cw4tYRt0rdP/Jdf8D8PphBYnB0N5W1egjrLYcJGuB2ttosK+ChYZ6Mgv0qWE8qZmj8GDA==",
+        "dependencies": {
+          "OpenFin.Net.Adapter": "29.2.0"
+        }
+      },
+      "OpenFin.Net.Adapter.Extensions.Snapshots": {
+        "type": "Direct",
+        "requested": "[29.2.0, )",
+        "resolved": "29.2.0",
+        "contentHash": "EJQH6ZY87MTZWa8wd6DuK+fHAKcuHbtGMjhCvZ2kQYVLfoSxQBrSs2UoV917lFz94xHQrwxMxiYQ5geniB0fow==",
+        "dependencies": {
+          "OpenFin.Net.Adapter": "29.2.0"
+        }
+      },
+      "OpenFin.Net.Adapter.Logs.Serilog": {
+        "type": "Direct",
+        "requested": "[29.2.0, )",
+        "resolved": "29.2.0",
+        "contentHash": "oiiOAro3c+vmWNJuXN4EXA/iW1fwej241X6piMZ3IjQc3dC4PFIXOr5GxKQ80JJwMCUYzrR/GJfQ9kYyvoRc+A==",
+        "dependencies": {
+          "OpenFin.Net.Adapter": "29.2.0",
+          "Serilog.Enrichers.Thread": "3.1.0",
+          "Serilog.Sinks.Console": "4.1.0",
+          "Serilog.Sinks.Debug": "2.0.0",
+          "Serilog.Sinks.File": "5.0.0"
+        }
+      },
       "Serilog": {
         "type": "Transitive",
         "resolved": "2.10.0",
@@ -37,31 +74,6 @@
         "contentHash": "uwV5hdhWPwUH1szhO8PJpFiahqXmzPzJT/sOijH/kFgUx+cyoDTMM8MHD0adw9+Iem6itoibbUXHYslzXsLEAg==",
         "dependencies": {
           "Serilog": "2.10.0"
-        }
-      },
-      "openfin.net.adapter": {
-        "type": "Project"
-      },
-      "openfin.net.adapter.extensions.desktopsystem": {
-        "type": "Project",
-        "dependencies": {
-          "OpenFin.Net.Adapter": "[1.0.0, )"
-        }
-      },
-      "openfin.net.adapter.extensions.snapshots": {
-        "type": "Project",
-        "dependencies": {
-          "OpenFin.Net.Adapter": "[1.0.0, )"
-        }
-      },
-      "openfin.net.adapter.logs.serilog": {
-        "type": "Project",
-        "dependencies": {
-          "OpenFin.Net.Adapter": "[1.0.0, )",
-          "Serilog.Enrichers.Thread": "[3.1.0, )",
-          "Serilog.Sinks.Console": "[4.1.0, )",
-          "Serilog.Sinks.Debug": "[2.0.0, )",
-          "Serilog.Sinks.File": "[5.0.0, )"
         }
       }
     }

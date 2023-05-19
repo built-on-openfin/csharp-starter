@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter.Extensions.DesktopSystem\OpenFin.Net.Adapter.Extensions.DesktopSystem.csproj" />
-    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter.Extensions.Snapshots\OpenFin.Net.Adapter.Extensions.Snapshots.csproj" />
-    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter.Logs.Serilog\OpenFin.Net.Adapter.Logs.Serilog.csproj" />
-    <ProjectReference Include="..\..\..\OpenFin.Net.Adapter\OpenFin.Net.Adapter.csproj" />
+    <PackageReference Include="OpenFin.Net.Adapter" Version="29.2.0" />
+    <PackageReference Include="OpenFin.Net.Adapter.Extensions.DesktopSystem" Version="29.2.0" />
+    <PackageReference Include="OpenFin.Net.Adapter.Extensions.Snapshots" Version="29.2.0" />
+    <PackageReference Include="OpenFin.Net.Adapter.Logs.Serilog" Version="29.2.0" />
   </ItemGroup>
 
   <ItemGroup>

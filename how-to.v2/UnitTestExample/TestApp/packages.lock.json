@@ -2,8 +2,11 @@
   "version": 1,
   "dependencies": {
     "net6.0-windows7.0": {
-      "openfin.net.adapter": {
-        "type": "Project"
+      "OpenFin.Net.Adapter": {
+        "type": "Direct",
+        "requested": "[29.2.0, )",
+        "resolved": "29.2.0",
+        "contentHash": "f+vd6gpuSssu+udm+NUP3XzLOUHP36I8f0ibhC/RP5pYRKahtKVV8copX1yRCT6CAe947i2j/JulUZw3jsXrvg=="
       }
     }
   }

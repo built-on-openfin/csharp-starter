@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Channels;
 using System.Windows;
@@ -103,11 +102,6 @@ namespace IAB
         {
             Debug.WriteLine(message);
             // TODO: Message is coming through as a JsonObject - See if that can be improved or make the type stronger
-            JsonElement result;
-            if(message.TryGetProperty("name", out result))
-            {
-                Debug.WriteLine($"{result.ToString()}");
-            }            
         }
 
 

@@ -6,21 +6,22 @@
         xmlns:local="clr-namespace:Channels"
         mc:Ignorable="d"
         Title="Channels Sample" Height="450" Width="800">
-    <StackPanel Orientation="Vertical">
-        <Border HorizontalAlignment="Stretch" Background="Red">
+    <DockPanel >
+        <Border HorizontalAlignment="Stretch" Background="Red" DockPanel.Dock="Top">
             <Label x:Name="status" FontSize="16" Foreground="White" HorizontalAlignment="Center">Status</Label>
         </Border>
-        <Button x:Name="connect"  Click="connect_Click">Connect To Runtime</Button>
-        <Button x:Name="disconnect"  Click="disconnect_Click">Disconnect From Runtime</Button>
+        <Button x:Name="connect"  Click="connect_Click" DockPanel.Dock="Top">Connect To Runtime</Button>
+        <Button x:Name="disconnect"  Click="disconnect_Click" DockPanel.Dock="Top">Disconnect From Runtime</Button>
 
-        <Button x:Name="ChannelClassicProviderCreate"  Click="ChannelClassicProviderCreate_Click">Channels Provider Create</Button>
+        <Button x:Name="ChannelClassicProviderCreate"  Click="ChannelClassicProviderCreate_Click" DockPanel.Dock="Top">Channels Provider Create</Button>
 
-        <Button x:Name="ProviderBroadcast"  Click="ProviderBroadcast_Click">Provider Broadcast</Button>
+        <Button x:Name="ProviderBroadcast"  Click="ProviderBroadcast_Click" DockPanel.Dock="Top">Provider Broadcast</Button>
 
-        <Button x:Name="ChannelsConnectToClassicChannel"  Click="ChannelsConnectToClassicChannel_Click">Connect to Channel</Button>
+        <Button x:Name="ChannelsConnectToClassicChannel"  Click="ChannelsConnectToClassicChannel_Click" DockPanel.Dock="Top">Connect to Channel</Button>
 
-        <Button x:Name="ChannelsProviderSend"  Click="ChannelsProviderSend_Click">Send to provider</Button>
+        <Button x:Name="ChannelsProviderSend"  Click="ChannelsProviderSend_Click" DockPanel.Dock="Top">Send to provider</Button>
+        <TextBlock x:Name="txtMessages" TextWrapping="Wrap" Text="TextBlock" />
 
 
-    </StackPanel>
+    </DockPanel>
 </Window>

@@ -47,6 +47,12 @@
           "System.Diagnostics.TextWriterTraceListener": "4.3.0"
         }
       },
+      "OpenFin.Net.Adapter": {
+        "type": "Direct",
+        "requested": "[29.2.0, )",
+        "resolved": "29.2.0",
+        "contentHash": "f+vd6gpuSssu+udm+NUP3XzLOUHP36I8f0ibhC/RP5pYRKahtKVV8copX1yRCT6CAe947i2j/JulUZw3jsXrvg=="
+      },
       "Castle.Core": {
         "type": "Transitive",
         "resolved": "5.1.0",
@@ -1103,13 +1109,10 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
-      "openfin.net.adapter": {
-        "type": "Project"
-      },
       "testapp": {
         "type": "Project",
         "dependencies": {
-          "OpenFin.Net.Adapter": "[1.0.0, )"
+          "OpenFin.Net.Adapter": "[29.2.0, )"
         }
       }
     }
