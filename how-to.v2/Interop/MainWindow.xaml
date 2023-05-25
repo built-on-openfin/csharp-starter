@@ -6,17 +6,17 @@
         xmlns:local="clr-namespace:Interop"
         mc:Ignorable="d"
         Title="Interop Sample" Height="450" Width="800">
-    <StackPanel Orientation="Vertical">
-        <Border HorizontalAlignment="Stretch" Background="Red">
+    <DockPanel>
+        <Border HorizontalAlignment="Stretch" Background="Red" DockPanel.Dock="Top">
             <Label x:Name="status" FontSize="16" Foreground="White" HorizontalAlignment="Center">Status</Label>
         </Border>
-        <Button x:Name="connect"  Click="connect_Click">Connect To Runtime</Button>
-        <Button x:Name="disconnect"  Click="disconnect_Click">Disconnect From Runtime</Button>
+        <Button x:Name="connect"  Click="connect_Click" DockPanel.Dock="Top">Connect To Runtime</Button>
+        <Button x:Name="disconnect"  Click="disconnect_Click" DockPanel.Dock="Top">Disconnect From Runtime</Button>
 
-        <Button x:Name="ConnectToBroker"  Click="ConnectToBroker_Click">Connect to Broker</Button>
-        <Button x:Name="FireIntent"  Click="FireIntent_Click">Fire Intent</Button>
-  
+        <Button x:Name="ConnectToBroker"  Click="ConnectToBroker_Click" IsEnabled="False" DockPanel.Dock="Top">Connect to Broker</Button>
+        <Button x:Name="FireIntent"  Click="FireIntent_Click" IsEnabled="False" DockPanel.Dock="Top">Fire Intent</Button>
+        <TextBlock x:Name="txtMessages" TextWrapping="Wrap" Text="TextBlock" />
 
 
-    </StackPanel>
+    </DockPanel>
 </Window>

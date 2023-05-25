@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text.Json.Nodes;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using OpenFin.Net.Adapter;
 using OpenFin.Net.Adapter.Interfaces;
@@ -21,63 +22,100 @@ namespace Interop
         public MainWindow()
         {
             InitializeComponent();
+            txtMessages.Text = string.Empty;
+            ShowMessage("Please ensure that you are running the how-to/support-context-and-intents example from the Workspace starter repo." + Environment.NewLine);
+            ShowMessage("*******************************************************************************************************************************" + Environment.NewLine);
+            ShowMessage("" + Environment.NewLine);
         }
 
         private async void connect_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine($"UI Thread {Thread.CurrentThread.ManagedThreadId}");
-
-            var factory = new RuntimeFactory();
-
-            runtime = factory.GetRuntimeInstance(new RuntimeOptions
+            try
             {
-                Version = "stable",
-                UUID = "dotnet-adapter-sample-wpf-channels",
-                LicenseKey = "openfin-demo-license-key"
-            });
+                Debug.WriteLine($"UI Thread {Thread.CurrentThread.ManagedThreadId}");
+                ShowMessage($"UI Thread {Thread.CurrentThread.ManagedThreadId}" + Environment.NewLine);
 
-            status.Content = "Connecting...";
+                var factory = new RuntimeFactory();
 
-            runtime.Connected += Runtime_Connected;
-            await runtime.ConnectAsync();
+                runtime = factory.GetRuntimeInstance(new RuntimeOptions
+                {
+                    Version = "stable",
+                    UUID = "dotnet-adapter-sample-wpf-channels",
+                    LicenseKey = "openfin-demo-license-key"
+                });
 
-            interop = runtime.GetService<IInterop>();
+                status.Content = "Connecting...";
+                ShowMessage("Connecting ..." + Environment.NewLine);
 
-            runtime.Disconnected += Runtime_Disconnected;
+                runtime.Connected += Runtime_Connected;
+                await runtime.ConnectAsync();
 
-            status.Content = "Connected";
+                interop = runtime.GetService<IInterop>();
+
+                runtime.Disconnected += Runtime_Disconnected;
+
+                status.Content = "Connected";
+                ShowMessage("Connected to OpenFin Runtime" + Environment.NewLine);
+                ConnectToBroker.IsEnabled= true;
+            }
+            catch (Exception ex)
+            {
+                ConnectToBroker.IsEnabled = false;
+                ShowMessage("Unable to connect to OpenFin Runtime" + Environment.NewLine + ex.Message);
+            }
+            
         }
 
         private void Runtime_Disconnected(object? sender, EventArgs e)
         {
             Debug.WriteLine("Disconnected Event");
+            ShowMessage("Disconnected Event" + Environment.NewLine);
         }
 
         private void Runtime_Connected(object? sender, EventArgs e)
         {
             Debug.WriteLine("Connected Event");
+            ShowMessage("Connected Event" + Environment.NewLine);
         }
 
         private async void disconnect_Click(object sender, RoutedEventArgs e)
         {
             status.Content = "Disconnecting...";
+            ShowMessage("Disconnecting ..." + Environment.NewLine);
 
             await runtime.DisconnectAsync();
 
+            FireIntent.IsEnabled = false;
+            ConnectToBroker.IsEnabled = false;
+
             status.Content = "Disconnected";
+            ShowMessage("Disconnected" + Environment.NewLine);
         }
 
         private async void ConnectToBroker_Click(object sender, RoutedEventArgs e)
         {
-            interopClient = await interop.ConnectAsync("support-context-and-intents").ConfigureAwait(true);
+            try
+            {
+                interopClient = await interop.ConnectAsync("support-context-and-intents").ConfigureAwait(true);
 
-            var contextGroups = await interopClient.GetContextGroupsAsync();
+                var contextGroups = await interopClient.GetContextGroupsAsync();
 
-            await interopClient.AddContextHandlerAsync(ctx => {
-                Debug.WriteLine($"Interop Context Received! {ctx.Name}");
-            });
+                await interopClient.AddContextHandlerAsync(ctx =>
+                {
+                    Debug.WriteLine($"Interop Context Received! {ctx.Name}");
+                });
 
-            await interopClient.JoinContextGroupAsync("green");
+                await interopClient.JoinContextGroupAsync("green");
+                ShowMessage("Connected to Broker: support-context-and-intents on channel green" + Environment.NewLine);
+                FireIntent.IsEnabled = true;
+            }
+            catch (Exception ex)
+            {
+                FireIntent.IsEnabled = false;
+                ShowMessage("Error connecting to Broker: support-context-and-intents on channel green" + Environment.NewLine + ex.Message + Environment.NewLine +
+                    "Please verify that you are running the how-to/support-context-and-intents example from the Workspace starter repo." + Environment.NewLine);
+            }
+
         }
 
         private async void FireIntent_Click(object sender, RoutedEventArgs e)
@@ -99,11 +137,18 @@ namespace Interop
             try
             {
                 var result = await interopClient.FireIntentAsync(intent);
+                ShowMessage("Intent was successfully fired." + Environment.NewLine);
             }
-            catch
+            catch (Exception ex)
             {
                 Console.WriteLine("Resolver Timeout - User has likely dismissed the target selection dialog");
+                ShowMessage("Error firing intent" + Environment.NewLine + "Resolver Timeout - User has likely dismissed the target selection dialog" + Environment.NewLine + ex.Message);
             }
+        }
+
+        private void ShowMessage(string message)
+        {
+            txtMessages.Text += message;
         }
     }
 }
