@@ -1,7 +1,7 @@
 {
-	"name": "openfin-workspace--notifications-proxy",
+	"name": "openfin-workspace--use-notifications",
 	"version": "12.6.0",
-	"description": "OpenFin Workspace -- Notifications Proxy",
+	"description": "OpenFin Workspace -- Use Notifications",
 	"main": "index.js",
 	"scripts": {
 		"dos": "npm --prefix ../common/ run dos",
@@ -13,10 +13,10 @@
 		"client": "npm --prefix common/ run client",
 		"server": "node ./server/build/index.js",
 		"kill": "npm --prefix ../common/ run kill",
-		"setup": "npm install && cd ./common/ && npm install",
+		"setup": "npm install && cd ./common && npm install",
 		"validate": "npm --prefix ../../ run validate"
 	},
-	"author": "ameet.jayawant@openfin.co",
+	"author": "martyn.janes@openfin.co",
 	"license": "SEE LICENSE IN LICENSE.MD",
 	"dependencies": {
 		"@openfin/workspace": "12.6.6",

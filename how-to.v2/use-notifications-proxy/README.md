@@ -19,7 +19,7 @@ This example contains 2 applications. There is one  Winforms application. There 
 2. Run 
 
    ```
-   npm install
+   npm run setup
    ```
 
     to install the dependencies
@@ -27,7 +27,7 @@ This example contains 2 applications. There is one  Winforms application. There 
 3. Run 
 
    ```
-   npm build
+   npm run build
    ```
 
     to build the server and client components.
