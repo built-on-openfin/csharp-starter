@@ -30,7 +30,7 @@ This example contains 2 applications. There is one  Winforms application. There 
    npm run build
    ```
 
-    to build the server and client components.
+    to build the client component.
    
    * **Note**. Please remember to repeat steps 1 though 3 each time you modify the code. 
 
@@ -40,7 +40,7 @@ This example contains 2 applications. There is one  Winforms application. There 
    npm run start 
    ```
 
-   to start the node js server component.
+   to start the generic http server which will serve static files.
 
 5. Open a new Terminal / Command Window in the same sub-folder as step 1. Run 
 

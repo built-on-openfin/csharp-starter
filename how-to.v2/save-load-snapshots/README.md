@@ -13,7 +13,7 @@ When the WPF application has launched it should appear as follows:
 
 ![WPF App](./wpf-app.png)
 
-By clicking the **Launch Platform** button this will request the **manifest.fin.json** from the Web Server and create an OpenFin platform, you should see the following window appear.
+By clicking the **Launch Platform** button this will request the **manifest.fin.json** from the Web Server and create an OpenFin platform. You should see the following window appear.
 
 ![Platform](./platform.png)
 

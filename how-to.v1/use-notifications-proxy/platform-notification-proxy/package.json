@@ -1,26 +1,22 @@
 {
-	"name": "openfin-workspace--use-notifications",
+	"name": "openfin-workspace--notifications-proxy",
 	"version": "12.6.0",
-	"description": "OpenFin Workspace -- Use Notifications",
+	"description": "OpenFin Workspace -- Notifications Proxy",
 	"main": "index.js",
 	"scripts": {
-		"dos": "npm --prefix ../common/ run dos",
-		"build": "npm run build-server & npm run build-client",
-		"build-server": "tsc --project ./server",
+		"build": "npm run build-client",
 		"build-client": "webpack build --config ./client/webpack.config.js --mode=development",
-		"build-client-prod": "webpack build --config ./client/webpack.config.js --mode=production",
-		"start": "npm run server",
-		"client": "npm --prefix common/ run client",
-		"server": "node ./server/build/index.js",
+		"start": "npx --yes http-server ./public -p 8080 -c-1",
+		"client": "node ./scripts/launch.mjs",
 		"kill": "npm --prefix ../common/ run kill",
-		"setup": "npm install && cd ./common && npm install",
-		"validate": "npm --prefix ../../ run validate"
+		"setup": "npm install"
 	},
-	"author": "martyn.janes@openfin.co",
+	"author": "ameet.jayawant@openfin.co",
 	"license": "SEE LICENSE IN LICENSE.MD",
 	"dependencies": {
 		"@openfin/workspace": "12.6.6",
-		"csstype": "^3.1.2"
+		"csstype": "^3.1.2",
+		"openfin-adapter": "^31.75.7"
 	},
 	"devDependencies": {
 		"@openfin/core": "30.74.13",
