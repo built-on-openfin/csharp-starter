@@ -6,7 +6,7 @@
 		"version": "30.110.74.13"
 	},
 	"platform": {
-		"uuid": "nodejs-notifications",
+		"uuid": "notification-proxy",
 		"icon": "http://localhost:8080/favicon.ico",
 		"autoShow": true,
 		"providerUrl": "http://localhost:8080/platform/provider.html",

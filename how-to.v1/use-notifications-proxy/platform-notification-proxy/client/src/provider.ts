@@ -19,7 +19,7 @@ import {
 
 import fs from 'fs';
 
-const PLATFORM_ID = "nodejs-notifications";
+const PLATFORM_ID = "platform-notifications";
 const PLATFORM_ICON = "http://localhost:8080/images/icon-dot.png";
 const PLATFORM_TITLE = "Notifications Proxy";
 
