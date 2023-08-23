@@ -9,22 +9,29 @@ This is a simple example that shows how to use the InterOp API to fire intents t
 - OpenFin.Net.Adapter (minimum 29.2.0)  
 2. Build the solution without errors
 
-3. Navigate to the folder that has the executable, typically this will be in "how-to.v2\fire-intents\bin\Debug\net6.0-windows"  
+3. Run it from Visual Studio.  
 
-4. Run the Interop.exe.  
+4. Or navigate to the folder that has the executable (typically this will be in "how-to.v2\fire-intents\bin\Debug\net6.0-windows") and run the Interop.exe.  
 
-5. Click on "Connect to Runtime". ![Step-5](Step-5-ConnectToRUntime.png)
+5. Click on "Connect to Runtime". 
+
+![Step-5](Step-5-ConnectToRUntime.PNG)
 
     Verify that you get the "Connected" message in the red box at the top.
 
-6. Click on Connect to Broker". ![Step-6](Step-6-ConnectToBroker.png) 
+6. Click on Connect to Broker". 
+
+![Step-6](Step-6-ConnectToBroker.PNG) 
 
    Verify that you get a message "Connected to Broker: ...." in the area under the buttons. 
 
 7. Click "Fire Intent". If your Workspace starter example (mentioned above) is running then you should see the following screen shot that is the intent picker  
-  ![Step-7](Step-7-IntentPicker.png)
+
+  ![Step-7](Step-7-IntentPicker.PNG)
 
 8. Select "Intents using Interop API" and click "Launch". This will display the "Intent using Interop API" view from the workspace starter repo.  
-  You should see the intent information that was sent from the Native application displayed in the log window on the right. ![Step-8](Step-8-IntentInterOpAPI-Window.png)
+  You should see the intent information that was sent from the Native application displayed in the log window on the right. 
+  
+  ![Step-8](Step-8-IntentInterOpAPI-Window.PNG)
 
 9. Please remember to click "Disconnect from Runtime" once you have verified that the tests are working, and prior to closing the application window.
