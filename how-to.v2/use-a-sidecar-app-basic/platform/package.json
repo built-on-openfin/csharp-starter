@@ -1,0 +1,29 @@
+{
+	"name": "csharp-starter--use-sidecar-app-basic",
+	"version": "1.0.0",
+	"description": "OpenFin CSharp Starter -- Sidecar App Platform Example.",
+	"main": "index.js",
+	"scripts": {
+		"build": "npm run build-client",
+		"build-client": "webpack build --config ./client/webpack.config.js --mode=development",
+		"start": "npx --yes http-server ./public -p 8080 -c-1",
+		"server": "node ./server/build/index.js",
+		"client": "node ./scripts/launch.mjs",
+		"secondclient": "node ./scripts/launch.mjs http://localhost:8080/second.manifest.fin.json",
+		"kill": "node ./scripts/kill.mjs",
+		"setup": "npm install && npm run build"
+	},
+	"author": "john.mandia@openfin.co",
+	"license": "SEE LICENSE IN LICENSE.MD",
+	"dependencies": {
+	},
+	"devDependencies": {
+		"openfin-adapter": "^32.76.14",
+		"@openfin/core": "^32.76.14",
+		"@types/node": "^20.1.3",
+		"ts-loader": "^9.4.2",
+		"typescript": "^4.9.5",
+		"webpack": "^5.82.1",
+		"webpack-cli": "^5.1.1"
+	}
+}
