@@ -35,6 +35,7 @@ This location contains the code that is supported by the version 2 of the dot ne
 | [Snapshot Source](./how-to.v2/save-load-snapshots)           | This example demonstrates creating a snapshot source client in your platform and calling it from a C# application. |
 | [Use Notifications Proxy](./how-to.v2/use-notifications-proxy) | An example that shows how a native app can connect to a platform app via channels and send notification requests to it. This platform app is then responsible for creating the notifications. The advantage of this is faster development, less code upkeep on the part of the native app developers, as all updates to notifications can be implemented in the platform app itself. Furthermore, the platform app can service the needs of multiple native apps. |
 | [Unit Testing](./how-to.v2/unit-test-example)                | An example showing how to create unit tests for OpenFin Channel API and InterOp. |
+| [Use a SideCar App - Basic](./how-to.v2/use-sidecar-app-basic)                | An example showing how to create a C# sidecar app to be used by a web OpenFin platform. |
 
 
 
