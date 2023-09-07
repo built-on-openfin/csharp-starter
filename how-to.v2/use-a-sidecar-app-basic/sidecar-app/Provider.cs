@@ -17,6 +17,10 @@ namespace SideCar.App
         private IChannels? channels;
         private Action<string>? onAction;
 
+        private const string SIDECAR_CHANNEL_NAME = "sidecar-app";
+        private const string SIDECAR_CLIENT_FUNCTION_NAME = "sidecar-app-client-subscriber";
+        private const string SIDECAR_CHANNEL_FUNCTION_NAME = "sidecar-app-echo";
+
         public async void Init(Action<string> onProviderAction)
         {
             onAction = onProviderAction;
@@ -38,9 +42,9 @@ namespace SideCar.App
             channels = runtime.GetService<IChannels>();
 
             onAction("Creating Provider");
-            provider = channels.CreateProvider("sidecar-app");
+            provider = channels.CreateProvider(SIDECAR_CHANNEL_NAME);
             onAction("Registering echo topic.");
-            provider.RegisterTopic<string, string>("sidecar-app-echo", (payload) =>
+            provider.RegisterTopic<string, string>(SIDECAR_CHANNEL_FUNCTION_NAME, (payload) =>
             {
                 onAction("Message received on SideCar App from connected client. Responding with Echo prefixed to recieved message.");
                 return "echo: " + payload;
@@ -80,7 +84,7 @@ namespace SideCar.App
         {
             if(provider != null)
             {
-                await provider.BroadcastAsync("sidecar-app-client-subscriber", message);
+                await provider.BroadcastAsync(SIDECAR_CLIENT_FUNCTION_NAME, message);
             }
             if(onAction != null)
             {

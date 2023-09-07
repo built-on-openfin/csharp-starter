@@ -10,6 +10,10 @@ let channelClient : ChannelClient;
 const SIDECAR_APP_ALIAS = "sidecar-app";
 const SIDECAR_APP_TARGET = "SideCar.App.exe";
 const SIDECAR_APP_SRC = `${ location.origin }/assets/sidecar-app.zip`; 
+const SIDECAR_CHANNEL_NAME = "sidecar-app";
+const SIDECAR_CLIENT_FUNCTION_NAME = "sidecar-app-client-subscriber";
+const SIDECAR_CHANNEL_FUNCTION_NAME = "sidecar-app-echo";
+
 /**
  * Wait for the DOM to have been loaded before we connect the UI elements and initialize the platform.
  */
@@ -23,7 +27,7 @@ window.addEventListener("DOMContentLoaded", async () => {
  */
 async function initializeDom(): Promise<void> {
 	loggingElement = document.querySelector("#logging");
-	const loggingContainer: HTMLDivElement | null = document.querySelector("#logging-container");
+	const loggingContainer= document.querySelector<HTMLDivElement>("#logging-container");
 
 	if (!loggingElement || !loggingContainer) {
 		return;
@@ -57,18 +61,22 @@ async function initializePlatform(): Promise<void> {
 		await fin.Platform.init({ });
 		loggingAddEntry("Platform initialized.");
 	} catch(error) {
-		loggingAddEntry(`There was an error while trying to initialize your platform. Error: ${getErrorMessage(error)}`);		
+		loggingAddEntry(`There was an error while trying to initialize your platform. Error: ${formatError(error)}`);		
 	}
 }
 
 /**
- * Return a message from an error.
- * @param error The error to inspect and retrieve the message from
- * @returns The error message
+ * Format an error to a readable string.
+ * @param err The error to format.
+ * @returns The formatted error.
  */
-function getErrorMessage(error: unknown): string {
-	if (error instanceof Error) return error.message
-	return String(error)
+function formatError(err: unknown): string {
+	if (err instanceof Error) {
+		return err.message;
+	} else if (typeof err === "string") {
+		return err;
+	}
+	return JSON.stringify(err);
 }
 
 /**
@@ -76,9 +84,8 @@ function getErrorMessage(error: unknown): string {
  * @returns channel client
  */
 async function createChannelClient(): Promise<ChannelClient> {
-	const channelName = "sidecar-app";
-    const channelClient = await fin.InterApplicationBus.Channel.connect(channelName, { payload: "Payload from platform"});
-	loggingAddEntry(`Connection To SideCar App on channel: ${channelName} established.`);
+    const channelClient = await fin.InterApplicationBus.Channel.connect(SIDECAR_CHANNEL_NAME, { payload: "Payload from platform"});
+	loggingAddEntry(`Connection To SideCar App on channel: ${SIDECAR_CHANNEL_NAME} established.`);
 	return channelClient;
 }
 
@@ -111,7 +118,7 @@ async function createChannelClientAndRegisterListeners(): Promise<void> {
 		});
 
 		// received request over channel to display a message
-		channelClient.register('sidecar-app-client-subscriber', async (payload) => {
+		channelClient.register(SIDECAR_CLIENT_FUNCTION_NAME, async (payload) => {
 			loggingAddEntry(`Message received from SideCar App: ${payload}`);
 		});
 	}
@@ -124,14 +131,14 @@ async function dispatchMessageToSideCarApp() {
 	try {
 		if(channelClient !== undefined) {
 			loggingAddEntry("Sending Message to SideCar App.");
-			let response = await channelClient.dispatch("sidecar-app-echo", "Message from platform to sidecar");
+			let response = await channelClient.dispatch(SIDECAR_CHANNEL_FUNCTION_NAME, "Message from platform to sidecar");
 			loggingAddEntry(`Message sent to SideCar App and response received: ${response}.`);
 		} else {
 			loggingAddEntry("Unable to sending message to SideCar App as the platform is not currently connected to it.");
 		}			
 	} catch (error) {		
 		console.error("There was an error trying to send a message to the SideCar App", error);
-		loggingAddEntry(`Error sending message to SideCar App:  \n\n\t${getErrorMessage(error)}`);
+		loggingAddEntry(`Error sending message to SideCar App:  \n\n\t${formatError(error)}`);
 	}	
 }
 
@@ -172,12 +179,12 @@ async function fetchSideCarAppIfNeeded() {
 */
 async function fetchSideCarApp() {
 	try {
-		const appAsset = {
+		const appAsset: OpenFin.AppAssetInfo = {
 			src: SIDECAR_APP_SRC,
 			alias: SIDECAR_APP_ALIAS,
-			version: "1.0.0",
+			version: "1.0.2",
 			target: SIDECAR_APP_TARGET,
-			force: true
+			mandatory: true
 		};
 	
 		loggingAddEntry("Fetching SideCar App through fin.System.downloadAsset.");
@@ -187,7 +194,7 @@ async function fetchSideCarApp() {
 		}));
 		loggingAddEntry("SideCar App is downloaded.");
 	} catch(err) {
-		loggingAddEntry(`There has been an error when trying to fetch the SideCar App: ${getErrorMessage(err)}`);
+		loggingAddEntry(`There has been an error when trying to fetch the SideCar App: ${formatError(err)}`);
 	}
 }
 
@@ -212,6 +219,6 @@ async function launchSideCarApp() {
 		loggingAddEntry("SideCar App Launched.");
 	} catch (err) {
 		console.error(err);
-		loggingAddEntry(`There was an error launching the SideCar App: ${getErrorMessage(err)}`);
+		loggingAddEntry(`There was an error launching the SideCar App: ${formatError(err)}`);
 	}
 }

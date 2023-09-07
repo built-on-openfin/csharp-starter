@@ -10,7 +10,7 @@
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"moduleResolution": "node",
-		"types": ["./fin"]
+		"types": ["./types/fin"]
 	},
-	"include": ["./src/**/*.ts", "fin.d.ts"]
+	"include": ["./src/**/*.ts"]
 }

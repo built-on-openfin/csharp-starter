@@ -53,7 +53,7 @@ namespace SideCar.App
             {
                 UISyncCtxt.Send(_ =>
                {
-                   txtStatus.Text += message + Environment.NewLine;
+                   txtStatus.Text = message + Environment.NewLine + txtStatus.Text;
                }, null);
             }
         }

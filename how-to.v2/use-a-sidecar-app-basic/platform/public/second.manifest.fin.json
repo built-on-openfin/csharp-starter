@@ -27,7 +27,7 @@
 	"appAssets": [
 		{
 			"src": "http://localhost:8080/assets/sidecar-app.zip",
-			"version": "1.0.0",
+			"version": "1.0.2",
 			"alias": "sidecar-app",
 			"target": "SideCar.App.exe",
 			"mandatory": true
