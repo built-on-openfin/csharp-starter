@@ -42,6 +42,19 @@ This location contains the code that is supported by the version 2 of the dot ne
 
 
 
+### Asp.Net-Core-MVC-Starter
+
+This location contains the code that shows how to use the OpenFin APIs from within an asp.net core mvc application. Note: Neither of these samples use the dotNet adapter that is used by the samples above.
+
+| Documentation                                                | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [OpenFin-Test-MVC-ClientSide](./Asp.Net-Core-MVC-Starter/OpenFin-Test-MVC-ClientSide) | This example shows you how to use the OpenFin api from within the cshtml view file. It does not make use of any server side functionality. The sample demonstrates the sendContext (fire a context), addContextListener (listen for / receive context broadcasts) and fireIntent (initiate an intent) apis. |
+| [OpenFin-Test-MVC-ServerSide](./Asp.Net-Core-MVC-Starter/OpenFin-Test-MVC-ServerSide) | This example shows you how to use the OpenFin api using server side processing of information received from the client side cshtml view. within the cshtml view file. The sample demonstrates the sendContext (fire a context) and addContextListener (listen for / receive context broadcasts)  apis. |
+
+
+
+
+
 ## Documentation
 
 - [.NET Adapter](https://developers.openfin.co/of-docs/docs/net-api)

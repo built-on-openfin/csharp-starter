@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">OpenFin Test (Server Side)</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 mb-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Send Context</h5>                        
+                        <button id="btnSendContext" class="btn btn-primary" onclick="InvokeServerSideSendContext()">
+                            Send Context
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mt-4" id="connInfo">Nothing!!</h4>
+
+            <div class="mt-4">
+                <button class="btn-info" onclick="clearLogs()">Clear Log Output</button>
+                <br /> <br />
+                <textarea style="width:100%" rows="10" id="testOutput">Log output</textarea>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", (event) => {
+        if (window.fin === undefined) {
+            console.log("OpenFin environment is not available.");
+            document.getElementById("connInfo").innerHTML = "OpenFin environment is not available!";
+            document.getElementById("btnSendContext").disabled = true;
+        }
+        else {
+            document.getElementById("connInfo").innerHTML = "Connected to OpenFin Runtime";
+            if (window.fdc3) {
+                console.log("Adding context listener.");
+                addToLog("Adding context listener.");
+                
+                window.fdc3.addContextListener((context) => {
+                    var message = JSON.stringify(context, undefined, " ");
+                    console.log("Incoming Context: " + message);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("ContextReceived", "Home")",
+                        data: { type: context.type, name: context.name },
+                        dataType: "JSON",
+                        success: function (result) {                            
+                            addToLog(JSON.stringify(result));
+                        },
+                        error: function (id) {
+                            addToLog("Unknown error occurred!");
+                            }
+                    });
+                })
+            }
+            else {
+                console.log("window.fdc3 is not available.");
+            }
+        }
+    });
+
+    function InvokeServerSideSendContext() { 
+        console.log("Invoking Server Side SendContext method");
+        addToLog("Invoking Server Side SendContext method");
+
+            $.ajax({
+            type: "POST",
+            url: "@Url.Action("SendContext", "Home")",
+            data: null,
+            dataType: "JSON",
+            success: function (contextValues) {
+                var jsonString = JSON.stringify(contextValues);
+                addToLog("Received from Server Side SendContext(): " + jsonString);
+
+                var jsonParseData = JSON.parse(jsonString);
+                var name = jsonParseData.name;
+                var email = jsonParseData.email;
+
+                SendContext(email, name);
+            },
+            error: function (id) {
+                addToLog("Unknown error occurred!");
+            }
+        });
+    
+    }
+
+    function clearLogs() {
+        var logElem = document.getElementById("testOutput");
+        if (logElem !== null) {
+            logElem.value = "Log output";
+        }
+    }
+
+    function addToLog(message) {
+        document.getElementById("testOutput").value += '\r\n' + message;
+    }
+
+    function SendContext(email, name) {
+        if (window.fdc3 === undefined) {
+            document.getElementById("connInfo").innerHTML = "FDC3 object in not available. Unable to send context.";
+        }
+        else {
+           
+            var contact = {
+                type: "fdc3.contact",
+                name: name,
+                id: {
+                    email: email
+                }
+            }
+
+            addToLog("Sending contact info: " + JSON.stringify(contact));
+
+            window.fdc3.broadcast(contact);
+        }
+    }
+</script>
+
+@* @if (ViewBag.JavaScriptFunction != null)
+{
+    <script type="text/javascript">
+        @Html.Raw(ViewBag.JavaScriptFunction)
+    </script>
+} *@
+

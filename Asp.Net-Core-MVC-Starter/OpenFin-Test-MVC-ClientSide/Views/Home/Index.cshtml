@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">OpenFin Test</h1>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Send Context</h5>
+                        <label>Name</label>
+                        <input type="text" id="name" />
+
+                        <label>Email</label>
+                        <input type="text" id="email" />
+                        <br /> <br />
+                        <button id="btnSendContext" class="btn btn-primary" onclick="SendContext()">
+                            Send Context
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 id="intents" class="card-title">Fire Intents</h5>
+                        <label>Select Intent</label>
+                        <select id="intent-select">
+                            <option value="StartCall" selected>Start Call</option>
+                            <option value="StartChat">Start Chat</option>
+                            <option value="ViewChart">View Chart</option>
+                            <option value="ViewContact">View Contact</option>
+                            <option value="ViewQuote">View Quote</option>
+                        </select>
+                        <br /><br />
+                        <button id="btnFireIntent" onclick="FireIntent()" class="btn btn-primary">
+                            Fire Intent
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <h4 id="connInfo">Nothing</h4>
+            <div class="mt-4">
+                <button class="btn-info" onclick="clearLogs()">Clear Log Output</button>
+                <br /> <br />
+                <textarea style="width:100%" rows="10" id="testOutput">Log output</textarea>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", (event) => {
+        if (window.fin === undefined) {
+            console.log("OpenFin environment is not available.");
+            document.getElementById("connInfo").innerHTML = "OpenFin environment is not available!";
+            document.getElementById("btnSendContext").disabled = true;
+            document.getElementById("btnFireIntent").disabled = true;
+        }
+        else {
+            document.getElementById("connInfo").innerHTML = "Connected to OpenFin Runtime";
+            if (window.fdc3) {
+                console.log("Adding context listener.");
+                window.fdc3.addContextListener((context) => {
+                    var message = JSON.stringify(context, undefined, " ");
+                    console.log("Incoming Context: " + message);
+                    document.getElementById("testOutput").value = message;
+                })
+            }
+            else {
+                console.log("window.fdc3 is not available.");
+            }
+        }
+    });
+
+    function FireIntent() {
+        var e = document.getElementById("intent-select");
+
+        if (e !== null) {
+            var selectedIntent = e.value;
+            var curText = e.options[e.selectedIndex].text;
+
+            document.getElementById("testOutput").value = "Firing intent for " + curText;
+
+            let intent;
+
+            if (selectedIntent === "StartCall" || selectedIntent === "StartChat" || selectedIntent === "ViewContact") {
+                intent = {
+                    type: "fdc3.contact",
+                    name: "John Doe",
+                    id: {
+                        email: "John.Doe@acme.com"
+                    }
+                }
+            }
+            else {
+                intent = {
+                    type: "fdc3.instrument",
+                    id: {
+                        "ticker": "TSLA",
+                        "BBG": "TSLA US Equity",
+                        "ISIN": "US88160R1014"
+                    }
+                }
+            }
+
+            window.fdc3.raiseIntent(selectedIntent, intent);
+        }
+    }
+
+
+    function clearLogs() {
+        var logElem = document.getElementById("testOutput");
+        if (logElem !== null) {
+            logElem.value = "Log output";
+        }
+    }
+
+    function SendContext() {
+        if (window.fdc3 === undefined) {
+            document.getElementById("connInfo").innerHTML = "FDC3 object in not available. Unable to send context.";
+        }
+        else {
+            var name = document.getElementById("name").value || "John Doe";
+            email = document.getElementById("email").value || "john.doe@acme.com";
+
+            var contact = {
+                type: "fdc3.contact",
+                name: name,
+                id: {
+                    email: email
+                }
+            }
+
+            console.log("Sending contact info: " + contact);
+
+            window.fdc3.broadcast(contact);
+        }
+    }
+
+
+
+</script>
