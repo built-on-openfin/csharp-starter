@@ -3,7 +3,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">OpenFin Test</h1>
+    <h1 class="display-6 pb-4">Asp.Net Core MVC - OpenFin API Test (ClientSide Processing)</h1>
 
     <div class="container">
         <div class="row">
@@ -11,9 +11,9 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Send Context</h5>
-                        <label>Name</label>
+                        <label class="pb-2">Name</label>
                         <input type="text" id="name" />
-
+                        <br />
                         <label>Email</label>
                         <input type="text" id="email" />
                         <br /> <br />
@@ -36,14 +36,14 @@
                             <option value="ViewContact">View Contact</option>
                             <option value="ViewQuote">View Quote</option>
                         </select>
-                        <br /><br />
+                        <br /><br /><br />
                         <button id="btnFireIntent" onclick="FireIntent()" class="btn btn-primary">
                             Fire Intent
                         </button>
                     </div>
                 </div>
             </div>
-
+            <br /><br />
             <h4 id="connInfo">Nothing</h4>
             <div class="mt-4">
                 <button class="btn-info" onclick="clearLogs()">Clear Log Output</button>
