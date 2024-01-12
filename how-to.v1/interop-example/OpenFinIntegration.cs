@@ -63,20 +63,17 @@ namespace OpenFin.Interop.Win.Sample
         private async Task ConnectInteropClient(string brokerName)
         {
             _interopClient = await ConnectAsync(brokerName);
-
             await _interopClient.AddContextHandlerAsync(ctx =>
             {
                 Console.WriteLine("Interop Context Received!");
                 InteropContextReceived?.Invoke(this, new ContextReceivedEventArgs(ctx));
             });
-            var c = _runtime.WrapApplication("openfin-browser");
-
             var contextGroups = await _interopClient.GetContextGroupsAsync();
             var contextGroupIds = contextGroups.Select(group => group.Id).ToArray();
             InteropContextGroupsReceived?.Invoke(this, new InteropContextGroupsReceivedEventArgs(contextGroupIds));
             InteropConnected?.Invoke(this, EventArgs.Empty);
         }
-
+ 
         private void Runtime_Disconnected(object sender, EventArgs e)
         {
             RuntimeDisconnected?.Invoke(this, EventArgs.Empty);
