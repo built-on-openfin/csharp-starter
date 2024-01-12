@@ -6,10 +6,12 @@ using System.Collections.Generic;
 
 namespace OpenFin.Interop.Win.Sample
 {
-    public class ContextReceivedEventArgs : EventArgs
+    public class IntentContextReceivedEventArgs : EventArgs
     {
-        public ContextReceivedEventArgs(Context context)
+        public IntentContextReceivedEventArgs(Context context, string intentName)
         {
+            IntentName = intentName;
+
             if (context.Type.IndexOf("fdc3.instrument") > -1)
             {
                 var instrumentContext = new Instrument
@@ -46,5 +48,7 @@ namespace OpenFin.Interop.Win.Sample
         public Contact Fdc3ContactContext { get; protected set; }
 
         public Organization Fdc3OrganizationContext { get; protected set; }
+
+        public string IntentName { get; protected set; }
     }
 }
