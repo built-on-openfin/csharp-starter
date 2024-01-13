@@ -5,9 +5,12 @@ namespace OpenFin.Interop.Win.Sample
 {
     public partial class MainWindow : Form
     {
-        OpenFinIntegration _openFin;
-        DataSource _dataSource;
+        readonly OpenFinIntegration _openFin;
+        readonly DataSource _dataSource;
         bool _joinedContextGroup;
+        readonly string _runtimeUUID;
+        readonly string _interopBrokerUUID;
+        readonly bool _registerIntents;
 
         public MainWindow()
         {
@@ -19,7 +22,12 @@ namespace OpenFin.Interop.Win.Sample
             contextTypeDropDown.SelectedIndex = 0;
 
             // OpenFin Integration
-            _openFin = new OpenFinIntegration("winform-interop-example");
+            _interopBrokerUUID = CommandLineOptions.GetSpecifiedWorkspaceUUID();
+            _runtimeUUID = CommandLineOptions.GetSpecifiedNativeUUID() ?? "winform-interop-example" + "/" + Guid.NewGuid().ToString();
+            _registerIntents = CommandLineOptions.GetRegisterIntents();
+            Log("Setting up runtime connection using UUID: " + _runtimeUUID);
+
+            _openFin = new OpenFinIntegration(_runtimeUUID); 
             _openFin.RuntimeConnected += OpenFin_RuntimeConnected;
             _openFin.RuntimeDisconnected += OpenFin_RuntimeDisconnected;
             _openFin.InteropConnected += OpenFin_InteropConnected;
@@ -27,7 +35,18 @@ namespace OpenFin.Interop.Win.Sample
             _openFin.InteropContextGroupsReceived += OpenFin_InteropContextGroupsReceived;
             _openFin.IntentResultReceived += OpenFin_IntentResultReceived;
             _openFin.IntentRequestReceived += OpenFin_IntentRequestReceived;
-            Log("Please add the UUID of the platform you wish to connect to in the Interop Broker textbox and click connect. Clicking connect without a value will try to connect to the UUID of our workspace platform starter.");
+            if(_interopBrokerUUID == null)
+            {
+                Log("Runtime connection will be established when you try to connect to a broker. Please add the UUID of the platform you wish to connect to in the Interop Broker textbox and click connect. Clicking connect without a value will try to connect to the UUID of our workspace platform starter.");
+            } 
+            else
+            {
+                connectToBrokerButton.Enabled = false;
+                Log("Interop Broker specified via the command line. Auto connecting to: " + _interopBrokerUUID);
+                Log("Connecting to broker: " + _interopBrokerUUID);
+                Log("Please wait...");
+                _openFin.ConnectToInteropBroker(_interopBrokerUUID);
+            }
         }
 
         private void SubmitContextButton_Click(object sender, EventArgs e)
@@ -86,8 +105,12 @@ namespace OpenFin.Interop.Win.Sample
         private void OpenFin_RuntimeConnected(object sender, EventArgs e)
         {
             Invoke(new Action(() => openFinStatusLabel.Text = "OpenFin Connected"));
-            Log("OpenFin Runtime Connected.");
-            connectToBrokerButton.Enabled = true;
+            Log("OpenFin Runtime Connected using UUID: " + _runtimeUUID);
+
+            if(_interopBrokerUUID == null)
+            {
+                connectToBrokerButton.Enabled = true;
+            }
         }
 
         private void OpenFin_RuntimeDisconnected(object sender, EventArgs e)
@@ -107,6 +130,13 @@ namespace OpenFin.Interop.Win.Sample
                 openFinStatusLabel.Text = "Interop Connected";
                 connectToBrokerButton.Enabled = false;
                 interopBrokerInput.Enabled = false;
+                if(_registerIntents)
+                {
+                    Log("Request to auto register intent handlers has been sent via the commandline.");
+                    RegisterIntent("Instrument");
+                    RegisterIntent("Contact");
+                    RegisterIntent("Organization");
+                }
                 RefreshUI();
             }));
             Log("Connected to InteropBroker");
@@ -235,11 +265,9 @@ namespace OpenFin.Interop.Win.Sample
             Log($"Fired intent: {result} for context type: {contextTypeDropDown.SelectedItem}.");
         }
 
-        private async void RegisterIntent_Click(object sender, EventArgs e)
+        private void RegisterIntent_Click(object sender, EventArgs e)
         {
-            Log($"Registering intent handler for context type: {contextTypeDropDown.SelectedItem}");
-            var result = await _openFin.RegisterIntent(contextTypeDropDown.SelectedItem.ToString());
-            Log(result);
+            RegisterIntent(contextTypeDropDown.SelectedItem.ToString());
         }
 
         private void Log(string message)
@@ -250,6 +278,13 @@ namespace OpenFin.Interop.Win.Sample
                 return;
             }
             this.logBox.AppendText(message + Environment.NewLine);
+        }
+
+        private async void RegisterIntent(string contextType)
+        {
+            Log($"Registering intent handler for context type: {contextType}");
+            var result = await _openFin.RegisterIntent(contextType);
+            Log(result);
         }
     }
 }
