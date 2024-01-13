@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using Openfin.WinForm;
 
 namespace OpenFin.Interop.Win.Sample
 {
     public partial class MainWindow : Form
     {
-        OpenFinIntegration _openFin;
-        DataSource _dataSource;
+        readonly OpenFinIntegration _openFin;
+        readonly DataSource _dataSource;
+        bool _joinedContextGroup;
+        readonly string _runtimeUUID;
+        readonly string _interopBrokerUUID;
+        readonly bool _registerIntents;
 
         public MainWindow()
         {
@@ -20,131 +22,202 @@ namespace OpenFin.Interop.Win.Sample
             contextTypeDropDown.SelectedIndex = 0;
 
             // OpenFin Integration
-            _openFin = new OpenFinIntegration();
-            _openFin.RuntimeConnected += openFin_RuntimeConnected;
-            _openFin.RuntimeDisconnected += openFin_RuntimeDisconnected;
-            _openFin.InteropConnected += openFin_InteropConnected;
-            _openFin.InteropContextReceived += openFin_InteropContextReceived;
-            _openFin.InteropContextGroupsReceived += openFin_InteropContextGroupsReceived;
-            _openFin.IntentResultReceived += _openFin_IntentResultReceived;
+            _interopBrokerUUID = CommandLineOptions.GetSpecifiedWorkspaceUUID();
+            _runtimeUUID = CommandLineOptions.GetSpecifiedNativeUUID() ?? "winform-interop-example" + "/" + Guid.NewGuid().ToString();
+            _registerIntents = CommandLineOptions.GetRegisterIntents();
+            Log("Setting up runtime connection using UUID: " + _runtimeUUID);
+
+            _openFin = new OpenFinIntegration(_runtimeUUID); 
+            _openFin.RuntimeConnected += OpenFin_RuntimeConnected;
+            _openFin.RuntimeDisconnected += OpenFin_RuntimeDisconnected;
+            _openFin.InteropConnected += OpenFin_InteropConnected;
+            _openFin.InteropContextReceived += OpenFin_InteropContextReceived;
+            _openFin.InteropContextGroupsReceived += OpenFin_InteropContextGroupsReceived;
+            _openFin.IntentResultReceived += OpenFin_IntentResultReceived;
+            _openFin.IntentRequestReceived += OpenFin_IntentRequestReceived;
+            if(_interopBrokerUUID == null)
+            {
+                Log("Runtime connection will be established when you try to connect to a broker. Please add the UUID of the platform you wish to connect to in the Interop Broker textbox and click connect. Clicking connect without a value will try to connect to the UUID of our workspace platform starter.");
+            } 
+            else
+            {
+                connectToBrokerButton.Enabled = false;
+                Log("Interop Broker specified via the command line. Auto connecting to: " + _interopBrokerUUID);
+                Log("Connecting to broker: " + _interopBrokerUUID);
+                Log("Please wait...");
+                _openFin.ConnectToInteropBroker(_interopBrokerUUID);
+            }
         }
 
-        private void submitContextButton_Click(object sender, EventArgs e)
+        private void SubmitContextButton_Click(object sender, EventArgs e)
         {
+            Log("Submitting Context: Information: " + ContextItemComboBox.SelectedItem.ToString() + " Context Type: " + contextTypeDropDown.SelectedItem.ToString());
             _openFin.SendBroadcast(ContextItemComboBox.SelectedItem.ToString(), contextTypeDropDown.SelectedItem.ToString());
         }
 
-
-        private void connectToBrokerButton_Click(object sender, EventArgs e)
+        private void ConnectToBrokerButton_Click(object sender, EventArgs e)
         {
             var broker = interopBrokerInput.Text;
             if (broker == "")
             {
-                broker = "openfin-browser";
+                broker = "workspace-platform-starter";
                 interopBrokerInput.Text = broker;
             }
+            Log("Connecting to broker: " + broker);
+            Log("Please wait...");
             _openFin.ConnectToInteropBroker(broker);
-            setWebView(broker);
         }
 
-        private void setWebView(string broker)
+        private void RefreshUI()
         {
-            var appOptions = new Openfin.Desktop.ApplicationOptions("interop-sample", "interop-sample-uuid", "https://fdc3.finos.org/toolbox/fdc3-workbench/");
-            appOptions.SetProperty("fdc3InteropApi", "1.2");
-            appOptions.MainWindowOptions.PreloadScripts = new List<Openfin.Desktop.PreloadScript>() {
-                new Openfin.Desktop.PreloadScript($"{Environment.CurrentDirectory}\\preload.js", false)
-            };
-            var customData = new Dictionary<string, object>();
-            customData.Add("brokerId", broker);
-            appOptions.MainWindowOptions.CustomData = customData;
-            this.embeddedView.Initialize(_openFin.DotNetOptions, appOptions);
-        }
-        private void createBrokerButton_Click(object sender, EventArgs e)
-        {
-            var broker = interopBrokerInput.Text;
-            if (broker != "" && broker != "openfin-browser")
+            ContextInputLabel.Text = contextTypeDropDown.SelectedItem as string;
+
+            switch (contextTypeDropDown.SelectedItem)
             {
-                _openFin.CreateInteropBroker(broker);
-                setWebView(broker);
-            }
-        }
+                case "Instrument":
+                    {
+                        ContextItemComboBox.DataSource = _dataSource.Instruments.DataSource;
+                        fireIntent.Enabled = (!connectToBrokerButton.Enabled);
+                        registerIntent.Enabled = (!connectToBrokerButton.Enabled);
+                        break;
+                    }
+                case "Contact":
+                    {
+                        ContextItemComboBox.DataSource = _dataSource.Contacts.DataSource;
 
-        private bool EnableCreateBroker(string brokerName)
-        {
-            return !string.IsNullOrWhiteSpace(brokerName) && brokerName != "openfin-browser";
+                        fireIntent.Enabled = (!connectToBrokerButton.Enabled);
+                        registerIntent.Enabled = (!connectToBrokerButton.Enabled);
+                        break;
+                    }
+                case "Organization":
+                    {
+                        ContextItemComboBox.DataSource = _dataSource.Organizations.DataSource;
+
+                        fireIntent.Enabled = (!connectToBrokerButton.Enabled);
+                        registerIntent.Enabled = (!connectToBrokerButton.Enabled);
+                        break;
+                    }
+            }
         }
 
         #region OpenFin Events
 
-        private void openFin_RuntimeConnected(object sender, EventArgs e)
+        private void OpenFin_RuntimeConnected(object sender, EventArgs e)
         {
             Invoke(new Action(() => openFinStatusLabel.Text = "OpenFin Connected"));
-            connectToBrokerButton.Enabled = true;
+            Log("OpenFin Runtime Connected using UUID: " + _runtimeUUID);
+
+            if(_interopBrokerUUID == null)
+            {
+                connectToBrokerButton.Enabled = true;
+            }
         }
 
-        private void openFin_RuntimeDisconnected(object sender, EventArgs e)
+        private void OpenFin_RuntimeDisconnected(object sender, EventArgs e)
         {
             Invoke(new Action(() =>
             {
                 openFinStatusLabel.Text = "OpenFin Disconnected";
                 connectToBrokerButton.Enabled = false;
             }));
+            Log("OpenFin Runtime Disconnected");
         }
 
-        private void openFin_InteropConnected(object sender, EventArgs e)
+        private void OpenFin_InteropConnected(object sender, EventArgs e)
         {
             Invoke(new Action(() =>
             {
                 openFinStatusLabel.Text = "Interop Connected";
                 connectToBrokerButton.Enabled = false;
-                createBrokerButton.Enabled = false;
                 interopBrokerInput.Enabled = false;
-                fireIntent.Enabled = contextTypeDropDown.SelectedItem.ToString() == "Contact";
+                if(_registerIntents)
+                {
+                    Log("Request to auto register intent handlers has been sent via the commandline.");
+                    RegisterIntent("Instrument");
+                    RegisterIntent("Contact");
+                    RegisterIntent("Organization");
+                }
+                RefreshUI();
             }));
+            Log("Connected to InteropBroker");
         }
 
-        private void openFin_InteropContextReceived(object sender, ContextReceivedEventArgs e)
+        private void OpenFin_InteropContextReceived(object sender, ContextReceivedEventArgs e)
         {
             Invoke(new Action(() =>
             {
                 var contextReceived = "Unknown Context Received";
-                if (e.InstrumentContext != null)
-                {
-                    contextReceived = e.InstrumentContext.Id["ticker"];
-                    receivedContext.Text = contextReceived;
-                }
                 if (e.Fdc3InstrumentContext != null)
                 {
                     contextReceived = e.Fdc3InstrumentContext.Id["ticker"];
                     receivedContext.Text = contextReceived;
+                    Log("Received an fdc3.instrument object. Ticker: " + contextReceived);
                 }
                 if (e.Fdc3ContactContext != null)
                 {
                     contextReceived = e.Fdc3ContactContext.Name;
                     receivedContext.Text = contextReceived;
+                    Log("Received an fdc3.contact object. Name: " + contextReceived);
                 }
                 if (e.Fdc3OrganizationContext != null)
                 {
                     contextReceived = e.Fdc3OrganizationContext.Name;
                     receivedContext.Text = contextReceived;
+                    Log("Received an fdc3.organization object. Name: " + contextReceived);
                 }
             }));
         }
 
+        private void OpenFin_IntentRequestReceived(object sender, IntentContextReceivedEventArgs e)
+        {
+            Invoke(new Action(() =>
+            {
+                var intentNameReceived = "Unknown Intent Raised";
+                var contextType = "Unknown";
 
-        private void _openFin_IntentResultReceived(object sender, IntentResolutionReceivedEventArgs e)
+                var contextReceived = "Unknown Context Received";
+                if (e.IntentName != null)
+                {
+                    intentNameReceived = e.IntentName;
+                    receivedIntentValue.Text = intentNameReceived;
+                }
+                if (e.Fdc3InstrumentContext != null)
+                {
+                    contextReceived = e.Fdc3InstrumentContext.Id["ticker"];
+                    receivedContext.Text = contextReceived;
+                    contextType = e.Fdc3InstrumentContext.Type;
+                }
+                if (e.Fdc3ContactContext != null)
+                {
+                    contextReceived = e.Fdc3ContactContext.Name;
+                    receivedContext.Text = contextReceived;
+                    contextType = e.Fdc3ContactContext.Type;
+                }
+                if (e.Fdc3OrganizationContext != null)
+                {
+                    contextReceived = e.Fdc3OrganizationContext.Name;
+                    receivedContext.Text = contextReceived;
+                    contextType = e.Fdc3OrganizationContext.Type;
+                }
+                Log($"Received an intent request of type: {intentNameReceived} with context object of type: {contextType} containing value: {contextReceived}");
+            }));
+        }
+
+        private void OpenFin_IntentResultReceived(object sender, IntentResolutionReceivedEventArgs e)
         {
             if (e.IsDismissed)
             {
                 receivedContext.Text = "Intent Cancelled";
+                Log("Fired Intent Request Cancelled.");
             }
             else
             {
-                receivedContext.Text = $"Intent Resolution Source: {e.Source} Version: {(string.IsNullOrWhiteSpace(e.Version) ? "n/a" : e.Version)}";
+                receivedContext.Text = $"Intent Resolution Source: {e.Source}";
+                Log($"Intent Resolution Source: {e.Source} Version: {(string.IsNullOrWhiteSpace(e.Version) ? "n/a" : e.Version)}");
             }
         }
 
-        private void openFin_InteropContextGroupsReceived(object sender, InteropContextGroupsReceivedEventArgs e)
+        private void OpenFin_InteropContextGroupsReceived(object sender, InteropContextGroupsReceivedEventArgs e)
         {
             Invoke(new Action(() =>
             {
@@ -158,64 +231,60 @@ namespace OpenFin.Interop.Win.Sample
 
         #endregion
 
-        private void contextGroupComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void ContextGroupComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             var contextGroupId = contextGroupComboBox.SelectedItem.ToString();
             if (contextGroupId != "none" && contextGroupId.IndexOf("N/A") > -1 == false && _openFin != null)
             {
                 _openFin.ConnectToContextGroup(contextGroupId);
+                Log("Connecting to context group: " + contextGroupId);
                 submitContextButton.Enabled = true;
+                _joinedContextGroup = true;
             }
             else if (contextGroupId == "none" && _openFin != null)
             {
                 _openFin.LeaveContextGroup();
+                if(_joinedContextGroup)
+                {                
+                    Log("Leaving current context group.");
+                }
+
                 submitContextButton.Enabled = false;
             }
         }
 
-        private void interopBrokerInput_Leave(object sender, EventArgs e)
+        private void ContextTypeDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
-            createBrokerButton.Enabled = EnableCreateBroker(interopBrokerInput.Text);
+            RefreshUI();
         }
 
-        private void interopBrokerInput_TextChanged(object sender, EventArgs e)
+        private void FireIntent_Click(object sender, EventArgs e)
         {
-            createBrokerButton.Enabled = EnableCreateBroker(interopBrokerInput.Text);
+            Log($"Firing intent for context type: {contextTypeDropDown.SelectedItem}");
+            var result = _openFin.FireIntent(contextTypeDropDown.SelectedItem.ToString(), ContextItemComboBox.SelectedItem.ToString());
+            Log($"Fired intent: {result} for context type: {contextTypeDropDown.SelectedItem}.");
         }
 
-        private void contextTypeDropDown_SelectedIndexChanged(object sender, EventArgs e)
+        private void RegisterIntent_Click(object sender, EventArgs e)
         {
-            ContextInputLabel.Text = contextTypeDropDown.SelectedItem as string;
+            RegisterIntent(contextTypeDropDown.SelectedItem.ToString());
+        }
 
-            switch (contextTypeDropDown.SelectedItem)
+        private void Log(string message)
+        {
+            if (this.logBox.InvokeRequired)
             {
-                case "Instrument":
-                    {
-                        ContextItemComboBox.DataSource = _dataSource.Instruments.DataSource;
-
-                        fireIntent.Enabled = false;
-                        break;
-                    }
-                case "Contact":
-                    {
-                        ContextItemComboBox.DataSource = _dataSource.Contacts.DataSource;
-
-                        fireIntent.Enabled = (!connectToBrokerButton.Enabled);
-                        break;
-                    }
-                case "Organization":
-                    {
-                        ContextItemComboBox.DataSource = _dataSource.Organizations.DataSource;
-
-                        fireIntent.Enabled = false;
-                        break;
-                    }
+                this.logBox.Invoke(new Action<string>(Log), new object[] { message });
+                return;
             }
+            this.logBox.AppendText(message + Environment.NewLine);
         }
 
-        private void fireIntent_Click(object sender, EventArgs e)
+        private async void RegisterIntent(string contextType)
         {
-            _openFin.FireIntent(ContextItemComboBox.SelectedItem.ToString());
+            Log($"Registering intent handler for context type: {contextType}");
+            var result = await _openFin.RegisterIntent(contextType);
+            Log(result);
         }
     }
 }

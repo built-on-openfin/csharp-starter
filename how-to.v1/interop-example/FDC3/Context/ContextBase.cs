@@ -1,13 +1,12 @@
 ﻿using Newtonsoft.Json;
-using Openfin.Desktop.InteropAPI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace OpenFin.Interop.Win.Sample
+namespace OpenFin.Interop.Win.Sample.FDC3.Context
 {
-    public class ContextBase: Context
+    public class ContextBase : Openfin.Desktop.InteropAPI.Context
     {
         private static Dictionary<string, object> customProps;
         private static Dictionary<string, List<PropertyInfo>> properties;
@@ -70,12 +69,12 @@ namespace OpenFin.Interop.Win.Sample
 
         private PropertyInfo getPropertyInfoByPropertyName(string propertyName)
         {
-            if (!properties.ContainsKey(this.GetType().Name))
+            if (!properties.ContainsKey(GetType().Name))
             {
-                properties[this.GetType().Name] = this.GetType().GetProperties().ToList();
+                properties[GetType().Name] = GetType().GetProperties().ToList();
             }
 
-            return properties[this.GetType().Name].FirstOrDefault(x => x.Name == propertyName);
+            return properties[GetType().Name].FirstOrDefault(x => x.Name == propertyName);
         }
     }
 }
