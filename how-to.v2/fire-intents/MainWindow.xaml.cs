@@ -103,7 +103,14 @@ namespace Interop
                 await interopClient.AddContextHandlerAsync(ctx =>
                 {
                     Debug.WriteLine($"Interop Context Received! {ctx.Name}");
+
+                    Dispatcher.Invoke(
+                        new ThreadStart(
+                            () => txtMessages.Text += $"Interop Context Received! {ctx.Name}" + Environment.NewLine
+                            )
+                        );
                 });
+
 
                 await interopClient.JoinContextGroupAsync("green");
                 ShowMessage("Connected to Broker: support-context-and-intents on channel green" + Environment.NewLine);
