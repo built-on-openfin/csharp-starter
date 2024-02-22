@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using OpenFin.Net.Adapter.Interop;
+﻿using OpenFin.Net.Adapter.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace OpenFin.Interop.Win.Sample
 {
@@ -12,13 +12,13 @@ namespace OpenFin.Interop.Win.Sample
         private static Dictionary<string, object> customProps;
         private static Dictionary<string, List<PropertyInfo>> properties;
 
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public new virtual string Type { get; set; }
 
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public new string Name { get; set; }
 
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public new Dictionary<string, string> Id { get; set; }
 
         public object this[string propertyName]

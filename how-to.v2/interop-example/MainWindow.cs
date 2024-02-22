@@ -21,7 +21,7 @@ namespace OpenFin.Interop.Win.Sample
             _openFin = new OpenFinIntegration();
             _openFin.RuntimeConnected += openFin_RuntimeConnected;
             _openFin.RuntimeDisconnected += openFin_RuntimeDisconnected;
-            _openFin.InteropConnected += openFin_InteropConnected;
+            _openFin.InteropClientConnected += openFin_InteropClientConnected;
             _openFin.InteropContextReceived += openFin_InteropContextReceived;
             _openFin.InteropContextGroupsReceived += openFin_InteropContextGroupsReceived;
             _openFin.IntentResultReceived += _openFin_IntentResultReceived;
@@ -38,10 +38,10 @@ namespace OpenFin.Interop.Win.Sample
             var broker = interopBrokerInput.Text;
             if (broker == "")
             {
-                broker = "openfin-browser";
+                broker = "workspace-platform-starter";
                 interopBrokerInput.Text = broker;
             }
-            _openFin.ConnectToInteropBroker(broker);
+            _openFin.CreateInteropClient(broker);
             // setWebView(broker);
         }
 
@@ -59,12 +59,12 @@ namespace OpenFin.Interop.Win.Sample
             //var customData = new Dictionary<string, object>();
             //customData.Add("brokerId", broker);
             //appOptions.MainWindowOptions.CustomData = customData;
-            // this.embeddedView.Initialize(_openFin.DotNetOptions, appOptions);
+            // this.embeddedView.Initialize(_openFin.RuntimeOptions, appOptions);
         }
         private void createBrokerButton_Click(object sender, EventArgs e)
         {
             var broker = interopBrokerInput.Text;
-            if (broker != "" && broker != "openfin-browser")
+            if (broker != "" && broker != "workspace-platform-starter")
             {
                 _openFin.CreateInteropBroker(broker);
                 // setWebView(broker);
@@ -73,7 +73,9 @@ namespace OpenFin.Interop.Win.Sample
 
         private bool EnableCreateBroker(string brokerName)
         {
-            return !string.IsNullOrWhiteSpace(brokerName) && brokerName != "openfin-browser";
+            // TODO: Fix this once the adapter supports creating brokers
+            return false;
+            return !string.IsNullOrWhiteSpace(brokerName) && brokerName != "workspace-platform-starter";
         }
 
         #region OpenFin Events
@@ -93,11 +95,11 @@ namespace OpenFin.Interop.Win.Sample
             }));
         }
 
-        private void openFin_InteropConnected(object sender, EventArgs e)
+        private void openFin_InteropClientConnected(object sender, EventArgs e)
         {
             Invoke(new Action(() =>
             {
-                openFinStatusLabel.Text = "Interop Connected";
+                openFinStatusLabel.Text = "Interop Client Connected";
                 connectToBrokerButton.Enabled = false;
                 createBrokerButton.Enabled = false;
                 interopBrokerInput.Enabled = false;

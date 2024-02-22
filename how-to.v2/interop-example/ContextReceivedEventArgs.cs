@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using OpenFin.Net.Adapter.Interop;
+﻿using OpenFin.Net.Adapter.Interop;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace OpenFin.Interop.Win.Sample
 {
@@ -15,7 +16,7 @@ namespace OpenFin.Interop.Win.Sample
                 {
                     Type = context.Type,
                     Name = context.Name,
-                    Id = (context.Id as JObject).ToObject<Dictionary<string, string>>()
+                    Id = ((JsonElement)context.Id).Deserialize<Dictionary<string, string>>() ?? new Dictionary<string, string>()
                 };
                 InstrumentContext = instrumentContext;
             }

@@ -1,190 +1,151 @@
-﻿using Newtonsoft.Json;
-using OpenFin.Net.Adapter;
-using OpenFin.Net.Adapter.Interfaces;
+﻿using OpenFin.Net.Adapter;
 using OpenFin.Net.Adapter.Interop;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace OpenFin.Interop.Win.Sample
 {
     class OpenFinIntegration
     {
-        private string DotNetUuid;
+        #region Private Fields
 
         private readonly IRuntime _runtime;
-        private IInterop _interop;
-        private IInteropClient _interopClient;
-        private IInteropBroker _interopBroker;
-        private DataSource _dataSource;
+        private readonly DataSource _dataSource;
+        private IInterop? _interop;
+        private IInteropClient? _interopClient;
+        private IInteropBroker? _interopBroker;
 
-        public RuntimeOptions DotNetOptions { get; }
+        #endregion
 
-        public OpenFinIntegration(string uuid = null)
+        #region Construction
+
+        public OpenFinIntegration(string? uuid = null)
         {
+            string dotNetUuid;
             _dataSource = new DataSource();
 
-            if(uuid != null)
-            {
-                DotNetUuid = uuid;
-            }
-            else
+            if(uuid == null)
             {
                 int count = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length;
-                DotNetUuid = "interop-winform-sample-" + count;
+                uuid = "interop-winform-sample-" + count;
             }
 
-            DotNetOptions = new RuntimeOptions()
+            RuntimeOptions = new RuntimeOptions()
             {
-                UUID = DotNetUuid,
+                UUID = uuid,
                 Version = "stable"
             };
 
             var factory = new RuntimeFactory();
 
-            _runtime = factory.GetRuntimeInstance(DotNetOptions); 
-
-             _interop = _runtime.GetService<IInterop>();            
-       
-            _runtime.Disconnected += Runtime_Disconnected;
+            _runtime = factory.GetRuntimeInstance(RuntimeOptions);
+            _runtime.Disconnected += OnRuntimeDisconnected;
+            _runtime.Connected += OnRuntimeConnected;
         }
 
-        public event EventHandler RuntimeConnected;
-        public event EventHandler RuntimeDisconnected;
-        public event EventHandler InteropConnected;
-        public event EventHandler<ContextReceivedEventArgs> InteropContextReceived;
-        public event EventHandler<InteropContextGroupsReceivedEventArgs> InteropContextGroupsReceived;
-        public event EventHandler<IntentResolutionReceivedEventArgs> IntentResultReceived;
+        #endregion
 
-        private async Task<IInteropClient> ConnectAsync(string brokerName)
-        {
-            _interopClient = await _interop.ConnectAsync(brokerName);
-            await _interopClient.JoinContextGroupAsync("green");
+        #region Public Events
 
-            await _interopClient.AddContextHandlerAsync(ctx =>
-            {
-                Debug.WriteLine($"Interop Context Received! {ctx.Name}");
-            });
+        public event EventHandler RuntimeConnected = delegate { };
+        public event EventHandler RuntimeDisconnected = delegate { };
+        public event EventHandler InteropClientConnected = delegate { };
+        public event EventHandler<ContextReceivedEventArgs> InteropContextReceived = delegate { };
+        public event EventHandler<InteropContextGroupsReceivedEventArgs> InteropContextGroupsReceived = delegate { };
+        public event EventHandler<IntentResolutionReceivedEventArgs> IntentResultReceived = delegate { };
 
-            return _interopClient;
-        }
+        #endregion
 
-        private async Task<IInteropBroker> CreateAsync(string brokerName)
-        {
-            _interopBroker = await CreateAsync(brokerName);
+        #region Public Properties
 
-            await ConnectInteropClient(brokerName);
+        public RuntimeOptions RuntimeOptions { get; }
 
-            return _interopBroker;
-        }
+        #endregion
 
-        private async Task ConnectInteropClient(string brokerName)
-        {
-            _interopClient = await ConnectAsync(brokerName);
-
-            await _interopClient.AddContextHandlerAsync(ctx => {
-                Console.WriteLine("Interop Context Received!");
-                InteropContextReceived?.Invoke(this, new ContextReceivedEventArgs(ctx));
-            });
-            
-            // TODO: What does this do?
-            // var c = _runtime.WrapApplication("openfin-browser");
-            
-            var contextGroups = await _interopClient.GetContextGroupsAsync();
-            var contextGroupIds = contextGroups.Select(group => group.Id).ToArray();
-            InteropContextGroupsReceived?.Invoke(this, new InteropContextGroupsReceivedEventArgs(contextGroupIds));
-            InteropConnected?.Invoke(this, EventArgs.Empty);
-        }
+        #region Public Methods
 
         public void SendBroadcast(string item, string contextType)
         {
-            if(contextType == "Instrument")
+            AssertInteropClient();
+            switch (contextType)
             {
-                var instrumentContext = new InstrumentContext();
-                var fdc3InstrumentContext = new Fdc3InstrumentContext();
-                instrumentContext.Id.Add("ticker", item);
-                fdc3InstrumentContext.Id.Add("ticker", item);
-                _interopClient.SetContextAsync(instrumentContext);
-                _interopClient.SetContextAsync(fdc3InstrumentContext);
-            }
+                case "Instrument":
+                    var instrumentContext = new InstrumentContext();
+                    var fdc3InstrumentContext = new Fdc3InstrumentContext();
+                    instrumentContext.Id.Add("ticker", item);
+                    fdc3InstrumentContext.Id.Add("ticker", item);
+                    _interopClient!.SetContextAsync(instrumentContext);
+                    _interopClient!.SetContextAsync(fdc3InstrumentContext);
+                    break;
+                case "Contact":
+                    var contactContext = new Fdc3ContactContext();
+                    contactContext.Name = item;
+                    contactContext.Id.Add("email", _dataSource.GetEmail(item));
+                    _interopClient!.SetContextAsync(contactContext);
+                    break;
+                case "Organization":
+                    var organizationContext = new Fdc3OrganizationContext();
+                    organizationContext.Name = item;
+                    organizationContext.Id.Add("PERMID", _dataSource.GetCompanyId(item));
+                    _interopClient!.SetContextAsync(organizationContext);
+                    break;
 
-            if (contextType == "Contact")
-            {
-                var contactContext = new Fdc3ContactContext();
-                contactContext.Name = item;
-                contactContext.Id.Add("email", _dataSource.GetEmail(item));
-                _interopClient.SetContextAsync(contactContext);
             }
+        }
 
-            if (contextType == "Organization")
+        public async Task CreateInteropBroker(string broker)
+        {
+            EnsureRuntimeConnected();
+            _interopBroker = await _interop!.CreateAsync(broker); 
+            throw new NotSupportedException("The V2 adapter does not currently support creating interop brokers");
+            // TODO: The need to implement this once the IInteropBroker interface is completed in the adapter 
+        }
+
+        public async Task CreateInteropClient(string brokerName)
+        {
+            EnsureRuntimeConnected();
+            _interopClient = await _interop!.ConnectAsync(brokerName);
+            await _interopClient.AddContextHandlerAsync(ctx =>
             {
-                var organizationContext = new Fdc3OrganizationContext();
-                organizationContext.Name = item;
-                organizationContext.Id.Add("PERMID", _dataSource.GetCompanyId(item));
-                _interopClient.SetContextAsync(organizationContext);
-            }
+                Debug.WriteLine($"Interop Context Received! {ctx.Name}");
+                InteropContextReceived(this, new ContextReceivedEventArgs(ctx));
+            });
+            _interopClient.GetContextGroupsAsync().ContinueWith(t =>
+            {
+                var contextGroups = t.Result;
+                var contextGroupIds = contextGroups.Select(group => group.Id).ToArray();
+                InteropContextGroupsReceived(this, new InteropContextGroupsReceivedEventArgs(contextGroupIds));
+            });
+            
+            
+            InteropClientConnected(this, EventArgs.Empty);
         }
 
         public async void LeaveContextGroup()
         {
-            await _interopClient.RemoveFromContextGroupAsync();
+            AssertInteropClient();
+            await _interopClient!.RemoveFromContextGroupAsync();
         }
 
         public async void ConnectToContextGroup(string contextGroupId)
         {
-            await _interopClient.JoinContextGroupAsync(contextGroupId);
-        }
-
-        public void ConnectToInteropBroker(string broker)
-        {
-            // Launch and Connect to the OpenFin Runtime
-            // If already connected, callback executes immediately
-            _runtime.Connected += async (sender, args) =>
-            {
-                Console.WriteLine("Runtime object connected!");
-                RuntimeConnected?.Invoke(sender, EventArgs.Empty);
-
-                _interopBroker = await CreateAsync(broker);
-
-                await ConnectInteropClient(broker);
-            };
-
-            _runtime.ConnectAsync();
-        }
-
-        public void CreateInteropBroker(string broker)
-        {
-            // Launch and Connect to the OpenFin Runtime
-            // If already connected, callback executes immediately
-            _runtime.Connected += async (sender, args) =>
-            {
-                Console.WriteLine("Runtime object connected!");
-                RuntimeConnected?.Invoke(sender, EventArgs.Empty);
-
-                _interopBroker = await CreateAsync(broker);
-
-                await ConnectInteropClient(broker);
-            };
-
-            _runtime.ConnectAsync();
-        }
-
-        private void Runtime_Disconnected(object sender, EventArgs e)
-        {
-            RuntimeDisconnected?.Invoke(this, EventArgs.Empty);
+            AssertInteropClient();
+            await _interopClient!.JoinContextGroupAsync(contextGroupId);
         }
 
         public async void FireIntent(string contactName)
         {
             // Build out intent payload by deserializing a standard FDC3 payload
-            var intent = JsonConvert.DeserializeObject<Intent>(@$"{{
-                'name': 'StartCall',
-                'context': {{
-                     'type': 'fdc3.contact',
-                     'name': '{contactName}',
-                     'id': {{
-                                'email': '{_dataSource.GetEmail(contactName)}'
+            var intent = JsonSerializer.Deserialize<Intent>(@$"{{
+                ""name"": ""StartCall"",
+                ""context"": {{
+                     ""type"": ""fdc3.contact"",
+                     ""name"": ""{contactName}"",
+                     ""id"": {{
+                                ""email"": ""{_dataSource.GetEmail(contactName)}""
                      }}
                         }}
                 }}");
@@ -203,5 +164,40 @@ namespace OpenFin.Interop.Win.Sample
                 IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs());
             }
         }
+
+        #endregion
+
+        #region Private Methods
+
+        private void EnsureRuntimeConnected()
+        {
+            if (!_runtime.IsConnected || _interop == null)
+            {
+                _runtime.ConnectAsync().Wait();
+                _interop = _runtime.GetService<IInterop>();
+            }
+        }
+
+        private void AssertInteropClient()
+        {
+            if (_interopClient == null)
+                throw new InvalidOperationException("The interop client is not initialised");
+        }
+
+        private void OnRuntimeConnected(object? sender, EventArgs e)
+        {
+            Console.WriteLine("Runtime object connected!");
+            RuntimeConnected(sender, EventArgs.Empty);
+        }
+
+        private void OnRuntimeDisconnected(object? sender, EventArgs e)
+        {
+            RuntimeDisconnected(this, EventArgs.Empty);
+            _interop = null;
+            _interopBroker = null;
+            _interopClient = null;
+        }
+
+        #endregion
     }
 }
