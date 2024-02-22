@@ -73,8 +73,6 @@ namespace OpenFin.Interop.Win.Sample
 
         private bool EnableCreateBroker(string brokerName)
         {
-            // TODO: Fix this once the adapter supports creating brokers
-            return false;
             return !string.IsNullOrWhiteSpace(brokerName) && brokerName != "workspace-platform-starter";
         }
 

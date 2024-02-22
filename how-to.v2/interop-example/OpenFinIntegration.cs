@@ -24,7 +24,6 @@ namespace OpenFin.Interop.Win.Sample
 
         public OpenFinIntegration(string? uuid = null)
         {
-            string dotNetUuid;
             _dataSource = new DataSource();
 
             if(uuid == null)
@@ -100,8 +99,6 @@ namespace OpenFin.Interop.Win.Sample
         {
             EnsureRuntimeConnected();
             _interopBroker = await _interop!.CreateAsync(broker); 
-            throw new NotSupportedException("The V2 adapter does not currently support creating interop brokers");
-            // TODO: The need to implement this once the IInteropBroker interface is completed in the adapter 
         }
 
         public async Task CreateInteropClient(string brokerName)
