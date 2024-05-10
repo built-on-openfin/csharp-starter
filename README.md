@@ -42,6 +42,8 @@ This location contains the code that is supported by the version 2 of the dot ne
 
 
 
+### server
+
 ### Asp.Net-Core-MVC-Starter
 
 This location contains the code that shows how to use the OpenFin APIs from within an asp.net core mvc application. Note: Neither of these samples use the dotNet adapter that is used by the samples above.
