@@ -55,14 +55,17 @@ namespace OpenFin.Interop.Win.Sample
         public event EventHandler<IntentResolutionReceivedEventArgs> IntentResultReceived;
         public event EventHandler<IntentContextReceivedEventArgs> IntentRequestReceived;
 
-        private async Task<InteropClient> ConnectAsync(string brokerName)
+        private async Task<InteropClient> ConnectAsync(string brokerName, object fdc3Payload)
         {
-            return await _runtime.Interop.ConnectAsync(brokerName).ConfigureAwait(true);
+            if(fdc3Payload != null)
+                return await _runtime.Interop.ConnectAsync(brokerName, fdc3Payload).ConfigureAwait(true);
+            else
+                return await _runtime.Interop.ConnectAsync(brokerName).ConfigureAwait(true);
         }
 
-        private async Task ConnectInteropClient(string brokerName)
+        private async Task ConnectInteropClient(string brokerName, object fdc3Payload)
         {
-            _interopClient = await ConnectAsync(brokerName);
+            _interopClient = await ConnectAsync(brokerName, fdc3Payload);
             await _interopClient.AddContextHandlerAsync(ctx =>
             {
                 Console.WriteLine("Interop Context Received!");
@@ -138,7 +141,7 @@ namespace OpenFin.Interop.Win.Sample
             await _interopClient.JoinContextGroupAsync(contextGroupId);
         }
 
-        public void ConnectToInteropBroker(string broker)
+        public void ConnectToInteropBroker(string broker, object fdc3Payload = null)
         {
             // Launch and Connect to the OpenFin Runtime
             // If already connected, callback executes immediately
@@ -147,7 +150,7 @@ namespace OpenFin.Interop.Win.Sample
                 Console.WriteLine("Runtime object connected!");
                 RuntimeConnected?.Invoke(this, EventArgs.Empty);
 
-                await ConnectInteropClient(broker);
+                await ConnectInteropClient(broker, fdc3Payload);
             });
         }
 

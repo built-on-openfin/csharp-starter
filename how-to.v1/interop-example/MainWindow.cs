@@ -20,6 +20,7 @@ namespace OpenFin.Interop.Win.Sample
             ContextItemComboBox.SelectedIndex = 0;
             contextGroupComboBox.SelectedIndex = 0;
             contextTypeDropDown.SelectedIndex = 0;
+            FDCVersionDropDown.SelectedIndex = 2;
 
             // OpenFin Integration
             _interopBrokerUUID = CommandLineOptions.GetSpecifiedWorkspaceUUID();
@@ -45,7 +46,10 @@ namespace OpenFin.Interop.Win.Sample
                 Log("Interop Broker specified via the command line. Auto connecting to: " + _interopBrokerUUID);
                 Log("Connecting to broker: " + _interopBrokerUUID);
                 Log("Please wait...");
-                _openFin.ConnectToInteropBroker(_interopBrokerUUID);
+
+                var fdc3VersionPayload = new { type = "fdc3", version = FDCVersionDropDown.SelectedItem}; // or 2.0
+
+                _openFin.ConnectToInteropBroker(_interopBrokerUUID, fdc3VersionPayload);
             }
         }
 
@@ -65,7 +69,13 @@ namespace OpenFin.Interop.Win.Sample
             }
             Log("Connecting to broker: " + broker);
             Log("Please wait...");
-            _openFin.ConnectToInteropBroker(broker);
+
+            var fdc3VersionPayload = new { type = "fdc3", version = FDCVersionDropDown.SelectedItem };
+
+            if(FDCVersionDropDown.SelectedIndex > 0)
+                _openFin.ConnectToInteropBroker(broker, fdc3VersionPayload);
+            else
+                _openFin.ConnectToInteropBroker(broker);
         }
 
         private void RefreshUI()
@@ -140,6 +150,10 @@ namespace OpenFin.Interop.Win.Sample
                 RefreshUI();
             }));
             Log("Connected to InteropBroker");
+            Invoke(new Action(() =>
+            {
+                FDCVersionDropDown.Enabled = false;
+            }));
         }
 
         private void OpenFin_InteropContextReceived(object sender, ContextReceivedEventArgs e)

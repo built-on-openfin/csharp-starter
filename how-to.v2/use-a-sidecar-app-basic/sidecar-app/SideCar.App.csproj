@@ -10,13 +10,10 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OpenFin.Net.Adapter" Version="29.2.0" />
+    <PackageReference Include="OpenFin.Net.Adapter" Version="36.122.1" />
   </ItemGroup>
 	<Target Name="ZipOutputPath" AfterTargets="Build">
-		<ZipDirectory
-			Overwrite="true"
-            SourceDirectory="$(OutputPath)"
-            DestinationFile="$(MSBuildProjectDirectory)\..\platform\public\assets\sidecar-app.zip" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(OutputPath)" DestinationFile="$(MSBuildProjectDirectory)\..\platform\public\assets\sidecar-app.zip" />
 	</Target>
 
 </Project>

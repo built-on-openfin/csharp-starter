@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Openfin.Notifications" Version="0.12.7" />
-    <PackageReference Include="OpenfinDesktop" Version="17.4.0" />
+    <PackageReference Include="Openfin.Notifications" Version="0.12.8" />
+    <PackageReference Include="OpenfinDesktop" Version="17.5.1" />
   </ItemGroup>
 
   <ItemGroup>

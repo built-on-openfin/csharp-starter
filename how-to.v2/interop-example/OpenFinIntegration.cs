@@ -101,10 +101,14 @@ namespace OpenFin.Interop.Win.Sample
             _interopBroker = await _interop!.CreateAsync(broker); 
         }
 
-        public async Task CreateInteropClient(string brokerName)
+        public async Task CreateInteropClient(string brokerName, object? fdc3Payload = null)
         {
             EnsureRuntimeConnected();
-            _interopClient = await _interop!.ConnectAsync(brokerName);
+
+            if(fdc3Payload != null)
+                _interopClient = await _interop!.ConnectAsync(brokerName, fdc3Payload);
+            else
+                _interopClient = await _interop!.ConnectAsync(brokerName);
             await _interopClient.AddContextHandlerAsync(ctx =>
             {
                 Debug.WriteLine($"Interop Context Received! {ctx.Name}");

@@ -2,7 +2,7 @@
 
 An example of interop with native applications and a workspace platform.
 
-This example connects two different native applications to a workspace platform. The implementation of the workspace platform is on our workspace starter repo: <https://github.com/built-on-openfin/workspace-starter/tree/main/how-to/customize-workspace>.
+This example connects two different native applications to a workspace platform. The implementation of the workspace platform is on our workspace starter repo: <https://github.com/built-on-openfin/workspace-starter/tree/main/how-to/workspace-platform-starter>.
 
 It shows how a native application and a workspace platform could work together so that the native applications could provide a list of apps to a platform, issues commands against a workspace platform (show home etc) and provide information so that the native application can be part of a saved workspace.
 ## Windows Forms .NET 4.8 Test Harness

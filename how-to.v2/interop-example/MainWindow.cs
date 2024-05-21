@@ -7,6 +7,17 @@ namespace OpenFin.Interop.Win.Sample
     {
         OpenFinIntegration _openFin;
         DataSource _dataSource;
+        readonly string _runtimeUUID;
+
+        private void Log(string message)
+        {
+            if (this.logBox.InvokeRequired)
+            {
+                this.logBox.Invoke(new Action<string>(Log), new object[] { message });
+                return;
+            }
+            this.logBox.AppendText(message + Environment.NewLine);
+        }
 
         public MainWindow()
         {
@@ -16,6 +27,9 @@ namespace OpenFin.Interop.Win.Sample
             ContextItemComboBox.SelectedIndex = 0;
             contextGroupComboBox.SelectedIndex = 0;
             contextTypeDropDown.SelectedIndex = 0;
+            FDCVersionDropDown.SelectedIndex = 2;
+
+            Log("Setting up runtime connection");
 
             // OpenFin Integration
             _openFin = new OpenFinIntegration();
@@ -24,11 +38,12 @@ namespace OpenFin.Interop.Win.Sample
             _openFin.InteropClientConnected += openFin_InteropClientConnected;
             _openFin.InteropContextReceived += openFin_InteropContextReceived;
             _openFin.InteropContextGroupsReceived += openFin_InteropContextGroupsReceived;
-            _openFin.IntentResultReceived += _openFin_IntentResultReceived;
+            _openFin.IntentResultReceived += _openFin_IntentResultReceived;            
         }
 
         private void submitContextButton_Click(object sender, EventArgs e)
         {
+            Log("Submitting Context: Information: " + ContextItemComboBox.SelectedItem.ToString() + " Context Type: " + contextTypeDropDown.SelectedItem.ToString());
             _openFin.SendBroadcast(ContextItemComboBox.SelectedItem.ToString(), contextTypeDropDown.SelectedItem.ToString());
         }
 
@@ -41,7 +56,16 @@ namespace OpenFin.Interop.Win.Sample
                 broker = "workspace-platform-starter";
                 interopBrokerInput.Text = broker;
             }
-            _openFin.CreateInteropClient(broker);
+
+            Log("Connecting to broker: " + broker);
+            Log("Please wait...");
+
+            var fdc3VersionPayload = new { type = "fdc3", version = FDCVersionDropDown.SelectedItem };
+
+            if (FDCVersionDropDown.SelectedIndex > 0)
+                _openFin.CreateInteropClient(broker, fdc3VersionPayload);
+            else
+                _openFin.CreateInteropClient(broker);
             // setWebView(broker);
         }
 
@@ -66,6 +90,7 @@ namespace OpenFin.Interop.Win.Sample
             var broker = interopBrokerInput.Text;
             if (broker != "" && broker != "workspace-platform-starter")
             {
+                Log("Creating InterOp Broker: " + broker);
                 _openFin.CreateInteropBroker(broker);
                 // setWebView(broker);
             }
@@ -80,7 +105,11 @@ namespace OpenFin.Interop.Win.Sample
 
         private void openFin_RuntimeConnected(object sender, EventArgs e)
         {
-            Invoke(new Action(() => openFinStatusLabel.Text = "OpenFin Connected"));
+            Invoke(new Action(() =>
+            {
+                openFinStatusLabel.Text = "OpenFin Connected";
+                Log("OpenFin Connected!");
+             }));
             connectToBrokerButton.Enabled = true;
         }
 
@@ -89,6 +118,7 @@ namespace OpenFin.Interop.Win.Sample
             Invoke(new Action(() =>
             {
                 openFinStatusLabel.Text = "OpenFin Disconnected";
+                Log("OpenFin Disconnected!");
                 connectToBrokerButton.Enabled = false;
             }));
         }
@@ -98,6 +128,7 @@ namespace OpenFin.Interop.Win.Sample
             Invoke(new Action(() =>
             {
                 openFinStatusLabel.Text = "Interop Client Connected";
+                Log("InterOp Client Connected!");
                 connectToBrokerButton.Enabled = false;
                 createBrokerButton.Enabled = false;
                 interopBrokerInput.Enabled = false;
@@ -130,6 +161,7 @@ namespace OpenFin.Interop.Win.Sample
                     contextReceived = e.Fdc3OrganizationContext.Name;
                     receivedContext.Text = contextReceived;
                 }
+                Log("Received Context: " + receivedContext.Text);
             }));
         }
 
@@ -142,6 +174,7 @@ namespace OpenFin.Interop.Win.Sample
             }
             else
             {
+                Log($"Intent Resolution Source: {e.Source} Version: {(string.IsNullOrWhiteSpace(e.Version) ? "n/a" : e.Version)}");
                 receivedContext.Text = $"Intent Resolution Source: {e.Source} Version: {(string.IsNullOrWhiteSpace(e.Version) ? "n/a" : e.Version)}";
             }
         }

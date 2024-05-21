@@ -4,35 +4,35 @@
     "net6.0-windows7.0": {
       "OpenFin.Net.Adapter": {
         "type": "Direct",
-        "requested": "[29.2.0, )",
-        "resolved": "29.2.0",
-        "contentHash": "f+vd6gpuSssu+udm+NUP3XzLOUHP36I8f0ibhC/RP5pYRKahtKVV8copX1yRCT6CAe947i2j/JulUZw3jsXrvg=="
+        "requested": "[36.122.1, )",
+        "resolved": "36.122.1",
+        "contentHash": "OWo9eU162nFC5b7CneE1hHdE1MRnYFByHFbTzqruH/94r+A5IL4LhdR/Yr4i89CFC/mavheU7gclEWV8cM0T7Q=="
       },
       "OpenFin.Net.Adapter.Extensions.DesktopSystem": {
         "type": "Direct",
-        "requested": "[29.2.0, )",
-        "resolved": "29.2.0",
-        "contentHash": "zBrqAH7jDlf+glbW2cw4tYRt0rdP/Jdf8D8PphBYnB0N5W1egjrLYcJGuB2ttosK+ChYZ6Mgv0qWE8qZmj8GDA==",
+        "requested": "[36.122.1, )",
+        "resolved": "36.122.1",
+        "contentHash": "5NjPylrA4RU07LjqaZJvYT4KbuthDgzLI9TTxgasLowW66I6AdOdpzarawid1xHbdipZgmIG8TKFdkOp6OaQKw==",
         "dependencies": {
-          "OpenFin.Net.Adapter": "29.2.0"
+          "OpenFin.Net.Adapter": "36.122.1"
         }
       },
       "OpenFin.Net.Adapter.Extensions.Snapshots": {
         "type": "Direct",
-        "requested": "[29.2.0, )",
-        "resolved": "29.2.0",
-        "contentHash": "EJQH6ZY87MTZWa8wd6DuK+fHAKcuHbtGMjhCvZ2kQYVLfoSxQBrSs2UoV917lFz94xHQrwxMxiYQ5geniB0fow==",
+        "requested": "[36.122.1, )",
+        "resolved": "36.122.1",
+        "contentHash": "EOTe+Q5hMvXWYbXZ2idXONdXldpZMPrWpiOYWBif+tzb+fCHsdBjnrAQOwKdbRJLr590JhMuWFqcJ4DELHA7cA==",
         "dependencies": {
-          "OpenFin.Net.Adapter": "29.2.0"
+          "OpenFin.Net.Adapter": "36.122.1"
         }
       },
       "OpenFin.Net.Adapter.Logs.Serilog": {
         "type": "Direct",
-        "requested": "[29.2.0, )",
-        "resolved": "29.2.0",
-        "contentHash": "oiiOAro3c+vmWNJuXN4EXA/iW1fwej241X6piMZ3IjQc3dC4PFIXOr5GxKQ80JJwMCUYzrR/GJfQ9kYyvoRc+A==",
+        "requested": "[36.122.1, )",
+        "resolved": "36.122.1",
+        "contentHash": "emP9EOcwda2r7OXmkpJR8XcqBNxmgJFl80dmcJSFbP+a5wthCP6xYKjsX1F65CAY/ETmp0kgNkNIHVpD//QG7A==",
         "dependencies": {
-          "OpenFin.Net.Adapter": "29.2.0",
+          "OpenFin.Net.Adapter": "36.122.1",
           "Serilog.Enrichers.Thread": "3.1.0",
           "Serilog.Sinks.Console": "4.1.0",
           "Serilog.Sinks.Debug": "2.0.0",

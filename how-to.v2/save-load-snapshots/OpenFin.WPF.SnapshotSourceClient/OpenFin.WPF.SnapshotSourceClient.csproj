@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenFin.Net.Adapter" Version="29.2.0" />
-    <PackageReference Include="OpenFin.Net.Adapter.Extensions.DesktopSystem" Version="29.2.0" />
-    <PackageReference Include="OpenFin.Net.Adapter.Extensions.Snapshots" Version="29.2.0" />
-    <PackageReference Include="OpenFin.Net.Adapter.Logs.Serilog" Version="29.2.0" />
+    <PackageReference Include="OpenFin.Net.Adapter" Version="36.122.1" />
+    <PackageReference Include="OpenFin.Net.Adapter.Extensions.DesktopSystem" Version="36.122.1" />
+    <PackageReference Include="OpenFin.Net.Adapter.Extensions.Snapshots" Version="36.122.1" />
+    <PackageReference Include="OpenFin.Net.Adapter.Logs.Serilog" Version="36.122.1" />
   </ItemGroup>
 
   <ItemGroup>

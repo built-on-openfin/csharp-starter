@@ -4,9 +4,9 @@
     "net6.0-windows7.0": {
       "OpenFin.Net.Adapter": {
         "type": "Direct",
-        "requested": "[29.2.0, )",
-        "resolved": "29.2.0",
-        "contentHash": "f+vd6gpuSssu+udm+NUP3XzLOUHP36I8f0ibhC/RP5pYRKahtKVV8copX1yRCT6CAe947i2j/JulUZw3jsXrvg=="
+        "requested": "[36.122.1, )",
+        "resolved": "36.122.1",
+        "contentHash": "OWo9eU162nFC5b7CneE1hHdE1MRnYFByHFbTzqruH/94r+A5IL4LhdR/Yr4i89CFC/mavheU7gclEWV8cM0T7Q=="
       }
     }
   }
