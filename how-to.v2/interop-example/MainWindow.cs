@@ -132,7 +132,7 @@ namespace OpenFin.Interop.Win.Sample
                 connectToBrokerButton.Enabled = false;
                 createBrokerButton.Enabled = false;
                 interopBrokerInput.Enabled = false;
-                fireIntent.Enabled = contextTypeDropDown.SelectedItem.ToString() == "Contact";
+                fireIntent.Enabled = true;
             }));
         }
 
@@ -227,8 +227,7 @@ namespace OpenFin.Interop.Win.Sample
                 case "Instrument":
                     {
                         ContextItemComboBox.DataSource = _dataSource.Instruments.DataSource;
-
-                        fireIntent.Enabled = false;
+                        fireIntent.Enabled = (!connectToBrokerButton.Enabled);
                         break;
                     }
                 case "Contact":
@@ -241,8 +240,7 @@ namespace OpenFin.Interop.Win.Sample
                 case "Organization":
                     {
                         ContextItemComboBox.DataSource = _dataSource.Organizations.DataSource;
-
-                        fireIntent.Enabled = false;
+                        fireIntent.Enabled = (!connectToBrokerButton.Enabled);
                         break;
                     }
             }

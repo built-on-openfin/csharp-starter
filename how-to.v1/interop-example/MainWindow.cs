@@ -23,6 +23,7 @@ namespace OpenFin.Interop.Win.Sample
             FDCVersionDropDown.SelectedIndex = 2;
 
             // OpenFin Integration
+            interopBrokerInput.Text = CommandLineOptions.GetSpecifiedWorkspaceUUID() ?? "workspace-platform-starter";
             _interopBrokerUUID = CommandLineOptions.GetSpecifiedWorkspaceUUID();
             _runtimeUUID = CommandLineOptions.GetSpecifiedNativeUUID() ?? "winform-interop-example" + "/" + Guid.NewGuid().ToString();
             _registerIntents = CommandLineOptions.GetRegisterIntents();
@@ -42,14 +43,14 @@ namespace OpenFin.Interop.Win.Sample
             } 
             else
             {
-                connectToBrokerButton.Enabled = false;
+                connectToBrokerButton.Enabled = true;
                 Log("Interop Broker specified via the command line. Auto connecting to: " + _interopBrokerUUID);
                 Log("Connecting to broker: " + _interopBrokerUUID);
                 Log("Please wait...");
 
                 var fdc3VersionPayload = new { type = "fdc3", version = FDCVersionDropDown.SelectedItem}; // or 2.0
 
-                _openFin.ConnectToInteropBroker(_interopBrokerUUID, fdc3VersionPayload);
+               // _openFin.ConnectToInteropBroker(_interopBrokerUUID, fdc3VersionPayload);
             }
         }
 
