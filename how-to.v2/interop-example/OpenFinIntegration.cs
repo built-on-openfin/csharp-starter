@@ -114,10 +114,11 @@ namespace OpenFin.Interop.Win.Sample
                 Debug.WriteLine($"Interop Context Received! {ctx.Name}");
                 InteropContextReceived(this, new ContextReceivedEventArgs(ctx));
             });
-            _interopClient.GetContextGroupsAsync().ContinueWith(t =>
+            await _interopClient.GetContextGroupsAsync().ContinueWith(t =>
             {
                 var contextGroups = t.Result;
-                var contextGroupIds = contextGroups.Select(group => group.Id).ToArray();
+                // In the case of EB we may get back results for context groups that do not have any associated metadata such as color, etc. Ignore those.
+                var contextGroupIds = contextGroups.Where(group => group.DisplayMetadata.Color != null).Select(group => group.Id).ToArray();
                 InteropContextGroupsReceived(this, new InteropContextGroupsReceivedEventArgs(contextGroupIds));
             });
             
