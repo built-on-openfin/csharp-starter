@@ -7,16 +7,17 @@
 		"build": "npm run build-client",
 		"build-client": "webpack build --config ./client/webpack.config.js --mode=development",
 		"start": "npx --yes http-server ./public -p 8080 -c-1",
+		"server": "node ./server/build/index.js",
 		"client": "node ./scripts/launch.mjs",
 		"kill": "npm --prefix ../common/ run kill",
-		"setup": "npm install"
+		"setup": "npm install && cd ./common && npm install"
 	},
 	"author": "ameet.jayawant@openfin.co",
 	"license": "SEE LICENSE IN LICENSE.MD",
 	"dependencies": {
-		"@openfin/workspace": "13.0.0",
+		"@openfin/workspace": "12.6.6",
 		"csstype": "^3.1.2",
-		"openfin-adapter": "^31.75.7"
+		"openfin-adapter": "^32.76.10"
 	},
 	"devDependencies": {
 		"@openfin/core": "30.74.13",
