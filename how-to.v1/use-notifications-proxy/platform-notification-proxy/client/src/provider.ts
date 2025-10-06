@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/await-thenable */
 import { init } from "@openfin/workspace-platform";
 import type OpenFin from "@openfin/core";
-import * as Notifications from "@openfin/workspace/notifications";
+import {
+	VERSION, 
+	register, 
+	getNotificationsCount, 
+	create, 
+	addEventListener,
+	TemplateMarkdown,
+	NotificationOptions,
+	provider
+} from "@openfin/workspace/notifications";
 
 const PLATFORM_ID = "nodejs-notifications";
 const PLATFORM_ICON = "http://localhost:8080/images/icon-dot.png";
@@ -10,7 +19,7 @@ const PLATFORM_TITLE = "Notifications Proxy";
 const NOTIFICATION_SOUND_URL = "http://localhost:8080/assets/notification.mp3";
 
 // Keep track of notifications we are updating
-const updatableNotifications: { [id: string]: Notifications.TemplateMarkdown & { customData: { count: number } } } = {};
+const updatableNotifications: { [id: string]: TemplateMarkdown & { customData: { count: number } } } = {};
 let updatableNotificationTimer: number | undefined;
 
 let loggingElement: HTMLElement | null;
@@ -45,7 +54,7 @@ async function initializeDom(): Promise<void> {
 		return;
 	}
 
-	loggingAddEntry(`Library Version: ${Notifications.VERSION}`);
+	loggingAddEntry(`Library Version: ${VERSION}`);
 	loggingContainer.style.display = "flex";
 	
 	clearLogsElement = document.querySelector("#btnClear");
@@ -107,7 +116,7 @@ async function initializePlatform(): Promise<void> {
  * Initialize the notifications.
  */
 async function initializeNotifications(): Promise<void> {
-	await Notifications.register({
+	await register({
 		notificationsPlatformOptions: {
 			id: PLATFORM_ID,
 			icon: PLATFORM_ICON,
@@ -115,7 +124,7 @@ async function initializeNotifications(): Promise<void> {
 		}
 	});
 
-	let notificationsCount = await Notifications.getNotificationsCount()
+	let notificationsCount = await getNotificationsCount()
 	loggingAddEntry(`Number of notifications in the Notification Center is ${notificationsCount}`);
 
 	await initializeListeners();
@@ -125,11 +134,11 @@ async function initializeNotifications(): Promise<void> {
  */
 async function initializeListeners(): Promise<void> {
 	// Listen for new notifications being created
-	Notifications.addEventListener("notification-created", async (event) => {
+	addEventListener("notification-created", async (event) => {
 		loggingAddEntry(`Created: ${event.notification.id}`);
 	});
 
-	Notifications.addEventListener("notification-closed", async (event) => {
+	addEventListener("notification-closed", async (event) => {
 		loggingAddEntry(`Closed: ${event.notification.id}`);
 
 		if (updatableNotifications[event.notification.id]) {
@@ -141,7 +150,7 @@ async function initializeListeners(): Promise<void> {
 		}
 	});
 
-	Notifications.addEventListener("notification-action", async (event) => {
+	addEventListener("notification-action", async (event) => {
 		if (event?.result?.BODY_CLICK === "dismiss_event") {
 			if (event.notification?.customData?.action) {
 				loggingAddEntry(
@@ -164,12 +173,12 @@ async function initializeListeners(): Promise<void> {
 		console.log(event);
 	});
 
-	Notifications.addEventListener("notification-toast-dismissed", async (event) => {
+	addEventListener("notification-toast-dismissed", async (event) => {
 		loggingAddEntry(`Toast Dismissed: ${event.notification.id}`);
 	});
 
 	// Event listener that tracks when input form notification is submitted
-	Notifications.addEventListener("notification-form-submitted", async (event) => {
+	addEventListener("notification-form-submitted", async (event) => {
 		loggingAddEntry(`\tData: ${event?.form ? JSON.stringify(event.form) : "None"}`);
 		loggingAddEntry(`Form submitted: ${event.notification.id}`);
 		console.log(event);
@@ -177,7 +186,7 @@ async function initializeListeners(): Promise<void> {
 		//channel.publish('form-notification-response', JSON.stringify(event?.form));
 	});
 
-	Notifications.addEventListener("notifications-count-changed", async(event) => {
+	addEventListener("notifications-count-changed", async(event) => {
 		loggingAddEntry(`Number of notifications in the Notification Center is ${event.count}`);
 	});
 
@@ -233,8 +242,8 @@ async function createChannelAndRegisterListeners(): Promise<void> {
 async function createNotification(payload: NotificationOptions) {
 	try {
 		loggingAddEntry(`Received notification payload from client: \n\n\t${JSON.stringify(payload, null, 2)}`);
-		const notificationOptions = payload as Notifications.NotificationOptions;
-		await Notifications.create(notificationOptions);				
+		const notificationOptions = payload as NotificationOptions;
+		await create(notificationOptions);				
 	} catch (error) {		
 		console.log(error);
 		loggingAddEntry(`Error parsing payload:  \n\n\t${error}`);
@@ -284,9 +293,9 @@ function showNotificationCount(count: number): void {
 	}
 }
 
-async function showNotification(payload: Notifications.NotificationOptions): Promise<void> {
-	const notification: Notifications.NotificationOptions = payload;
-	await Notifications.create(notification);
+async function showNotification(payload: NotificationOptions): Promise<void> {
+	const notification: NotificationOptions = payload;
+	await create(notification);
 }
 
 /**
@@ -294,11 +303,11 @@ async function showNotification(payload: Notifications.NotificationOptions): Pro
  * @param callback The callback to call when the connection state changes.
  */
 function addConnectionChangedEventListener(
-	callback: (status: Notifications.provider.ProviderStatus) => void
+	callback: (status: provider.ProviderStatus) => void
 ): void {
 	if (statusIntervalId === undefined) {
 		statusIntervalId = window.setInterval(async () => {
-			const status = await Notifications.provider.getStatus();
+			const status = await provider.getStatus();
 			if (status.connected !== lastConnectionStatus) {
 				lastConnectionStatus = status.connected;
 				callback(status);
