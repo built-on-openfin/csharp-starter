@@ -1,23 +1,16 @@
-import { ChannelAction, ChannelProvider } from "@openfin/core/src/OpenFin";
+/* eslint-disable @typescript-eslint/await-thenable */
+import { init } from "@openfin/workspace-platform";
+import type OpenFin from "@openfin/core";
 import {
-	ActionBodyClickType,
-	VERSION,
-	addEventListener as addNotificationEventListener,
-	create,
-	deregisterPlatform,
-	getNotificationsCount,
-	hide as hideNotificationCenter,
-	provider,
-	registerPlatform,
-	show as showNotificationCenter,
-	update,
-	type NotificationOptions,
-	type TemplateMarkdown,
-	type UpdatableNotificationOptions,
-	IndicatorColor
+	VERSION, 
+	register, 
+	getNotificationsCount, 
+	create, 
+	addEventListener,
+	TemplateMarkdown,
+	NotificationOptions,
+	provider
 } from "@openfin/workspace/notifications";
-
-import fs from 'fs';
 
 const PLATFORM_ID = "nodejs-notifications";
 const PLATFORM_ICON = "http://localhost:8080/images/icon-dot.png";
@@ -37,15 +30,16 @@ let connected: boolean = false;
 let connectedVersion: string | null;
 let statusIntervalId: number | undefined;
 let lastConnectionStatus: boolean | undefined;
-let channel : ChannelProvider;
+let channel: OpenFin.ChannelProvider | null = null;
 
 /**
  * Wait for the DOM to have been loaded before we connect the UI elements and listeners.
  */
 window.addEventListener("DOMContentLoaded", async () => {
 	await initializeDom();
-	await initializeListeners();
 	await initializePlatform();
+
+	await initializeNotifications();
 	await createChannelAndRegisterListeners();
 });
 
@@ -63,34 +57,88 @@ async function initializeDom(): Promise<void> {
 	loggingAddEntry(`Library Version: ${VERSION}`);
 	loggingContainer.style.display = "flex";
 	
-	const notificationsCount = await getNotificationsCount();
-	loggingAddEntry(`Number of notifications in the Notification Center is ${notificationsCount}`);
-
 	clearLogsElement = document.querySelector("#btnClear");
 	clearLogsElement?.addEventListener("click", () => loggingElement ? loggingElement.textContent = "" : null);
 }
 
 
 async function initializePlatform(): Promise<void> {
-	await registerPlatform({
-		id: PLATFORM_ID,
-		icon: PLATFORM_ICON,
-		title: PLATFORM_TITLE
+	console.log("Initializing workspace platform");
+	await init({
+		browser: {
+			defaultWindowOptions: {
+				icon: PLATFORM_ICON,
+				workspacePlatform: {
+					pages: [],
+					favicon: PLATFORM_ICON
+				}
+			}
+		},
+		theme: [
+			{
+				label: "Default",
+				default: "dark",
+				palettes: {
+					dark: {
+						brandPrimary: "#0A76D3",
+						brandSecondary: "#383A40",
+						backgroundPrimary: "#1E1F23"
+					},
+					light: {
+						brandPrimary: "#0A76D3",
+						brandSecondary: "#1E1F23",
+						backgroundPrimary: "#FAFBFE",
+						// Demonstrate changing the link color for notifications
+						linkDefault: "#FF0000",
+						linkHover: "#00FF00"
+					}
+				},
+				notificationIndicatorColors: {
+					// This custom indicator color will be used in the Notification with Custom Indicator
+					"custom-indicator": {
+						dark: {
+							background: "#FF0000",
+							foreground: "#FFFFDD"
+						},
+						light: {
+							background: "#FF0000",
+							foreground: "#FFFFDD"
+						}
+					}
+				}
+			}
+		]
+	});
+	loggingAddEntry("Platform registered");
+}
+
+/**
+ * Initialize the notifications.
+ */
+async function initializeNotifications(): Promise<void> {
+	await register({
+		notificationsPlatformOptions: {
+			id: PLATFORM_ID,
+			icon: PLATFORM_ICON,
+			title: PLATFORM_TITLE
+		}
 	});
 
-	loggingAddEntry("Platform registered");
-	activePlatform = PLATFORM_ID;
+	let notificationsCount = await getNotificationsCount()
+	loggingAddEntry(`Number of notifications in the Notification Center is ${notificationsCount}`);
+
+	await initializeListeners();
 }
 /**
  * Initialize the listeners for the events from the notification center.
  */
 async function initializeListeners(): Promise<void> {
 	// Listen for new notifications being created
-	addNotificationEventListener("notification-created", (event) => {
+	addEventListener("notification-created", async (event) => {
 		loggingAddEntry(`Created: ${event.notification.id}`);
 	});
 
-	addNotificationEventListener("notification-closed", (event) => {
+	addEventListener("notification-closed", async (event) => {
 		loggingAddEntry(`Closed: ${event.notification.id}`);
 
 		if (updatableNotifications[event.notification.id]) {
@@ -102,7 +150,7 @@ async function initializeListeners(): Promise<void> {
 		}
 	});
 
-	addNotificationEventListener("notification-action", (event) => {
+	addEventListener("notification-action", async (event) => {
 		if (event?.result?.BODY_CLICK === "dismiss_event") {
 			if (event.notification?.customData?.action) {
 				loggingAddEntry(
@@ -125,20 +173,20 @@ async function initializeListeners(): Promise<void> {
 		console.log(event);
 	});
 
-	addNotificationEventListener("notification-toast-dismissed", (event) => {
+	addEventListener("notification-toast-dismissed", async (event) => {
 		loggingAddEntry(`Toast Dismissed: ${event.notification.id}`);
 	});
 
 	// Event listener that tracks when input form notification is submitted
-	addNotificationEventListener("notification-form-submitted", (event) => {
+	addEventListener("notification-form-submitted", async (event) => {
 		loggingAddEntry(`\tData: ${event?.form ? JSON.stringify(event.form) : "None"}`);
 		loggingAddEntry(`Form submitted: ${event.notification.id}`);
 		console.log(event);
 		// Send data back to the client
-		channel.publish('form-notification-response', JSON.stringify(event?.form));
+		//channel.publish('form-notification-response', JSON.stringify(event?.form));
 	});
 
-	addNotificationEventListener("notifications-count-changed", (event) => {
+	addEventListener("notifications-count-changed", async(event) => {
 		loggingAddEntry(`Number of notifications in the Notification Center is ${event.count}`);
 	});
 
@@ -202,7 +250,7 @@ async function createNotification(payload: NotificationOptions) {
 	}	
 }
 
-async function createChannel(): Promise<ChannelProvider> {
+async function createChannel(): Promise<OpenFin.ChannelProvider> {
 	const channelName = 'notification-channel';
     const provider = await fin.InterApplicationBus.Channel.create(channelName);
 	loggingAddEntry(`New channel provider created: ${channelName}`);
@@ -254,7 +302,9 @@ async function showNotification(payload: NotificationOptions): Promise<void> {
  * Add a listener which checks for the connection changed event.
  * @param callback The callback to call when the connection state changes.
  */
-function addConnectionChangedEventListener(callback: (status: provider.ProviderStatus) => void): void {
+function addConnectionChangedEventListener(
+	callback: (status: provider.ProviderStatus) => void
+): void {
 	if (statusIntervalId === undefined) {
 		statusIntervalId = window.setInterval(async () => {
 			const status = await provider.getStatus();
