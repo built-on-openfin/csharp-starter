@@ -1,4 +1,4 @@
-# Automation testing for .Net application using embedded OpenFin view
+# Automation testing for .Net application using embedded Here.io view
 
 This is an example of a Windows Form Application that can be used for test automation.
 

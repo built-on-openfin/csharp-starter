@@ -119,7 +119,7 @@ namespace OpenFin.Notifications.Demo
                     Title = $"{NOTIFICATION_TITLE}-wpf/{id}",
                     Body = NotificationBodyService.GetNotificationBodyContent((BodyContentType)bodyContentTypeSelector.SelectedIndex),
                     Category = "Category",
-                    Icon = "https://openfin.co/favicon-32x32.png",
+                    Icon = "https://www.here.io/favicon.ico",
                     OnNotificationSelect = new Dictionary<string, object>
                     {
                         {"task", "selected" }
@@ -178,10 +178,10 @@ namespace OpenFin.Notifications.Demo
                 Category = "Expiring Notification",
                 Buttons = new[]
             {
-                    new ButtonOptions() { Title = "Button1", IconUrl = "https://openfin.co/favicon-32x32.png" },
-                    new ButtonOptions() { Title = "Button2", IconUrl = "https://openfin.co/favicon-32x32.png"}
+                    new ButtonOptions() { Title = "Button1", IconUrl = "https://www.here.io/favicon.ico" },
+                    new ButtonOptions() { Title = "Button2", IconUrl = "https://www.here.io/favicon.ico"}
                 },
-                Icon = "https://openfin.co/favicon-32x32.png",
+                Icon = "https://www.here.io/favicon.ico",
                 Expires = DateTime.Now.AddSeconds(10),
                 OnNotificationExpired = new Dictionary<string, object>
                 {

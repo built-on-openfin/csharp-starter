@@ -1,9 +1,9 @@
 # embedding-wpf-demo
-This is a demo WPF application that embeds an HTML 5 application and shares data over the OpenFin Runtime Inter Application Bus. The demo leverages the OpenFin Runtime, the Openfin.WPF EmbeddedView control and [Hypergrid](https://github.com/openfin/fin-hypergrid)
+This is a demo WPF application that embeds an HTML 5 application and shares data over the Here.io Runtime Inter Application Bus. The demo leverages the Here.io Runtime, the Here.io WPF EmbeddedView control and [Hypergrid](https://github.com/openfin/fin-hypergrid)
 
 ![embed](screenshot.png)
 
-# Getting started with Openfin.WPF
+# Getting started with Here.io WPF
 * Follow the [NuGet](https://www.nuget.org/packages/OpenFin.WPF/) install instructions.
 
 * Add this XmlNamespace attribute to the root element of the markup file where it is to be used:
@@ -30,7 +30,7 @@ var runtimeOptions = new Openfin.Desktop.RuntimeOptions
 ```
 
 ### Application Options
-The Application Options object allows you to configure the OpenFin Application being embedded, options include: name, URL, icon and window options, you can read more about options in our [Docs](https://openfin.co/developers/application-config/):
+The Application Options object allows you to configure the Here.io Application being embedded, options include: name, URL, icon and window options, you can read more about options in our [Docs](https://openfin.co/developers/application-config/):
 ```js
 var appOptions = new Openfin.Desktop.ApplicationOptions("of-chart", 
     "of-chart-uuid", "http://cdn.openfin.co/embed-web/chart.html");
@@ -67,7 +67,7 @@ OpenFinEmbeddedView.Ready += (sender, e) =>
 ```
 
 ### Runtime Object
-Every EmbeddedView control that shares a RuntimeOptions object will share a connection to the OpenFin Runtime. You can obtain this singleton object via the Runtime.GetRuntimeInstance function. It allows you to publish and subscribe to Inter Application Bus messages, react to disconnect events, and initiate connect calls (this is optional and unnecessary in the case where one or more EmbeddedView control has been initialized).
+Every EmbeddedView control that shares a RuntimeOptions object will share a connection to the Here.io Runtime. You can obtain this singleton object via the Runtime.GetRuntimeInstance function. It allows you to publish and subscribe to Inter Application Bus messages, react to disconnect events, and initiate connect calls (this is optional and unnecessary in the case where one or more EmbeddedView control has been initialized).
 ```js
 var openFinRuntime = Runtime.GetRuntimeInstance(runtimeOptions);
 openFinRuntime.Connect(() => 
@@ -89,7 +89,7 @@ openFinRuntime.Connect(() =>
 ## License
 
 https://openfin.co/developer-agreement/ <br/>
-https://openfin.co/licensing/
+
 
 ## Support
-Please enter an issue in the repo for any questions or problems. Alternatively, please contact us at support@openfin.co 
+Please enter an issue in the repo for any questions or problems. Alternatively, please contact us at support@here.io 

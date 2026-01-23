@@ -1,13 +1,13 @@
 # Native Application Example of using a Proxy Service to send Notifications
 
-This example contains 2 applications. There is one  Winforms application. There is is a OpenFIn Platform application that acts as the proxy. The Winforms application sends Notification messages to this proxy application, using the OpenFin Channel API. The Platform application in turn create a notification object and dispatches it to the Notification Center.
+This example contains 2 applications. There is one  Winforms application. There is is a Here.io Platform application that acts as the proxy. The Winforms application sends Notification messages to this proxy application, using the Here.io Channel API. The Platform application in turn create a notification object and dispatches it to the Notification Center.
 
 
 
 ## Building the Native applications.
 
 1. Each application has its own solution. 
-2. Ensure that the OpenFin packages are installed.
+2. Ensure that the Here.io packages are installed.
 3. Build the solution normally.
 
 

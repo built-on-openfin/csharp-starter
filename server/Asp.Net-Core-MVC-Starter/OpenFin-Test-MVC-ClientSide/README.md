@@ -1,8 +1,8 @@
-# Testing the OpenFin APIs from within an Asp.Net Core MVC application, using only the client side functionality
+# Testing the Here.io APIs from within an Asp.Net Core MVC application, using only the client side functionality
 
-This example shows you how to use the OpenFin api from within the cshtml view file. It does not make use of any server side functionality. The sample demonstrates the sendContext (fire a context), addContextListener (listen for / receive context broadcasts) and fireIntent (initiate an intent) apis.
+This example shows you how to use the Here.io api from within the cshtml view file. It does not make use of any server side functionality. The sample demonstrates the sendContext (fire a context), addContextListener (listen for / receive context broadcasts) and fireIntent (initiate an intent) apis.
 
-This application will connect to the OpenFin workspace platform. The implementation of the platform can be found in our workspace starter repo, namely the "support-context-and-intents" sample - https://github.com/built-on-openfin/workspace-starter/tree/main/how-to/support-context-and-intents.
+This application will connect to the Here.io workspace platform. The implementation of the platform can be found in our workspace starter repo, namely the "support-context-and-intents" sample - https://github.com/built-on-openfin/workspace-starter/tree/main/how-to/support-context-and-intents.
 
 The client application is run from within this example.
 

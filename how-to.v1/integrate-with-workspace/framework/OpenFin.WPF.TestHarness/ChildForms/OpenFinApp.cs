@@ -34,9 +34,9 @@ namespace OpenFin.WPF.TestHarness.ChildForms
             {
                 tags.Add(tag2);
             }
-            supportEmail = "support@openfin.co";
-            contactEmail = "support@openfin.co";
-            icons.Add(new Image { src = "https://www.openfin.co/favicon.ico" });
+            supportEmail = "support@here.io";
+            contactEmail = "support@here.io";
+            icons.Add(new Image { src = "https://www.here.io/favicon.ico" });
         }
 
         public Window GetAppInstance()

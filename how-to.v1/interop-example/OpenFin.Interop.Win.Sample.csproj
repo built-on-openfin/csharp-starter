@@ -7,13 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="assets\icon-blue.png" />
-    <None Remove="Resources\icon-blue.bmp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="assets\icon-blue.png" />
-    <EmbeddedResource Include="Resources\icon-blue.bmp" />
+    <None Remove="assets\here.png" />
   </ItemGroup>
 
   <ItemGroup>

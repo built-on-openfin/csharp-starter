@@ -43,14 +43,14 @@ The SideCar Platform App has two manifests:
 
 The buttons perform the following functions:
 
-- Connect To SideCar App - This button checks to see if an AppAsset has been defined in the manifest. If it has it means the RVM has fetched the asset already, otherwise it defines an AppAsset and downloads it using the OpenFin API. It will then launch the asset through the LaunchExternalProcess API and connects to it using our Channel API (once the native app is launched you need to click the create service button for it to connect).
+- Connect To SideCar App - This button checks to see if an AppAsset has been defined in the manifest. If it has it means the RVM has fetched the asset already, otherwise it defines an AppAsset and downloads it using the Here.io API. It will then launch the asset through the LaunchExternalProcess API and connects to it using our Channel API (once the native app is launched you need to click the create service button for it to connect).
 - Dispatch Message To SideCar App - The platform app uses the client connection to the SideCar App to send a message and receive a response from the SideCar App.
 - Clear Logs - simply clears the panel to make it easier to see status messages.
 
 ## Building the Native applications
 
 1. Each application has its own solution.
-2. Ensure that the OpenFin packages are installed.
+2. Ensure that the Here.io packages are installed.
 3. Build the solution normally.
 
 ## Build the Platform application

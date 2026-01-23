@@ -17,16 +17,16 @@
 		"windows": []
 	},
 	"shortcut": {
-		"company": "OpenFin",
-		"description": "A way of showing how an app can use a proxy app to work with OpenFin Notifications without having to implement all the packages itself.",
+		"company": "Here.io",
+		"description": "A way of showing how an app can use a proxy app to work with Here.io Notifications without having to implement all the packages itself.",
 		"icon": "http://localhost:8080/favicon.ico",
 		"name": "Notifications Proxy - v1.0.0",
 		"target": ["desktop", "start-menu"]
 	},
 	"supportInformation": {
-		"company": "OpenFin",
-		"product": "OpenFin Notifications Proxy",
-		"email": "support@openfin.co",
+		"company": "Here.io",
+		"product": "Here.io Notifications Proxy",
+		"email": "support@here.io",
 		"forwardErrorReports": true
 	}
 }

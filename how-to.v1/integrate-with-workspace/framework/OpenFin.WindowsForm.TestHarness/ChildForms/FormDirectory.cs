@@ -37,9 +37,9 @@ namespace OpenFin.WindowsForm.TestHarness.ChildForms
 
         private void GenerateApps()
         {
-            apps.Add(new OpenFinApp(uuid, "WinForm App1", "winformapp1", "OpenFin .NET 4 WinForm Test Harness", () => new App1(), "winform", "native"));
-            apps.Add(new OpenFinApp(uuid, "WinForm App2", "winformapp2", "OpenFin .NET 4 WinForm Test Harness", () => new App2(), "winform", "native"));
-            apps.Add(new OpenFinApp(uuid, "WinForm App3", "winformapp3", "OpenFin .NET 4 WinForm Test Harness", ()=> new App3(), "winform", "native"));      
+            apps.Add(new OpenFinApp(uuid, "WinForm App1", "winformapp1", "Here.io .NET 4 WinForm Test Harness", () => new App1(), "winform", "native"));
+            apps.Add(new OpenFinApp(uuid, "WinForm App2", "winformapp2", "Here.io .NET 4 WinForm Test Harness", () => new App2(), "winform", "native"));
+            apps.Add(new OpenFinApp(uuid, "WinForm App3", "winformapp3", "Here.io .NET 4 WinForm Test Harness", ()=> new App3(), "winform", "native"));      
         }
     }
 }
