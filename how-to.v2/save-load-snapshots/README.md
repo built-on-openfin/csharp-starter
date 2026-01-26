@@ -10,7 +10,7 @@ Set the action for both projects to **Start**.
 Now when you start the project it will launch both the web server for the platform, and a WPF app to perform the C# interactions.
 
 When the WPF application has launched it should appear as follows:
-https://resources.HERE/docs/core/adapters/dotnet-framework/enfin
+https://resources.here.io/docs/core/adapters/dotnet-framework
 ![WPF App](./wpf-app.jpg)
 
 By clicking the **Launch Platform** button this will request the **manifest.fin.json** from the Web Server and create an HERE platform. You should see the following window appear.

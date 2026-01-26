@@ -59,6 +59,6 @@ This location contains the code that shows how to use the OpenFin APIs from with
 
 ## Documentation
 
-- [.NET Adapter](https://resources.HERE/docs/core/adapters/dotnet-framework/)
+- [.NET Adapter](https://resources.here.io/docs/core/adapters/dotnet-framework/)
 - [.NET API Docs](https://developer.openfin.co/docs/csharp/latest/OpenfinDesktop/html/F7F260CA.htm)
 - [.NET Notification API Docs](https://developer.openfin.co/docs/services/dotnet-notifications/latest/html/42B77E13.htm)
