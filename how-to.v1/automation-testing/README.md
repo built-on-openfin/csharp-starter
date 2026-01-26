@@ -1,4 +1,4 @@
-# Automation testing for .Net application using embedded Here.io view
+# Automation testing for .Net application using embedded HERE view
 
 This is an example of a Windows Form Application that can be used for test automation.
 

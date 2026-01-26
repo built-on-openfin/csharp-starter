@@ -4,7 +4,7 @@ This is a simple example that shows how to use the IAB api to send messages betw
 ## How to run this example
 
 1. Ensure that you have installed the following nuget packages:  
-- Here.io Net.Adapter (minimum 29.2.0)  
+- HERE Net.Adapter (minimum 29.2.0)  
 2. Build the solution without errors
 3. Launch the app from Visual Studio  
 4. Or navigate to the folder that has the executable, typically this will be in "how-to.v2\use-inter-application-bus\bin\Debug\net6.0-windows" and run the IAB.exe.  

@@ -6,7 +6,7 @@
 	"startup_app": {
 		"name": "automation-harness-app",
 		"uuid": "automation-harness-app",
-		"url": "https://www.openfin.co",
+		"url": "https://www.here.io",
         "saveWindowState": false,
 		"autoShow": false
 	}

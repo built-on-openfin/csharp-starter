@@ -1,8 +1,8 @@
-# Testing the Here.io APIs from within an Asp.Net Core MVC application, using only the server side and client side functionality
+# Testing the HERE APIs from within an Asp.Net Core MVC application, using only the server side and client side functionality
 
-This example shows you how to use the Here.io api using server side processing of information received from the client side cshtml view. within the cshtml view file. The sample demonstrates the sendContext (fire a context) and addContextListener (listen for / receive context broadcasts)  apis.
+This example shows you how to use the HERE api using server side processing of information received from the client side cshtml view. within the cshtml view file. The sample demonstrates the sendContext (fire a context) and addContextListener (listen for / receive context broadcasts)  apis.
 
-This application will connect to the Here.io workspace platform. The implementation of the platform can be found in our workspace starter repo, namely the "support-context-and-intents" sample - https://github.com/built-on-openfin/workspace-starter/tree/main/how-to/support-context-and-intents.
+This application will connect to the HERE workspace platform. The implementation of the platform can be found in our workspace starter repo, namely the "support-context-and-intents" sample - https://github.com/built-on-openfin/workspace-starter/tree/main/how-to/support-context-and-intents.
 
 The client application is run from within this example.
 

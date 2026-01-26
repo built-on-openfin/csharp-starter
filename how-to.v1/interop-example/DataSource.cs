@@ -35,7 +35,7 @@ namespace OpenFin.Interop.Win.Sample
             contacts = new BindingSource();
             contacts.DataSource = contactList;
 
-            List<string> organizationList = new List<string> { "Here.io", "Here Demo Corp", "United Oil & Gas Corp" };
+            List<string> organizationList = new List<string> { "HERE", "HERE Demo Corp", "United Oil & Gas Corp" };
 
             organizations = new BindingSource();
             organizations.DataSource = organizationList;

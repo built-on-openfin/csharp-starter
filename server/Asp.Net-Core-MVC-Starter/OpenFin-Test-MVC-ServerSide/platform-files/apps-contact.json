@@ -13,7 +13,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "StartCall",
@@ -47,7 +47,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [],
 		"images": [
 			{
@@ -70,7 +70,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [],
 		"images": [
 			{
@@ -93,7 +93,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [],
 		"images": [
 			{
@@ -116,7 +116,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
@@ -145,7 +145,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
@@ -174,7 +174,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
@@ -203,7 +203,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
@@ -232,7 +232,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "Here.io",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",

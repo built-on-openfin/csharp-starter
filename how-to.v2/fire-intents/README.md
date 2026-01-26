@@ -1,12 +1,12 @@
-# Example of InterOp API communication between a Windows Native Application and Here.io Workspace hosted Web Application
-This is a simple example that shows how to use the InterOp API to fire intents that will be picked up and processed by the Here.io Workspace InterOp Broker.
+# Example of InterOp API communication between a Windows Native Application and HERE Workspace hosted Web Application
+This is a simple example that shows how to use the InterOp API to fire intents that will be picked up and processed by the HERE Workspace InterOp Broker.
 
 #### *Please note that it is very important that you are running the how-to/support-context-and-intents example from the Workspace starter repo prior to running this application.*
 
 ## How to run this example
 
 1. Ensure that you have installed the following nuget packages:  
-- Here.io Net.Adapter (minimum 29.2.0)  
+- HERE Net.Adapter (minimum 29.2.0)  
 2. Build the solution without errors
 
 3. Run it from Visual Studio.  

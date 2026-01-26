@@ -27,7 +27,7 @@ namespace OpenFin.WPF.TestHarness
             string licenseKey = appSettings.Get("licenseKey") ?? Settings.DefaultLicenseKey;
             
             WorkspaceOptions workspaceOptions = new WorkspaceOptions() { WorkspaceUUID = workspaceUUID, WorkspaceConnectionId = workspaceConnectionId, WorkspaceManifestUrl = workspaceManifestUrl, WorkspaceAutoConnect = workspaceAutoConnect };
-            ConnectionOptions connectionOptions = new ConnectionOptions("openfin-demo-license-key", uuid);
+            ConnectionOptions connectionOptions = new ConnectionOptions("here-demo-license-key", uuid);
             workspace = new Workspace(GetApps, LaunchApp, this, connectionOptions, workspaceOptions);
         }
 

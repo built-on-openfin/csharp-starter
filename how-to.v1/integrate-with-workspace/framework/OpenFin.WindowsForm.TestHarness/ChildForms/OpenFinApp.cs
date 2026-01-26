@@ -34,8 +34,8 @@ namespace OpenFin.WindowsForm.TestHarness.ChildForms
             {
                 tags.Add(tag2);
             }
-            supportEmail = "support@openfin.co";
-            contactEmail = "support@openfin.co";
+            supportEmail = "support@here.io";
+            contactEmail = "support@here.io";
             icons.Add(new Image { src = "https://www.here.io/favicon.ico" });
         }
         public Form GetAppInstance()

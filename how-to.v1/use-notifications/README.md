@@ -1,4 +1,4 @@
-# Here.io Notifications Service .NET Client Demo
+# HERE Notifications Service .NET Client Demo
 
 The .NET Notifications Service client provides an interface for the Notifications Service allowing notifications to be manipulated from .NET Applications.
 
@@ -67,11 +67,11 @@ Handlers for these events are invoked when notifications are created.
 
 ![embed](ss2.png)
 
-The Here.io Notifications.Demo project is a WPF application demonstrating the notification client's functionality. Functionality demonstrated include creating notifications, deleting notifications, creating expiring notifications, configuring buttons within the notifications, responding to events when notifications are interacted with (body and button clicks) or expire, and toggling the visibility of the Notification Center.
+The HERE Notifications.Demo project is a WPF application demonstrating the notification client's functionality. Functionality demonstrated include creating notifications, deleting notifications, creating expiring notifications, configuring buttons within the notifications, responding to events when notifications are interacted with (body and button clicks) or expire, and toggling the visibility of the Notification Center.
 
 
 
-Copyright 2018-2019 Here.io
+Copyright 2018-2019 HERE
 
 https://openfin.co/developer-agreement/ 
 https://openfin.co/licensing/

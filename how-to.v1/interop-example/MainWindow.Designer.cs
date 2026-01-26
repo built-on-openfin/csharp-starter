@@ -396,7 +396,7 @@ namespace OpenFin.Interop.Win.Sample
             this.label5.Padding = new System.Windows.Forms.Padding(15, 0, 15, 0);
             this.label5.Size = new System.Drawing.Size(381, 19);
             this.label5.TabIndex = 10;
-            this.label5.Text = "Demonstrate interop with Here.io in a native application";
+            this.label5.Text = "Demonstrate interop with HERE in a native application";
             // 
             // submitContextButton
             // 
