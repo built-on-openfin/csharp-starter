@@ -1,7 +1,6 @@
 # embedding-wpf-demo
 This is a demo WPF application that embeds an HTML 5 application and shares data over the HERE Runtime Inter Application Bus. The demo leverages the HERE Runtime, the HERE WPF EmbeddedView control and [Hypergrid](https://github.com/openfin/fin-hypergrid)
 
-![embed](screenshot.png)
 
 # Getting started with HERE WPF
 * Follow the [NuGet](https://www.nuget.org/packages/OpenFin.WPF/) install instructions.
@@ -19,7 +18,7 @@ Once installed and added to the XmlNamespace, place an EmbeddedView control in t
 ```
 
 ### Runtime Options
-The Runtime Options object specifies the OpenFin Runtime being used, options include: target runtime (alpha, beta, 32/64 bits...etc), the ability to use remote debugging or specifiying the RVM location, you can read more about options in our [Docs](https://openfin.co/developers/application-config/):
+The Runtime Options object specifies the Here Runtime being used, options include: target runtime (alpha, beta, 32/64 bits...etc), the ability to use remote debugging or specifiying the RVM location, you can read more about options in our [Docs](https://www.openfin.co/blog/openfin-application-config-best-practices/):
 ```js
 var runtimeOptions = new Openfin.Desktop.RuntimeOptions
 {
@@ -30,7 +29,7 @@ var runtimeOptions = new Openfin.Desktop.RuntimeOptions
 ```
 
 ### Application Options
-The Application Options object allows you to configure the HERE Application being embedded, options include: name, URL, icon and window options, you can read more about options in our [Docs](https://openfin.co/developers/application-config/):
+The Application Options object allows you to configure the HERE Application being embedded, options include: name, URL, icon and window options, you can read more about options in our [Docs](https://developer.openfin.co/docs/javascript/37.121.80.4/classes/OpenFin.Application.html/):
 ```js
 var appOptions = new Openfin.Desktop.ApplicationOptions("of-chart", 
     "of-chart-uuid", "http://cdn.openfin.co/embed-web/chart.html");
@@ -54,7 +53,7 @@ OpenFinEmbeddedView.Ready += (sender, e) =>
 ```
 
 ### Embedding Child Windows
-The OpenFinEmbeddedView allows you to embed web applicatons, these have their own render process and sandbox, but it also allows you to embed child windows that can share the same render process and sandbox, adding the risk of one window crashing the other but using less resources.
+The EmbeddedView allows you to embed web applicatons, these have their own render process and sandbox, but it also allows you to embed child windows that can share the same render process and sandbox, adding the risk of one window crashing the other but using less resources.
 ```js
 OpenFinEmbeddedView.Ready += (sender, e) =>
 {

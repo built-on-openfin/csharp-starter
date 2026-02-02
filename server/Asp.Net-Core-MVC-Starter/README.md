@@ -1,4 +1,7 @@
 # ASP.Net-Core-MVC-Starter
+
+![HERE .Net Starter](../../HERE .NET Starter.png)
+
 This starter is focused on giving examples related to Asp.Net Core MVC and the HERE APIs.
 
 ## Starters

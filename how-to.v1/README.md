@@ -1,4 +1,7 @@
 # csharp-starter
+
+![HERE .Net Starter](../HERE .NET Starter.png)
+
 This starter is focused on giving examples related to our C# adapter.
 
 ## Starters

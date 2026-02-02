@@ -1,4 +1,7 @@
 # csharp-starter
+
+![Here .Net Starter](/HERE .NET Starter.png)
+
 This starter is focused on giving examples related to our C# adapter.
 
 The examples are broken out by the two versions of the adapter that we support :
@@ -26,7 +29,7 @@ This location contains the code that is supported by the version 1 of the dot ne
 
 ### how-to.v2
 
-This location contains the code that is supported by the version 2 of the dot net adapter (Openfin.Net.Adapter 29.2.0). It supports .Net framework 6.0 and .Net 7.0.
+This location contains the code that is supported by the version 2 of the dot net adapter (Here Net.Adapter 29.2.0). It supports .Net framework 6.0 and .Net 7.0.
 
 | Documentation                                                | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -50,8 +53,8 @@ This location contains the code that shows how to use the OpenFin APIs from with
 
 | Documentation                                                | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [OpenFin-Test-MVC-ClientSide](./Asp.Net-Core-MVC-Starter/OpenFin-Test-MVC-ClientSide) | This example shows you how to use the HERE api from within the cshtml view file. It does not make use of any server side functionality. The sample demonstrates the sendContext (fire a context), addContextListener (listen for / receive context broadcasts) and fireIntent (initiate an intent) apis. |
-| [OpenFin-Test-MVC-ServerSide](./Asp.Net-Core-MVC-Starter/OpenFin-Test-MVC-ServerSide) | This example shows you how to use the HERE api using server side processing of information received from the client side cshtml view. within the cshtml view file. The sample demonstrates the sendContext (fire a context) and addContextListener (listen for / receive context broadcasts)  apis. |
+| [Test-MVC-ClientSide](./Asp.Net-Core-MVC-Starter/OpenFin-Test-MVC-ClientSide) | This example shows you how to use the HERE api from within the cshtml view file. It does not make use of any server side functionality. The sample demonstrates the sendContext (fire a context), addContextListener (listen for / receive context broadcasts) and fireIntent (initiate an intent) apis. |
+| [Test-MVC-ServerSide](./Asp.Net-Core-MVC-Starter/OpenFin-Test-MVC-ServerSide) | This example shows you how to use the HERE api using server side processing of information received from the client side cshtml view. within the cshtml view file. The sample demonstrates the sendContext (fire a context) and addContextListener (listen for / receive context broadcasts)  apis. |
 
 
 

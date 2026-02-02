@@ -74,4 +74,3 @@ The HERE Notifications.Demo project is a WPF application demonstrating the notif
 Copyright 2018-2019 HERE
 
 https://openfin.co/developer-agreement/ 
-https://openfin.co/licensing/

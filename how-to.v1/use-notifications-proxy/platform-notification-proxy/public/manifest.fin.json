@@ -1,6 +1,6 @@
 {
 	"devtools_port": 9090,
-	"licenseKey": "openfin-demo-license-key",
+	"licenseKey": "here-demo-license-key",
 	"runtime": {
 		"arguments": "",
 		"version": "42.138.100.107"

@@ -4,7 +4,7 @@ This example demonstrates creating a snapshot source client in your platform and
 
 ## Running
 
-First open the **Openfin.SnapshotSourceClient.sln** solution, and then in the solution properties make sure that the **Startup Project** is set to **Multiple Projects**, set the action for both projects to **Start**.
+First open the **OpenFin.SnapshotSourceClient.sln** solution, and then in the solution properties make sure that the **Startup Project** is set to **Multiple Projects**, set the action for both projects to **Start**.
 
 Now when you start the project it will launch both the web server for the platform, and a WPF app to perform the C# interactions.
 
