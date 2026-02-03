@@ -13,7 +13,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "StartCall",
@@ -47,14 +47,14 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [],
 		"images": [
 			{
 				"src": "http://localhost:8080/common/images/previews/contact/call-app.png"
 			}
 		],
-		"tags": ["view", "interop", "fdc3", "contact"]
+		"tags": [ "view", "interop", "fdc3", "contact" ]
 	},
 	{
 		"appId": "mvc-serverside-app",
@@ -70,14 +70,14 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [],
 		"images": [
 			{
 				"src": "http://localhost:8080/common/images/previews/contact/call-app.png"
 			}
 		],
-		"tags": ["view", "interop", "fdc3", "contact"]
+		"tags": [ "view", "interop", "fdc3", "contact" ]
 	},
 	{
 		"appId": "participant-selection",
@@ -93,7 +93,7 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [],
 		"images": [
 			{
@@ -116,12 +116,12 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
 				"displayName": "View Contact",
-				"contexts": ["fdc3.contact"]
+				"contexts": [ "fdc3.contact" ]
 			}
 		],
 		"images": [
@@ -129,7 +129,7 @@
 				"src": "http://localhost:8080/common/images/previews/contact/participant-history.png"
 			}
 		],
-		"tags": ["view", "interop", "fdc3", "contact"]
+		"tags": [ "view", "interop", "fdc3", "contact" ]
 	},
 	{
 		"appId": "investments-and-models",
@@ -145,12 +145,12 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
 				"displayName": "View Contact",
-				"contexts": ["fdc3.contact"]
+				"contexts": [ "fdc3.contact" ]
 			}
 		],
 		"images": [
@@ -158,7 +158,7 @@
 				"src": "http://localhost:8080/common/images/previews/contact/investments-and-models.png"
 			}
 		],
-		"tags": ["view", "interop", "fdc3", "contact"]
+		"tags": [ "view", "interop", "fdc3", "contact" ]
 	},
 	{
 		"appId": "participant-summary-view",
@@ -174,12 +174,12 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
 				"displayName": "View Contact",
-				"contexts": ["fdc3.contact"]
+				"contexts": [ "fdc3.contact" ]
 			}
 		],
 		"images": [
@@ -187,7 +187,7 @@
 				"src": "http://localhost:8080/common/images/previews/contact/participant-summary-view.png"
 			}
 		],
-		"tags": ["view", "interop", "fdc3", "contact"]
+		"tags": [ "view", "interop", "fdc3", "contact" ]
 	},
 	{
 		"appId": "participant-summary-window",
@@ -203,12 +203,12 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
 				"displayName": "View Contact",
-				"contexts": ["fdc3.contact"]
+				"contexts": [ "fdc3.contact" ]
 			}
 		],
 		"images": [
@@ -216,7 +216,7 @@
 				"src": "http://localhost:8080/common/images/previews/contact/participant-summary-window.png"
 			}
 		],
-		"tags": ["window", "interop", "fdc3", "contact"]
+		"tags": [ "window", "interop", "fdc3", "contact" ]
 	},
 	{
 		"appId": "client-overview",
@@ -232,12 +232,12 @@
 		],
 		"contactEmail": "contact@example.com",
 		"supportEmail": "support@example.com",
-		"publisher": "OpenFin",
+		"publisher": "HERE",
 		"intents": [
 			{
 				"name": "ViewContact",
 				"displayName": "View Contact",
-				"contexts": ["fdc3.contact"]
+				"contexts": [ "fdc3.contact" ]
 			}
 		],
 		"images": [
@@ -245,6 +245,6 @@
 				"src": "http://localhost:8080/common/images/previews/contact/client-overview.png"
 			}
 		],
-		"tags": ["page", "openfin", "client", "interop", "fdc3", "contact"]
+		"tags": [ "page", "here", "client", "interop", "fdc3", "contact" ]
 	}
 ]

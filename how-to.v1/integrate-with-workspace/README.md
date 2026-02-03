@@ -13,7 +13,7 @@ Open:
 * restore nuget packages.
 * debug the project OpenFin.WindowsForm.TestHarness or start without debugging.
 
-It will run the main form and that will instantiate the workspace class which launches OpenFin Workspace and connects it to your native app.
+It will run the main form and that will instantiate the workspace class which launches HERE Workspace and connects it to your native app.
 
 When home shows hit enter. You can see all of the applications returned from your Winform App (and any of your other connected apps).
 
@@ -24,9 +24,9 @@ Open:
 `framework\OpenFin.WPF.TestHarness\OpenFin.WPF.TestHarness.sln`
 
 * restore nuget packages.
-* debug the project OpenFin.WPF.TestHarness or start without debugging.
+* debug the project HERE .WPF.TestHarness or start without debugging.
 
-It will run the main WPF form and that will instantiate the workspace class which launches OpenFin Workspace (if it isn't already running) and connects it to your native app.
+It will run the main WPF form and that will instantiate the workspace class which launches HERE Workspace (if it isn't already running) and connects it to your native app.
 
 When home shows hit enter.
 
@@ -41,6 +41,6 @@ Capabilities:
 * Hitting enter launches the selected app
 * typing /store will let you launch the store which will let you browse your available applications.
 
-You can save a workspace by using the workspace menu in the OpenFin Workspace Browser or you can type the following into home /w myworkspace.
+You can save a workspace by using the workspace menu in the HERE Workspace Browser or you can type the following into home /w myworkspace.
 
 The Native applications connect to a specific channel api exposed by the workspace platform. This is configured in the workspace platform's manifest file and defined in the App.config files of the native applications. 

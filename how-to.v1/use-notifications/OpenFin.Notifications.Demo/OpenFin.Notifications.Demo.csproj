@@ -9,7 +9,15 @@
 
   <ItemGroup>
     <PackageReference Include="Openfin.Notifications" Version="0.12.8" />
-    <PackageReference Include="OpenfinDesktop" Version="17.5.1" />
+    <PackageReference Include="OpenfinDesktop" Version="17.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +26,10 @@
     </None>
     <None Update="body.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

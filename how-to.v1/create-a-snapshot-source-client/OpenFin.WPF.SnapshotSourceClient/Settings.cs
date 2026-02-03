@@ -2,9 +2,9 @@
 {
     internal class Settings
     {
-        public static string UUID = "openfin-dotnet-wpf-snapshot-source-client";
+        public static string UUID = "here-dotnet-wpf-snapshot-source-client";
         public static string ManifestUrl = "http://localhost:4040/manifest.fin.json";
-        public static string LicenseKey = "openfin-demo-license-key";
-        public static string PlatformUUID = "openfin-dotnet-web-platform";
+        public static string LicenseKey = "here-demo-license-key";
+        public static string PlatformUUID = "here-dotnet-web-platform";
     }
 }

@@ -14,7 +14,7 @@ public class InteropTests
         var interopMock = new Mock<IInterop>();
         var interopClientMock = new Mock<IInteropClient>();
         
-        interopMock.Setup(x => x.ConnectAsync(It.IsAny<string>()))
+        interopMock.Setup(x => x.ConnectAsync(It.IsAny<string>(), null))
                    .ReturnsAsync( interopClientMock.Object );
 
         // When the client code 

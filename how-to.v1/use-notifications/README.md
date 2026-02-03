@@ -1,11 +1,11 @@
-# OpenFin Notifications Service .NET Client Demo
+# HERE Notifications Service .NET Client Demo
 
 The .NET Notifications Service client provides an interface for the Notifications Service allowing notifications to be manipulated from .NET Applications.
 
 ## Dependencies
 
-[OpenFin.Notifications](https://www.nuget.org/packages/OpenFin.Notifications/)
-[OpenFin Desktop](https://www.nuget.org/packages/OpenfinDesktop/) (v16.0 and higher)
+[Here Notifications](https://www.nuget.org/packages/OpenFin.Notifications/)
+[Here Desktop](https://www.nuget.org/packages/OpenfinDesktop/) (v16.0 and higher)
 
 # Getting Started
 
@@ -67,11 +67,10 @@ Handlers for these events are invoked when notifications are created.
 
 ![embed](ss2.png)
 
-The OpenFin.Notifications.Demo project is a WPF application demonstrating the notification client's functionality. Functionality demonstrated include creating notifications, deleting notifications, creating expiring notifications, configuring buttons within the notifications, responding to events when notifications are interacted with (body and button clicks) or expire, and toggling the visibility of the Notification Center.
+The HERE Notifications.Demo project is a WPF application demonstrating the notification client's functionality. Functionality demonstrated include creating notifications, deleting notifications, creating expiring notifications, configuring buttons within the notifications, responding to events when notifications are interacted with (body and button clicks) or expire, and toggling the visibility of the Notification Center.
 
 
 
-Copyright 2018-2019 OpenFin
+Copyright 2018-2019 HERE
 
 https://openfin.co/developer-agreement/ 
-https://openfin.co/licensing/

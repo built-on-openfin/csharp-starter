@@ -8,11 +8,11 @@ class Program
         Console.WriteLine("Connecting to OpenFin");
 
         var runtime = new RuntimeFactory()
-                         .GetRuntimeInstance(new RuntimeOptions
-                         {
-                             Version = "stable",
-                             UUID = "wpf-test-app2-provider",
-                         });
+            .GetRuntimeInstance(new RuntimeOptions
+            {
+                Version = "stable",
+                UUID = "wpf-test-app2-provider",
+            });
 
         runtime.Connected += Runtime_Connected;
         runtime.Disconnected += Runtime_Disconnected;

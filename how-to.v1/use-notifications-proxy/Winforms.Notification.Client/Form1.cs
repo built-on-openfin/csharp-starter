@@ -1,19 +1,10 @@
-﻿using System;
+﻿using Openfin.Desktop.Messaging;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows;
-using Newtonsoft.Json.Linq;
-using Openfin.Desktop.Messaging;
-using Fin = Openfin.Desktop;
 using Winforms.Notification.Client;
-using Newtonsoft.Json;
+using Fin = Openfin.Desktop;
 
 namespace Winfowms.Notification.Client_v1
 {

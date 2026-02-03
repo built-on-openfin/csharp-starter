@@ -71,31 +71,31 @@ namespace OpenFin.Interop.Win.Sample
             statusStrip.BackColor = System.Drawing.Color.FromArgb(30, 31, 35);
             statusStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { openFinStatusLabel, orderStatusLabel });
-            statusStrip.Location = new System.Drawing.Point(0, 519);
+            statusStrip.Location = new System.Drawing.Point(0, 695);
             statusStrip.Name = "statusStrip";
-            statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            statusStrip.Size = new System.Drawing.Size(704, 22);
+            statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 18, 0);
+            statusStrip.Size = new System.Drawing.Size(805, 26);
             statusStrip.TabIndex = 0;
             // 
             // openFinStatusLabel
             // 
             openFinStatusLabel.ForeColor = System.Drawing.Color.White;
             openFinStatusLabel.Name = "openFinStatusLabel";
-            openFinStatusLabel.Size = new System.Drawing.Size(127, 17);
+            openFinStatusLabel.Size = new System.Drawing.Size(158, 20);
             openFinStatusLabel.Text = "OpenFin Disconnected";
             // 
             // orderStatusLabel
             // 
             orderStatusLabel.Name = "orderStatusLabel";
-            orderStatusLabel.Size = new System.Drawing.Size(0, 17);
+            orderStatusLabel.Size = new System.Drawing.Size(0, 20);
             // 
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.AutoSize = true;
             tableLayoutPanel1.ColumnCount = 3;
-            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
-            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
-            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 330F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 377F));
             tableLayoutPanel1.Controls.Add(FDCVersionDropDown, 0, 6);
             tableLayoutPanel1.Controls.Add(label4, 0, 0);
             tableLayoutPanel1.Controls.Add(contextTypeDropDown, 0, 1);
@@ -109,21 +109,21 @@ namespace OpenFin.Interop.Win.Sample
             tableLayoutPanel1.Controls.Add(receivedContext, 2, 1);
             tableLayoutPanel1.Controls.Add(label6, 0, 5);
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            tableLayoutPanel1.Location = new System.Drawing.Point(0, 52);
-            tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            tableLayoutPanel1.Location = new System.Drawing.Point(0, 69);
+            tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(5);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(12, 10, 12, 10);
+            tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(14, 13, 14, 13);
             tableLayoutPanel1.RowCount = 9;
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 16F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 7F));
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 12F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 19F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 5F));
-            tableLayoutPanel1.Size = new System.Drawing.Size(704, 180);
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 7F));
+            tableLayoutPanel1.Size = new System.Drawing.Size(805, 238);
             tableLayoutPanel1.TabIndex = 4;
             // 
             // FDCVersionDropDown
@@ -131,10 +131,10 @@ namespace OpenFin.Interop.Win.Sample
             FDCVersionDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             FDCVersionDropDown.FormattingEnabled = true;
             FDCVersionDropDown.Items.AddRange(new object[] { "None", "1.2", "2.0" });
-            FDCVersionDropDown.Location = new System.Drawing.Point(16, 145);
-            FDCVersionDropDown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            FDCVersionDropDown.Location = new System.Drawing.Point(19, 191);
+            FDCVersionDropDown.Margin = new System.Windows.Forms.Padding(5);
             FDCVersionDropDown.Name = "FDCVersionDropDown";
-            FDCVersionDropDown.Size = new System.Drawing.Size(151, 23);
+            FDCVersionDropDown.Size = new System.Drawing.Size(172, 28);
             FDCVersionDropDown.TabIndex = 16;
             // 
             // label4
@@ -143,10 +143,10 @@ namespace OpenFin.Interop.Win.Sample
             label4.AutoSize = true;
             label4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             label4.ForeColor = System.Drawing.Color.White;
-            label4.Location = new System.Drawing.Point(12, 17);
-            label4.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+            label4.Location = new System.Drawing.Point(14, 22);
+            label4.Margin = new System.Windows.Forms.Padding(0, 4, 5, 4);
             label4.Name = "label4";
-            label4.Size = new System.Drawing.Size(81, 15);
+            label4.Size = new System.Drawing.Size(101, 20);
             label4.TabIndex = 5;
             label4.Text = "Context Type";
             // 
@@ -155,10 +155,10 @@ namespace OpenFin.Interop.Win.Sample
             contextTypeDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             contextTypeDropDown.FormattingEnabled = true;
             contextTypeDropDown.Items.AddRange(new object[] { "Instrument", "Contact", "Organization" });
-            contextTypeDropDown.Location = new System.Drawing.Point(16, 39);
-            contextTypeDropDown.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            contextTypeDropDown.Location = new System.Drawing.Point(19, 51);
+            contextTypeDropDown.Margin = new System.Windows.Forms.Padding(5);
             contextTypeDropDown.Name = "contextTypeDropDown";
-            contextTypeDropDown.Size = new System.Drawing.Size(151, 23);
+            contextTypeDropDown.Size = new System.Drawing.Size(172, 28);
             contextTypeDropDown.TabIndex = 6;
             contextTypeDropDown.SelectedIndexChanged += contextTypeDropDown_SelectedIndexChanged;
             // 
@@ -168,10 +168,10 @@ namespace OpenFin.Interop.Win.Sample
             ContextInputLabel.AutoSize = true;
             ContextInputLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             ContextInputLabel.ForeColor = System.Drawing.Color.White;
-            ContextInputLabel.Location = new System.Drawing.Point(12, 67);
-            ContextInputLabel.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+            ContextInputLabel.Location = new System.Drawing.Point(14, 88);
+            ContextInputLabel.Margin = new System.Windows.Forms.Padding(0, 4, 5, 4);
             ContextInputLabel.Name = "ContextInputLabel";
-            ContextInputLabel.Size = new System.Drawing.Size(70, 15);
+            ContextInputLabel.Size = new System.Drawing.Size(88, 20);
             ContextInputLabel.TabIndex = 7;
             ContextInputLabel.Text = "Instrument";
             ContextInputLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -181,10 +181,10 @@ namespace OpenFin.Interop.Win.Sample
             ContextItemComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             ContextItemComboBox.FormattingEnabled = true;
             ContextItemComboBox.Items.AddRange(new object[] { "AAPL", "CSCO", "IBM", "MSFT", "TSLA" });
-            ContextItemComboBox.Location = new System.Drawing.Point(16, 89);
-            ContextItemComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            ContextItemComboBox.Location = new System.Drawing.Point(19, 117);
+            ContextItemComboBox.Margin = new System.Windows.Forms.Padding(5);
             ContextItemComboBox.Name = "ContextItemComboBox";
-            ContextItemComboBox.Size = new System.Drawing.Size(151, 23);
+            ContextItemComboBox.Size = new System.Drawing.Size(172, 28);
             ContextItemComboBox.TabIndex = 8;
             // 
             // label2
@@ -193,10 +193,10 @@ namespace OpenFin.Interop.Win.Sample
             label2.AutoSize = true;
             label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             label2.ForeColor = System.Drawing.Color.White;
-            label2.Location = new System.Drawing.Point(187, 17);
-            label2.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+            label2.Location = new System.Drawing.Point(214, 22);
+            label2.Margin = new System.Windows.Forms.Padding(0, 4, 5, 4);
             label2.Name = "label2";
-            label2.Size = new System.Drawing.Size(90, 15);
+            label2.Size = new System.Drawing.Size(112, 20);
             label2.TabIndex = 9;
             label2.Text = "Context Group";
             // 
@@ -206,10 +206,10 @@ namespace OpenFin.Interop.Win.Sample
             contextGroupComboBox.Enabled = false;
             contextGroupComboBox.FormattingEnabled = true;
             contextGroupComboBox.Items.AddRange(new object[] { "N/A" });
-            contextGroupComboBox.Location = new System.Drawing.Point(191, 39);
-            contextGroupComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            contextGroupComboBox.Location = new System.Drawing.Point(219, 51);
+            contextGroupComboBox.Margin = new System.Windows.Forms.Padding(5);
             contextGroupComboBox.Name = "contextGroupComboBox";
-            contextGroupComboBox.Size = new System.Drawing.Size(151, 23);
+            contextGroupComboBox.Size = new System.Drawing.Size(172, 28);
             contextGroupComboBox.TabIndex = 10;
             contextGroupComboBox.SelectedIndexChanged += contextGroupComboBox_SelectedIndexChanged;
             // 
@@ -219,21 +219,21 @@ namespace OpenFin.Interop.Win.Sample
             label3.AutoSize = true;
             label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             label3.ForeColor = System.Drawing.Color.White;
-            label3.Location = new System.Drawing.Point(187, 67);
-            label3.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+            label3.Location = new System.Drawing.Point(214, 88);
+            label3.Margin = new System.Windows.Forms.Padding(0, 4, 5, 4);
             label3.Name = "label3";
-            label3.Size = new System.Drawing.Size(91, 15);
+            label3.Size = new System.Drawing.Size(112, 20);
             label3.TabIndex = 11;
             label3.Text = "Interop Broker";
             // 
             // interopBrokerInput
             // 
-            interopBrokerInput.Location = new System.Drawing.Point(191, 89);
-            interopBrokerInput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            interopBrokerInput.Location = new System.Drawing.Point(219, 117);
+            interopBrokerInput.Margin = new System.Windows.Forms.Padding(5);
             interopBrokerInput.MinimumSize = new System.Drawing.Size(4, 38);
             interopBrokerInput.Name = "interopBrokerInput";
             interopBrokerInput.PlaceholderText = "workspace-platform-starter";
-            interopBrokerInput.Size = new System.Drawing.Size(152, 38);
+            interopBrokerInput.Size = new System.Drawing.Size(173, 38);
             interopBrokerInput.TabIndex = 12;
             interopBrokerInput.TextChanged += interopBrokerInput_TextChanged;
             interopBrokerInput.Leave += interopBrokerInput_Leave;
@@ -244,10 +244,10 @@ namespace OpenFin.Interop.Win.Sample
             receivedInstrument.AutoSize = true;
             receivedInstrument.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             receivedInstrument.ForeColor = System.Drawing.Color.White;
-            receivedInstrument.Location = new System.Drawing.Point(362, 17);
-            receivedInstrument.Margin = new System.Windows.Forms.Padding(0, 3, 4, 3);
+            receivedInstrument.Location = new System.Drawing.Point(414, 22);
+            receivedInstrument.Margin = new System.Windows.Forms.Padding(0, 4, 5, 4);
             receivedInstrument.Name = "receivedInstrument";
-            receivedInstrument.Size = new System.Drawing.Size(59, 15);
+            receivedInstrument.Size = new System.Drawing.Size(71, 20);
             receivedInstrument.TabIndex = 13;
             receivedInstrument.Text = "Received";
             // 
@@ -255,10 +255,10 @@ namespace OpenFin.Interop.Win.Sample
             // 
             receivedContext.AutoSize = true;
             receivedContext.ForeColor = System.Drawing.Color.White;
-            receivedContext.Location = new System.Drawing.Point(366, 35);
-            receivedContext.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            receivedContext.Location = new System.Drawing.Point(419, 46);
+            receivedContext.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             receivedContext.Name = "receivedContext";
-            receivedContext.Size = new System.Drawing.Size(46, 15);
+            receivedContext.Size = new System.Drawing.Size(59, 20);
             receivedContext.TabIndex = 14;
             receivedContext.Text = "Not Set";
             // 
@@ -267,10 +267,10 @@ namespace OpenFin.Interop.Win.Sample
             label6.AutoSize = true;
             label6.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             label6.ForeColor = System.Drawing.Color.White;
-            label6.Location = new System.Drawing.Point(14, 122);
+            label6.Location = new System.Drawing.Point(16, 161);
             label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             label6.Name = "label6";
-            label6.Size = new System.Drawing.Size(73, 15);
+            label6.Size = new System.Drawing.Size(93, 20);
             label6.TabIndex = 15;
             label6.Text = "FDC Version";
             // 
@@ -278,20 +278,20 @@ namespace OpenFin.Interop.Win.Sample
             // 
             embeddedViewPanel.Controls.Add(logBox);
             embeddedViewPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            embeddedViewPanel.Location = new System.Drawing.Point(0, 272);
-            embeddedViewPanel.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+            embeddedViewPanel.Location = new System.Drawing.Point(0, 360);
+            embeddedViewPanel.Margin = new System.Windows.Forms.Padding(1);
             embeddedViewPanel.Name = "embeddedViewPanel";
-            embeddedViewPanel.Padding = new System.Windows.Forms.Padding(12, 10, 12, 10);
-            embeddedViewPanel.Size = new System.Drawing.Size(704, 269);
+            embeddedViewPanel.Padding = new System.Windows.Forms.Padding(14, 13, 14, 13);
+            embeddedViewPanel.Size = new System.Drawing.Size(805, 361);
             embeddedViewPanel.TabIndex = 5;
             // 
             // logBox
             // 
             logBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            logBox.Location = new System.Drawing.Point(12, -7);
-            logBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            logBox.Location = new System.Drawing.Point(14, -5);
+            logBox.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             logBox.Name = "logBox";
-            logBox.Size = new System.Drawing.Size(680, 266);
+            logBox.Size = new System.Drawing.Size(777, 353);
             logBox.TabIndex = 0;
             logBox.Text = "";
             // 
@@ -299,10 +299,10 @@ namespace OpenFin.Interop.Win.Sample
             // 
             separator.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             separator.Dock = System.Windows.Forms.DockStyle.Top;
-            separator.Location = new System.Drawing.Point(0, 51);
+            separator.Location = new System.Drawing.Point(0, 68);
             separator.Margin = new System.Windows.Forms.Padding(0);
             separator.Name = "separator";
-            separator.Size = new System.Drawing.Size(704, 1);
+            separator.Size = new System.Drawing.Size(805, 1);
             separator.TabIndex = 3;
             separator.Text = "label5";
             // 
@@ -312,22 +312,22 @@ namespace OpenFin.Interop.Win.Sample
             label1.AutoSize = true;
             label1.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             label1.ForeColor = System.Drawing.Color.White;
-            label1.Location = new System.Drawing.Point(1, 8);
+            label1.Location = new System.Drawing.Point(1, 11);
             label1.Margin = new System.Windows.Forms.Padding(0);
             label1.Name = "label1";
-            label1.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
-            label1.Size = new System.Drawing.Size(271, 25);
+            label1.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
+            label1.Size = new System.Drawing.Size(342, 32);
             label1.TabIndex = 2;
             label1.Text = "WinForm Interop Example";
             // 
             // pictureBox1
             // 
             pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            pictureBox1.Image = Properties.Resources.icon_blue;
-            pictureBox1.Location = new System.Drawing.Point(651, 11);
-            pictureBox1.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+            pictureBox1.Image = (System.Drawing.Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new System.Drawing.Point(744, 15);
+            pictureBox1.Margin = new System.Windows.Forms.Padding(1);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new System.Drawing.Size(37, 32);
+            pictureBox1.Size = new System.Drawing.Size(42, 43);
             pictureBox1.TabIndex = 9;
             pictureBox1.TabStop = false;
             // 
@@ -338,9 +338,9 @@ namespace OpenFin.Interop.Win.Sample
             panelUnderline.Controls.Add(label1);
             panelUnderline.Dock = System.Windows.Forms.DockStyle.Top;
             panelUnderline.Location = new System.Drawing.Point(0, 0);
-            panelUnderline.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+            panelUnderline.Margin = new System.Windows.Forms.Padding(1);
             panelUnderline.Name = "panelUnderline";
-            panelUnderline.Size = new System.Drawing.Size(704, 51);
+            panelUnderline.Size = new System.Drawing.Size(805, 68);
             panelUnderline.TabIndex = 1;
             // 
             // label5
@@ -349,11 +349,11 @@ namespace OpenFin.Interop.Win.Sample
             label5.AutoSize = true;
             label5.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             label5.ForeColor = System.Drawing.Color.White;
-            label5.Location = new System.Drawing.Point(4, 31);
+            label5.Location = new System.Drawing.Point(5, 41);
             label5.Margin = new System.Windows.Forms.Padding(0);
             label5.Name = "label5";
-            label5.Padding = new System.Windows.Forms.Padding(12, 0, 12, 0);
-            label5.Size = new System.Drawing.Size(329, 13);
+            label5.Padding = new System.Windows.Forms.Padding(14, 0, 14, 0);
+            label5.Size = new System.Drawing.Size(388, 19);
             label5.TabIndex = 10;
             label5.Text = "Demonstrate interop with OpenFin in a native application";
             // 
@@ -364,10 +364,10 @@ namespace OpenFin.Interop.Win.Sample
             submitContextButton.Enabled = false;
             submitContextButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             submitContextButton.ForeColor = System.Drawing.Color.White;
-            submitContextButton.Location = new System.Drawing.Point(265, 5);
-            submitContextButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            submitContextButton.Location = new System.Drawing.Point(303, 7);
+            submitContextButton.Margin = new System.Windows.Forms.Padding(5);
             submitContextButton.Name = "submitContextButton";
-            submitContextButton.Size = new System.Drawing.Size(111, 25);
+            submitContextButton.Size = new System.Drawing.Size(127, 33);
             submitContextButton.TabIndex = 18;
             submitContextButton.Text = "Submit Context";
             submitContextButton.UseVisualStyleBackColor = false;
@@ -379,10 +379,10 @@ namespace OpenFin.Interop.Win.Sample
             connectToBrokerButton.BackColor = System.Drawing.Color.FromArgb(79, 77, 255);
             connectToBrokerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             connectToBrokerButton.ForeColor = System.Drawing.Color.White;
-            connectToBrokerButton.Location = new System.Drawing.Point(15, 5);
-            connectToBrokerButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            connectToBrokerButton.Location = new System.Drawing.Point(17, 7);
+            connectToBrokerButton.Margin = new System.Windows.Forms.Padding(5);
             connectToBrokerButton.Name = "connectToBrokerButton";
-            connectToBrokerButton.Size = new System.Drawing.Size(124, 25);
+            connectToBrokerButton.Size = new System.Drawing.Size(142, 33);
             connectToBrokerButton.TabIndex = 16;
             connectToBrokerButton.Text = "Connect To Broker";
             connectToBrokerButton.UseVisualStyleBackColor = false;
@@ -395,10 +395,10 @@ namespace OpenFin.Interop.Win.Sample
             createBrokerButton.Enabled = false;
             createBrokerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             createBrokerButton.ForeColor = System.Drawing.Color.White;
-            createBrokerButton.Location = new System.Drawing.Point(155, 5);
-            createBrokerButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            createBrokerButton.Location = new System.Drawing.Point(177, 7);
+            createBrokerButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             createBrokerButton.Name = "createBrokerButton";
-            createBrokerButton.Size = new System.Drawing.Size(97, 25);
+            createBrokerButton.Size = new System.Drawing.Size(111, 33);
             createBrokerButton.TabIndex = 17;
             createBrokerButton.Text = "Create Broker";
             createBrokerButton.UseVisualStyleBackColor = false;
@@ -411,11 +411,11 @@ namespace OpenFin.Interop.Win.Sample
             panelButtons.Controls.Add(connectToBrokerButton);
             panelButtons.Controls.Add(submitContextButton);
             panelButtons.Dock = System.Windows.Forms.DockStyle.Top;
-            panelButtons.Location = new System.Drawing.Point(0, 232);
-            panelButtons.Margin = new System.Windows.Forms.Padding(1, 1, 1, 1);
+            panelButtons.Location = new System.Drawing.Point(0, 307);
+            panelButtons.Margin = new System.Windows.Forms.Padding(1);
             panelButtons.Name = "panelButtons";
-            panelButtons.Padding = new System.Windows.Forms.Padding(12, 10, 12, 10);
-            panelButtons.Size = new System.Drawing.Size(704, 40);
+            panelButtons.Padding = new System.Windows.Forms.Padding(14, 13, 14, 13);
+            panelButtons.Size = new System.Drawing.Size(805, 53);
             panelButtons.TabIndex = 15;
             // 
             // fireIntent
@@ -425,10 +425,10 @@ namespace OpenFin.Interop.Win.Sample
             fireIntent.Enabled = false;
             fireIntent.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             fireIntent.ForeColor = System.Drawing.Color.White;
-            fireIntent.Location = new System.Drawing.Point(384, 5);
-            fireIntent.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            fireIntent.Location = new System.Drawing.Point(439, 7);
+            fireIntent.Margin = new System.Windows.Forms.Padding(5);
             fireIntent.Name = "fireIntent";
-            fireIntent.Size = new System.Drawing.Size(111, 25);
+            fireIntent.Size = new System.Drawing.Size(127, 33);
             fireIntent.TabIndex = 19;
             fireIntent.Text = "Fire Intent";
             fireIntent.UseVisualStyleBackColor = false;
@@ -436,10 +436,10 @@ namespace OpenFin.Interop.Win.Sample
             // 
             // MainWindow
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             BackColor = System.Drawing.Color.FromArgb(30, 31, 35);
-            ClientSize = new System.Drawing.Size(704, 541);
+            ClientSize = new System.Drawing.Size(805, 721);
             Controls.Add(statusStrip);
             Controls.Add(embeddedViewPanel);
             Controls.Add(panelButtons);
@@ -447,7 +447,7 @@ namespace OpenFin.Interop.Win.Sample
             Controls.Add(separator);
             Controls.Add(panelUnderline);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            Margin = new System.Windows.Forms.Padding(5);
             Name = "MainWindow";
             Text = "Interop Example Tool";
             statusStrip.ResumeLayout(false);

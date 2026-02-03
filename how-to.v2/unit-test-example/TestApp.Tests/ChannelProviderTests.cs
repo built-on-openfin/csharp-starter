@@ -14,7 +14,7 @@ public class ChannelProviderTests
         var channelClient = new Mock<IChannelClient>();
 
         // We are going to mock the CreateClient call and return a mock of a channel client
-        channelsMock.Setup(x => x.CreateClient("my-channel"))
+        channelsMock.Setup(x => x.CreateClient("my-channel", null))
                     .Returns(channelClient.Object);
 
         // Mock the runtime to return a channels mock when requested

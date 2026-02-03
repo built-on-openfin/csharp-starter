@@ -1,6 +1,6 @@
 {
 	"devtools_port": 9090,
-	"licenseKey": "openfin-demo-license-key",
+	"licenseKey": "here-demo-license-key",
 	"runtime": {
 		"arguments": "",
 		"version": "42.138.100.107"
@@ -17,16 +17,16 @@
 		"windows": []
 	},
 	"shortcut": {
-		"company": "OpenFin",
-		"description": "A way of showing how an app can use a proxy app to work with OpenFin Notifications without having to implement all the packages itself.",
+		"company": "HERE",
+		"description": "A way of showing how an app can use a proxy app to work with Here.io Notifications without having to implement all the packages itself.",
 		"icon": "http://localhost:8080/favicon.ico",
 		"name": "Notifications Proxy - v1.0.0",
 		"target": ["desktop", "start-menu"]
 	},
 	"supportInformation": {
-		"company": "OpenFin",
-		"product": "OpenFin Notifications Proxy",
-		"email": "support@openfin.co",
+		"company": "HERE",
+		"product": "HERE Notifications Proxy",
+		"email": "support@here.io",
 		"forwardErrorReports": true
 	}
 }

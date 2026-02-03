@@ -3,8 +3,8 @@
 ## How to run this example
 
 1. Ensure that you have installed the following nuget packages:  
-- OpenFin.Net.Adapter (minimum 29.2.0)  
-- OpenFIn.Net.Adapter.Logs.Serilog (minimum 29.2.0)  
+- HERE Net.Adapter (minimum 29.2.0)  
+- HERE Net.Adapter.Logs.Serilog (minimum 29.2.0)  
 2. Build the solution without errors
 3. Navigate to the folder that has the executable, typically this will be in "how-to.v2\use-channels-api\bin\Debug\net6.0-windows"  
 4. Run the Channels.exe twice.  

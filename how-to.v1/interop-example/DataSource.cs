@@ -35,7 +35,7 @@ namespace OpenFin.Interop.Win.Sample
             contacts = new BindingSource();
             contacts.DataSource = contactList;
 
-            List<string> organizationList = new List<string> { "OpenFin", "OpenFin Demo Corp", "United Oil & Gas Corp" };
+            List<string> organizationList = new List<string> { "HERE", "HERE Demo Corp", "United Oil & Gas Corp" };
 
             organizations = new BindingSource();
             organizations.DataSource = organizationList;
@@ -74,7 +74,7 @@ namespace OpenFin.Interop.Win.Sample
                     }
                 case "John Mandia":
                     {
-                        email = "john.mandia@openfin.co";
+                        email = "john.mandia@here.io";
                         break;
                     }
                 case "John McHugh":
