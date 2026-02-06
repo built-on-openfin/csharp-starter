@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "interop-intents-v1", "interop-intents-v1.csproj", "{F054735B-9232-4F8A-9819-3B59C626F628}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F054735B-9232-4F8A-9819-3B59C626F628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F054735B-9232-4F8A-9819-3B59C626F628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F054735B-9232-4F8A-9819-3B59C626F628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F054735B-9232-4F8A-9819-3B59C626F628}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {25AB8881-5834-4E89-8B5F-D0C82471062B}
+	EndGlobalSection
+EndGlobal
