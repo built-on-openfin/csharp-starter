@@ -22,3 +22,6 @@ obj
 *.user
 *.userosscache
 *.sln.docstates
+
+# Ignore the publish folder created by the publish profile in Visual Studio
+how-to.v1/interop-example-wpf/publish/
