@@ -10,34 +10,61 @@ namespace OpenFin.Interop.Win.Sample
     {
         public ContextReceivedEventArgs(Context context)
         {
-            if (context.Type.IndexOf("fdc3.instrument") > -1)
+            try
             {
-                var instrumentContext = new Instrument
+                if (context.Type.IndexOf("fdc3.instrument") > -1)
                 {
-                    Type = context.Type,
-                    Name = context.Name,
-                    Id = (context.Id as JObject).ToObject<Dictionary<string, string>>()
-                };
-                Fdc3InstrumentContext = instrumentContext;
+                    try
+                    {
+                        var instrumentContext = new Instrument
+                        {
+                            Type = context.Type,
+                            Name = context.Name,
+                            Id = (context.Id as JObject).ToObject<Dictionary<string, string>>()
+                        };
+                        Fdc3InstrumentContext = instrumentContext;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error creating Instrument context: " + ex.Message);
+                    }
+                }
+                else if (context.Type.IndexOf("fdc3.contact") > -1)
+                {
+                    try
+                    {
+                        var contactContext = new Contact
+                        {
+                            Type = context.Type,
+                            Name = context.Name
+                        };
+                        Fdc3ContactContext = contactContext;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error creating Contact context: " + ex.Message);
+                    }
+                }
+                else if (context.Type.IndexOf("fdc3.organization") > -1)
+                {
+                    try
+                    {
+                        var organizationContext = new Organization
+                        {
+                            Type = context.Type,
+                            Name = context.Name
+                        };
+                        Fdc3OrganizationContext = organizationContext;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error creating Organization context: " + ex.Message);
+                    }
+                }
             }
-            else if (context.Type.IndexOf("fdc3.contact") > -1)
+            catch (Exception ex)
             {
-
-                var contactContext = new Contact
-                {
-                    Type = context.Type,
-                    Name = context.Name
-                };
-                Fdc3ContactContext = contactContext;
-            }
-            else if (context.Type.IndexOf("fdc3.organization") > -1)
-            {
-                var organizationContext = new Organization
-                {
-                    Type = context.Type,
-                    Name = context.Name
-                };
-                Fdc3OrganizationContext = organizationContext;
+                Console.WriteLine("Error in ContextReceivedEventArgs constructor: " + ex.Message);
             }
         }
 
