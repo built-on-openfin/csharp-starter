@@ -134,7 +134,7 @@ namespace interop_intents_v1
 
         private async void ConnectToBroker_Click(object sender, RoutedEventArgs e)
         {
-            // No sensitive code present
+            
         }
 
         private async void FireIntent_Click(object sender, RoutedEventArgs e)

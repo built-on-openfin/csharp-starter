@@ -10,62 +10,57 @@ namespace OpenFin.Interop.Win.Sample
     {
         public ContextReceivedEventArgs(Context context)
         {
-            try
+           
+            if (context.Type.IndexOf("fdc3.instrument") > -1)
             {
-                if (context.Type.IndexOf("fdc3.instrument") > -1)
+                try
                 {
-                    try
+                    var instrumentContext = new Instrument
                     {
-                        var instrumentContext = new Instrument
-                        {
-                            Type = context.Type,
-                            Name = context.Name,
-                            Id = (context.Id as JObject).ToObject<Dictionary<string, string>>()
-                        };
-                        Fdc3InstrumentContext = instrumentContext;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error creating Instrument context: " + ex.Message);
-                    }
+                        Type = context.Type,
+                        Name = context.Name,
+                        Id = (context.Id as JObject).ToObject<Dictionary<string, string>>()
+                    };
+                    Fdc3InstrumentContext = instrumentContext;
                 }
-                else if (context.Type.IndexOf("fdc3.contact") > -1)
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        var contactContext = new Contact
-                        {
-                            Type = context.Type,
-                            Name = context.Name
-                        };
-                        Fdc3ContactContext = contactContext;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error creating Contact context: " + ex.Message);
-                    }
-                }
-                else if (context.Type.IndexOf("fdc3.organization") > -1)
-                {
-                    try
-                    {
-                        var organizationContext = new Organization
-                        {
-                            Type = context.Type,
-                            Name = context.Name
-                        };
-                        Fdc3OrganizationContext = organizationContext;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error creating Organization context: " + ex.Message);
-                    }
+                    Console.WriteLine("Error creating Instrument context: " + ex.Message);
                 }
             }
-            catch (Exception ex)
+            else if (context.Type.IndexOf("fdc3.contact") > -1)
             {
-                Console.WriteLine("Error in ContextReceivedEventArgs constructor: " + ex.Message);
+                try
+                {
+                    var contactContext = new Contact
+                    {
+                        Type = context.Type,
+                        Name = context.Name
+                    };
+                    Fdc3ContactContext = contactContext;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error creating Contact context: " + ex.Message);
+                }
             }
+            else if (context.Type.IndexOf("fdc3.organization") > -1)
+            {
+                try
+                {
+                    var organizationContext = new Organization
+                    {
+                        Type = context.Type,
+                        Name = context.Name
+                    };
+                    Fdc3OrganizationContext = organizationContext;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error creating Organization context: " + ex.Message);
+                }
+            }
+            
         }
 
         public Instrument Fdc3InstrumentContext { get; protected set; }
