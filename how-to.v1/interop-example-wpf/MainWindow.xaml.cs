@@ -37,23 +37,30 @@ namespace interop_intents_v1
             _openFin.IntentResultReceived += OpenFin_IntentResultReceived;
             _openFin.IntentRequestReceived += OpenFin_IntentRequestReceived;
 
-            if(!_openFin._isRuntimeConnected)
+            // Add a Loaded event handler instead of connecting in constructor
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!_openFin._isRuntimeConnected)
             {
                 try
                 {
                     status.Content = "Connecting...";
                     ShowMessage("Connecting ...");
 
+                    // The connection happens asynchronously
                     _openFin.ConnectToInteropBroker(_interopBrokerUUID, null);
 
-                    status.Content = "Connected";
-                    ShowMessage("Connected to OpenFin Runtime");
-                    ConnectToBroker.IsEnabled = true;
+                    // Note: Don't set status here - let the events handle it
+                    // The RuntimeConnected event will be fired when connection succeeds
                 }
                 catch (Exception ex)
                 {
                     ConnectToBroker.IsEnabled = false;
                     ShowMessage("Unable to connect to OpenFin Runtime" + Environment.NewLine + ex.Message);
+                    status.Content = "Connection Failed";
                 }
             }
         }
