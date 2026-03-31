@@ -50,6 +50,7 @@ namespace OpenFin.Interop.Win.Sample
             catch (Exception ex)
             {
                 Console.WriteLine("Error initializing OpenFinIntegration: " + ex.Message);
+                throw;
             }
         }
 
@@ -72,8 +73,8 @@ namespace OpenFin.Interop.Win.Sample
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error connecting to Interop broker: " + ex.Message);
-                return null;
+                Console.WriteLine("Error in ConnectAsync: " + ex.Message);
+                throw;
             }
         }
 
@@ -82,12 +83,6 @@ namespace OpenFin.Interop.Win.Sample
             try
             {
                 _interopClient = await ConnectAsync(brokerName, fdc3Payload);
-                if (_interopClient == null)
-                {
-                    Console.WriteLine("InteropClient is null after connection attempt.");
-                    return;
-                }
-
                 await _interopClient.AddContextHandlerAsync(ctx =>
                 {
                     try
@@ -100,8 +95,9 @@ namespace OpenFin.Interop.Win.Sample
                         Console.WriteLine("Error in context handler: " + ex.Message);
                     }
                 });
-
                 var contextGroups = await _interopClient.GetContextGroupsAsync();
+
+                // In the case of EB we may get back results for context groups that do not have any associated metadata such as color, etc. Ignore those.
                 var contextGroupIds = contextGroups.Where(group => group.DisplayMetadata.Color != null).Select(group => group.Id).ToArray();
                 InteropContextGroupsReceived?.Invoke(this, new InteropContextGroupsReceivedEventArgs(contextGroupIds));
                 InteropConnected?.Invoke(this, EventArgs.Empty);
@@ -109,7 +105,8 @@ namespace OpenFin.Interop.Win.Sample
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error connecting InteropClient: " + ex.Message);
+                Console.WriteLine("Error in ConnectInteropClient: " + ex.Message);
+                throw;
             }
         }
 
@@ -164,25 +161,28 @@ namespace OpenFin.Interop.Win.Sample
                     organizationContext.Id.Add("PERMID", contextValue);
                     return (T)(organizationContext as ContextBase);
                 }
+
+                return null;
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error creating context: " + ex.Message);
+                Console.WriteLine("Error in GetContext: " + ex.Message);
+                return null;
             }
-
-            return null;
         }
 
         private async void FireSelectedIntent(Intent intent)
         {
             try
             {
+                // Invoke the intent
                 var result = await _interopClient.FireIntentAsync(intent);
+
                 IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs(result));
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Resolver Timeout or error firing intent: " + ex.Message);
+                Console.WriteLine("Resolver Timeout or error - User has likely dismissed the target selection dialog or error occurred: " + ex.Message);
                 IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs());
             }
         }
@@ -195,7 +195,7 @@ namespace OpenFin.Interop.Win.Sample
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error broadcasting context: " + ex.Message);
+                Console.WriteLine("Error in SendBroadcast: " + ex.Message);
             }
         }
 
@@ -219,7 +219,7 @@ namespace OpenFin.Interop.Win.Sample
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error joining context group: " + ex.Message);
+                Console.WriteLine("Error connecting to context group: " + ex.Message);
             }
         }
 
@@ -227,24 +227,20 @@ namespace OpenFin.Interop.Win.Sample
         {
             try
             {
+                // Launch and Connect to the OpenFin Runtime
+                // If already connected, callback executes immediately
                 _runtime.Connect(async () =>
-                {
-                    try
-                    {
-                        Console.WriteLine("Runtime object connected!");
-                        RuntimeConnected?.Invoke(this, EventArgs.Empty);
+                {                    
+                    Console.WriteLine("Runtime object connected!");
+                    RuntimeConnected?.Invoke(this, EventArgs.Empty);
 
-                        await ConnectInteropClient(broker, fdc3Payload);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error in runtime connect callback: " + ex.Message);
-                    }
+                    await ConnectInteropClient(broker, fdc3Payload);
+                   
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error connecting to Interop broker: " + ex.Message);
+                Console.WriteLine("Error in ConnectToInteropBroker: " + ex.Message);
             }
         }
 
@@ -281,94 +277,81 @@ namespace OpenFin.Interop.Win.Sample
                     FireSelectedIntent(viewNews);
                     return viewNews.Name;
                 }
+
+                return "Unknown";
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error firing intent: " + ex.Message);
+                Console.WriteLine("Error in FireIntent: " + ex.Message);
+                return "Error";
             }
-
-            return "Unknown";
         }
 
         public async Task<string> RegisterIntent(string contextType)
         {
             string intentName = null;
 
-            try
+            if (contextType == "Contact")
             {
-                if (contextType == "Contact")
+                if (_viewContactRegistered)
                 {
-                    if (_viewContactRegistered)
-                    {
-                        return "ViewContact Intent Handler already registered.";
-                    }
-                    else
-                    {
-                        intentName = "ViewContact";
-                        _viewContactRegistered = true;
-                    }
-                }
-                if (contextType == "Instrument")
-                {
-                    if (_viewInstrumentRegistered)
-                    {
-                        return "ViewInstrument Intent Handler already registered.";
-                    }
-                    else
-                    {
-                        intentName = "ViewInstrument";
-                        _viewInstrumentRegistered = true;
-                    }
-                }
-                if (contextType == "Organization")
-                {
-                    if (_viewNewsRegistered)
-                    {
-                        return "ViewNews Intent Handler already registered";
-                    }
-                    else
-                    {
-                        intentName = "ViewNews";
-                        _viewNewsRegistered = true;
-                    }
-                }
-
-                if (intentName != null)
-                {
-                    try
-                    {
-                        Console.WriteLine("Registering intent for : " + intentName);
-                        await _interopClient.RegisterIntentHandlerAsync((passedIntent) =>
-                        {
-                            try
-                            {
-                                Console.WriteLine("Intent Received" + passedIntent.Name);
-                                IntentRequestReceived?.Invoke(this, new IntentContextReceivedEventArgs(passedIntent.Context, passedIntent.Name));
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("Error in intent handler: " + ex.Message);
-                            }
-                        }, intentName);
-                        return intentName + " Intent Handler registered.";
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Error on intent registration: " + e.Message);
-                        IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs());
-                        return intentName + " Intent Handler could not be registered because of an error: " + e.Message;
-                    }
+                    return "ViewContact Intent Handler already registered.";
                 }
                 else
                 {
-                    Console.WriteLine("Context Type: " + contextType + " is not supported");
-                    return "Unable to find an intent type for context type: " + contextType;
+                    intentName = "ViewContact";
+                    _viewContactRegistered = true;
                 }
             }
-            catch (Exception ex)
+            if (contextType == "Instrument")
             {
-                Console.WriteLine("Error in RegisterIntent: " + ex.Message);
-                return "Error registering intent: " + ex.Message;
+                if (_viewInstrumentRegistered)
+                {
+                    return "ViewInstrument Intent Handler already registered.";
+                }
+                else
+                {
+                    intentName = "ViewInstrument";
+                    _viewInstrumentRegistered = true;
+                }
+            }
+            if (contextType == "Organization")
+            {
+                if (_viewNewsRegistered)
+                {
+                    return "ViewNews Intent Handler already registered";
+                }
+                else
+                {
+                    intentName = "ViewNews";
+                    _viewNewsRegistered = true;
+                }
+            }
+
+            if (intentName != null)
+            {
+                try
+                {
+                    Console.WriteLine("Registering intent for : " + intentName);
+                    await _interopClient.RegisterIntentHandlerAsync((passedIntent) =>
+                    {                       
+                        Console.WriteLine("Intent Received" + passedIntent.Name);
+                        IntentRequestReceived?.Invoke(this, new IntentContextReceivedEventArgs(passedIntent.Context, passedIntent.Name));
+                        
+                    }, intentName);
+                    return intentName + " Intent Handler registered.";
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error on intent registration: " + e.Message);
+                    IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs());
+                    return intentName + " Intent Handler could not be registered because of an error: " + e.Message;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Context Type: " + contextType + " is not supported");
+                return "Unable to find an intent type for context type: " + contextType;
             }
         }
     }

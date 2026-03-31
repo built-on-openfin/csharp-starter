@@ -7,8 +7,6 @@ using System.Threading;
 using System.Windows;
 using Newtonsoft.Json.Linq;
 
-
-
 namespace interop_intents_v1
 {
     /// <summary>
@@ -29,22 +27,20 @@ namespace interop_intents_v1
             ShowMessage("*******************************************************************************************************************************");
             ShowMessage("");
 
-            try
-            {
-                _openFin = new OpenFinIntegration(_runtimeUUID);
-                _openFin.RuntimeConnected += OpenFin_RuntimeConnected;
-                _openFin.RuntimeDisconnected += OpenFin_RuntimeDisconnected;
-                _openFin.InteropConnected += OpenFin_InteropConnected;
-                _openFin.InteropContextReceived += OpenFin_InteropContextReceived;
-                _openFin.IntentResultReceived += OpenFin_IntentResultReceived;
-                _openFin.IntentRequestReceived += OpenFin_IntentRequestReceived;
-            }
-            catch (Exception ex)
-            {
-                ShowMessage("Failed to initialize OpenFin integration: " + ex.Message);
-                return;
-            }
+            _openFin = new OpenFinIntegration(_runtimeUUID);
+            _openFin.RuntimeConnected += OpenFin_RuntimeConnected;
+            _openFin.RuntimeDisconnected += OpenFin_RuntimeDisconnected;
+            _openFin.InteropConnected += OpenFin_InteropConnected;
+            _openFin.InteropContextReceived += OpenFin_InteropContextReceived;
+            _openFin.IntentResultReceived += OpenFin_IntentResultReceived;
+            _openFin.IntentRequestReceived += OpenFin_IntentRequestReceived;
 
+            // Add a Loaded event handler instead of connecting in constructor
+            this.Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
             if (!_openFin._isRuntimeConnected)
             {
                 try
@@ -52,21 +48,22 @@ namespace interop_intents_v1
                     status.Content = "Connecting...";
                     ShowMessage("Connecting ...");
 
+                    // The connection happens asynchronously
                     _openFin.ConnectToInteropBroker(_interopBrokerUUID, null);
 
-                    status.Content = "Connected";
-                    ShowMessage("Connected to OpenFin Runtime");
-                    ConnectToBroker.IsEnabled = true;
+                    // Note: Don't set status here - let the events handle it
+                    // The RuntimeConnected event will be fired when connection succeeds
                 }
                 catch (Exception ex)
                 {
                     ConnectToBroker.IsEnabled = false;
                     ShowMessage("Unable to connect to OpenFin Runtime" + Environment.NewLine + ex.Message);
+                    status.Content = "Connection Failed";
                 }
             }
         }
 
-        private async void connect_Click(object sender, RoutedEventArgs e)
+        private async void connect_Click(object sender, EventArgs e)
         {
             try
             {
@@ -98,7 +95,7 @@ namespace interop_intents_v1
             }
             catch (Exception ex)
             {
-                ShowMessage("Error handling runtime disconnection: " + ex.Message);
+                ShowMessage("Error in Runtime_Disconnected: " + ex.Message);
             }
         }
 
@@ -111,7 +108,7 @@ namespace interop_intents_v1
             }
             catch (Exception ex)
             {
-                ShowMessage("Error handling runtime connection: " + ex.Message);
+                ShowMessage("Error in Runtime_Connected: " + ex.Message);
             }
         }
 
@@ -134,13 +131,21 @@ namespace interop_intents_v1
 
         private async void ConnectToBroker_Click(object sender, RoutedEventArgs e)
         {
-            
+            try
+            {
+                // No implementation yet
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Error in ConnectToBroker_Click: " + ex.Message);
+            }
         }
 
         private async void FireIntent_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                // Serialize the JObject to a JSON string to match the expected parameter type
                 ShowMessage("Firing Intent: ViewChart with context: fdc3.instrument MSFT");
                 var context = new JObject { { "type", "fdc3.instrument" }, { "id", new JObject { { "ticker", "MSFT" } } } };
                 // _openFin.FireIntent("ViewChart", context.ToString());
@@ -159,12 +164,13 @@ namespace interop_intents_v1
                 Dispatcher.Invoke(
                     new ThreadStart(
                         () => txtMessages.Text += message + Environment.NewLine
-                    )
+                        )
                 );
             }
-            catch
+            catch (Exception ex)
             {
-                // Avoid recursive error reporting
+                // If ShowMessage fails, write to Debug as fallback
+                Debug.WriteLine("ShowMessage failed: " + ex.Message);
             }
         }
 
@@ -199,10 +205,12 @@ namespace interop_intents_v1
             try
             {
                 ShowMessage("Interop Connected");
+
                 ShowMessage("Request to auto register intent handlers has been sent via the commandline.");
                 RegisterIntent("Instrument");
                 RegisterIntent("Contact");
                 RegisterIntent("Organization");
+
                 ShowMessage("Connected to InteropBroker");
             }
             catch (Exception ex)
@@ -221,7 +229,7 @@ namespace interop_intents_v1
             }
             catch (Exception ex)
             {
-                ShowMessage($"Error registering intent for {contextType}: {ex.Message}");
+                ShowMessage("Error registering intent: " + ex.Message);
             }
         }
 
@@ -252,7 +260,7 @@ namespace interop_intents_v1
             }
             catch (Exception ex)
             {
-                ShowMessage("Error processing received context: " + ex.Message);
+                ShowMessage("Error in OpenFin_InteropContextReceived: " + ex.Message);
             }
         }
 
@@ -294,11 +302,11 @@ namespace interop_intents_v1
                         }
                         ShowMessage($"Received an intent request of type: {intentNameReceived} with context object of type: {contextType} containing value: {contextReceived}");
                     }
-                ));
+                 ));
             }
             catch (Exception ex)
             {
-                ShowMessage("Error processing intent request: " + ex.Message);
+                ShowMessage("Error in OpenFin_IntentRequestReceived: " + ex.Message);
             }
         }
 
@@ -319,7 +327,7 @@ namespace interop_intents_v1
             }
             catch (Exception ex)
             {
-                ShowMessage("Error processing intent result: " + ex.Message);
+                ShowMessage("Error in OpenFin_IntentResultReceived: " + ex.Message);
             }
         }
     }
