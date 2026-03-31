@@ -25,26 +25,33 @@ namespace OpenFin.Interop.Win.Sample
 
         public OpenFinIntegration(string uuid = null)
         {
-
-            if (uuid != null)
+            try
             {
-                DotNetUuid = uuid;
+                if (uuid != null)
+                {
+                    DotNetUuid = uuid;
+                }
+                else
+                {
+                    int count = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length;
+                    DotNetUuid = "interop-winform-sample-" + count;
+                }
+
+                DotNetOptions = new RuntimeOptions()
+                {
+                    UUID = DotNetUuid,
+                    Version = "stable"
+                };
+
+                _runtime = Runtime.GetRuntimeInstance(DotNetOptions);
+
+                _runtime.Disconnected += Runtime_Disconnected;
             }
-            else
+            catch (Exception ex)
             {
-                int count = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length;
-                DotNetUuid = "interop-winform-sample-" + count;
+                Console.WriteLine("Error initializing OpenFinIntegration: " + ex.Message);
+                throw;
             }
-
-            DotNetOptions = new RuntimeOptions()
-            {
-                UUID = DotNetUuid,
-                Version = "stable"
-            };
-
-            _runtime = Runtime.GetRuntimeInstance(DotNetOptions);
-
-            _runtime.Disconnected += Runtime_Disconnected;
         }
 
         public event EventHandler RuntimeConnected;
@@ -57,67 +64,113 @@ namespace OpenFin.Interop.Win.Sample
 
         private async Task<InteropClient> ConnectAsync(string brokerName, object fdc3Payload)
         {
-            if (fdc3Payload != null)
-                return await _runtime.Interop.ConnectAsync(brokerName, fdc3Payload).ConfigureAwait(true);
-            else
-                return await _runtime.Interop.ConnectAsync(brokerName).ConfigureAwait(true);
+            try
+            {
+                if (fdc3Payload != null)
+                    return await _runtime.Interop.ConnectAsync(brokerName, fdc3Payload).ConfigureAwait(true);
+                else
+                    return await _runtime.Interop.ConnectAsync(brokerName).ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in ConnectAsync: " + ex.Message);
+                throw;
+            }
         }
 
         private async Task ConnectInteropClient(string brokerName, object fdc3Payload)
         {
-            _interopClient = await ConnectAsync(brokerName, fdc3Payload);
-            await _interopClient.AddContextHandlerAsync(ctx =>
+            try
             {
-                Console.WriteLine("Interop Context Received!");
-                InteropContextReceived?.Invoke(this, new ContextReceivedEventArgs(ctx));
-            });
-            var contextGroups = await _interopClient.GetContextGroupsAsync();
+                _interopClient = await ConnectAsync(brokerName, fdc3Payload);
+                await _interopClient.AddContextHandlerAsync(ctx =>
+                {
+                    try
+                    {
+                        Console.WriteLine("Interop Context Received!");
+                        InteropContextReceived?.Invoke(this, new ContextReceivedEventArgs(ctx));
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error in context handler: " + ex.Message);
+                    }
+                });
+                var contextGroups = await _interopClient.GetContextGroupsAsync();
 
-            // In the case of EB we may get back results for context groups that do not have any associated metadata such as color, etc. Ignore those.
-            var contextGroupIds = contextGroups.Where(group => group.DisplayMetadata.Color != null).Select(group => group.Id).ToArray();
-            InteropContextGroupsReceived?.Invoke(this, new InteropContextGroupsReceivedEventArgs(contextGroupIds));
-            InteropConnected?.Invoke(this, EventArgs.Empty);
-            _isRuntimeConnected = true;
+                // In the case of EB we may get back results for context groups that do not have any associated metadata such as color, etc. Ignore those.
+                var contextGroupIds = contextGroups.Where(group => group.DisplayMetadata.Color != null).Select(group => group.Id).ToArray();
+                InteropContextGroupsReceived?.Invoke(this, new InteropContextGroupsReceivedEventArgs(contextGroupIds));
+                InteropConnected?.Invoke(this, EventArgs.Empty);
+                _isRuntimeConnected = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in ConnectInteropClient: " + ex.Message);
+                throw;
+            }
         }
 
         public void DisconnectFromRuntime()
         {
-            _runtime.Disconnect(() => { });
-            _isRuntimeConnected = false;
+            try
+            {
+                _runtime.Disconnect(() => { });
+                _isRuntimeConnected = false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error disconnecting from runtime: " + ex.Message);
+            }
         }
 
         private void Runtime_Disconnected(object sender, EventArgs e)
         {
-            RuntimeDisconnected?.Invoke(this, EventArgs.Empty);
+            try
+            {
+                RuntimeDisconnected?.Invoke(this, EventArgs.Empty);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in Runtime_Disconnected event: " + ex.Message);
+            }
         }
 
         private T GetContext<T>(string contextType, string contextValue) where T : ContextBase, new()
         {
-            if (contextType == "Instrument")
+            try
             {
-                var instrumentContext = new Instrument();
-                instrumentContext.Id.Add("ticker", contextValue);
-                return (T)(instrumentContext as ContextBase);
-            }
+                if (contextType == "Instrument")
+                {
+                    var instrumentContext = new Instrument();
+                    instrumentContext.Id.Add("ticker", contextValue);
+                    return (T)(instrumentContext as ContextBase);
+                }
 
-            if (contextType == "Contact")
+                if (contextType == "Contact")
+                {
+                    var contactContext = new Contact();
+                    contactContext.Name = contextValue;
+                    contactContext.Id.Add("email", contextValue);
+                    return (T)(contactContext as ContextBase);
+                }
+
+                if (contextType == "Organization")
+                {
+                    var organizationContext = new Organization();
+                    organizationContext.Name = contextValue;
+                    organizationContext.Id.Add("PERMID", contextValue);
+                    return (T)(organizationContext as ContextBase);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
             {
-                var contactContext = new Contact();
-                contactContext.Name = contextValue;
-                contactContext.Id.Add("email", contextValue);
-                return (T)(contactContext as ContextBase);
+                Console.WriteLine("Error in GetContext: " + ex.Message);
+                return null;
             }
-
-            if (contextType == "Organization")
-            {
-                var organizationContext = new Organization();
-                organizationContext.Name = contextValue;
-                organizationContext.Id.Add("PERMID", contextValue);
-                return (T)(organizationContext as ContextBase);
-            }
-
-            return null;
         }
+
         private async void FireSelectedIntent(Intent intent)
         {
             try
@@ -126,76 +179,112 @@ namespace OpenFin.Interop.Win.Sample
                 var result = await _interopClient.FireIntentAsync(intent);
 
                 IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs(result));
-
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Resolver Timeout - User has likely dismissed the target selection dialog");
+                Console.WriteLine("Resolver Timeout or error - User has likely dismissed the target selection dialog or error occurred: " + ex.Message);
                 IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs());
             }
         }
 
         public void SendBroadcast(string item, string contextType)
         {
-            _interopClient.SetContextAsync(GetContext<ContextBase>(contextType, item));
+            try
+            {
+                _interopClient.SetContextAsync(GetContext<ContextBase>(contextType, item));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in SendBroadcast: " + ex.Message);
+            }
         }
 
         public async void LeaveContextGroup()
         {
-            await _interopClient.RemoveFromContextGroupAsync();
+            try
+            {
+                await _interopClient.RemoveFromContextGroupAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error leaving context group: " + ex.Message);
+            }
         }
 
         public async void ConnectToContextGroup(string contextGroupId)
         {
-            await _interopClient.JoinContextGroupAsync(contextGroupId);
+            try
+            {
+                await _interopClient.JoinContextGroupAsync(contextGroupId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error connecting to context group: " + ex.Message);
+            }
         }
 
         public void ConnectToInteropBroker(string broker, object fdc3Payload = null)
         {
-            // Launch and Connect to the OpenFin Runtime
-            // If already connected, callback executes immediately
-            _runtime.Connect(async () =>
+            try
             {
-                Console.WriteLine("Runtime object connected!");
-                RuntimeConnected?.Invoke(this, EventArgs.Empty);
+                // Launch and Connect to the OpenFin Runtime
+                // If already connected, callback executes immediately
+                _runtime.Connect(async () =>
+                {                    
+                    Console.WriteLine("Runtime object connected!");
+                    RuntimeConnected?.Invoke(this, EventArgs.Empty);
 
-                await ConnectInteropClient(broker, fdc3Payload);
-            });
+                    await ConnectInteropClient(broker, fdc3Payload);
+                   
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error in ConnectToInteropBroker: " + ex.Message);
+            }
         }
 
         public string FireIntent(string contextType, string contextValue)
         {
-            if (contextType == "Instrument")
+            try
             {
-                var viewInstrument = new ViewInstrument
+                if (contextType == "Instrument")
                 {
-                    Context = GetContext<Instrument>(contextType, contextValue)
-                };
-                FireSelectedIntent(viewInstrument);
-                return viewInstrument.Name;
-            }
+                    var viewInstrument = new ViewInstrument
+                    {
+                        Context = GetContext<Instrument>(contextType, contextValue)
+                    };
+                    FireSelectedIntent(viewInstrument);
+                    return viewInstrument.Name;
+                }
 
-            if (contextType == "Contact")
+                if (contextType == "Contact")
+                {
+                    var viewContact = new ViewContact
+                    {
+                        Context = GetContext<Contact>(contextType, contextValue)
+                    };
+                    FireSelectedIntent(viewContact);
+                    return viewContact.Name;
+                }
+
+                if (contextType == "Organization")
+                {
+                    var viewNews = new ViewNews
+                    {
+                        Context = GetContext<Organization>(contextType, contextValue)
+                    };
+                    FireSelectedIntent(viewNews);
+                    return viewNews.Name;
+                }
+
+                return "Unknown";
+            }
+            catch (Exception ex)
             {
-                var viewContact = new ViewContact
-                {
-                    Context = GetContext<Contact>(contextType, contextValue)
-                };
-                FireSelectedIntent(viewContact);
-                return viewContact.Name;
+                Console.WriteLine("Error in FireIntent: " + ex.Message);
+                return "Error";
             }
-
-            if (contextType == "Organization")
-            {
-                var viewNews = new ViewNews
-                {
-                    Context = GetContext<Organization>(contextType, contextValue)
-                };
-                FireSelectedIntent(viewNews);
-                return viewNews.Name;
-            }
-
-            return "Unknown";
         }
 
         public async Task<string> RegisterIntent(string contextType)
@@ -213,7 +302,6 @@ namespace OpenFin.Interop.Win.Sample
                     intentName = "ViewContact";
                     _viewContactRegistered = true;
                 }
-
             }
             if (contextType == "Instrument")
             {
@@ -246,16 +334,16 @@ namespace OpenFin.Interop.Win.Sample
                 {
                     Console.WriteLine("Registering intent for : " + intentName);
                     await _interopClient.RegisterIntentHandlerAsync((passedIntent) =>
-                    {
+                    {                       
                         Console.WriteLine("Intent Received" + passedIntent.Name);
                         IntentRequestReceived?.Invoke(this, new IntentContextReceivedEventArgs(passedIntent.Context, passedIntent.Name));
+                        
                     }, intentName);
                     return intentName + " Intent Handler registered.";
-
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error on intent registration.");
+                    Console.WriteLine("Error on intent registration: " + e.Message);
                     IntentResultReceived?.Invoke(this, new IntentResolutionReceivedEventArgs());
                     return intentName + " Intent Handler could not be registered because of an error: " + e.Message;
                 }
