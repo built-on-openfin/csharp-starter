@@ -25,7 +25,7 @@ namespace CloudInteropOms
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly (string Name, Color Color)[] ContextGroups =
+        internal static readonly (string Name, Color Color)[] ContextGroups =
         {
             ("green", Color.FromRgb(0x00, 0xCC, 0x88)),
             ("purple", Color.FromRgb(0x82, 0x55, 0xFF)),
@@ -35,7 +35,7 @@ namespace CloudInteropOms
             ("yellow", Color.FromRgb(0xE9, 0xFF, 0x8F))
         };
 
-        private readonly AppSettings _settings;
+        private AppSettings _settings;
         private readonly ObservableCollection<Order> _orders;
         private readonly ICollectionView _ordersView;
         private readonly ObservableCollection<LogEntry> _log = new ObservableCollection<LogEntry>();
@@ -52,9 +52,6 @@ namespace CloudInteropOms
             InitializeComponent();
             _settings = settings;
 
-            Title = $"HERE Cloud Interop OMS - {settings.CloudInterop.SourceId}";
-            HeaderText.Text = $"HERE Cloud Interop OMS  |  {settings.CloudInterop.SourceId}";
-
             _orders = new ObservableCollection<Order>(SampleOrders.Create());
             _ordersView = CollectionViewSource.GetDefaultView(_orders);
             _ordersView.Filter = item => _filter == null || _filter((Order)item);
@@ -63,16 +60,57 @@ namespace CloudInteropOms
 
             TicketSide.ItemsSource = Enum.GetValues(typeof(OrderSide));
             TicketSide.SelectedIndex = 0;
-            UsernameBox.Text = settings.Basic.Username;
-            PopulateContextGroups(settings.CloudInterop.DefaultContextGroup);
-
-            BasicRadio.IsChecked = settings.AuthMode == AuthMode.Basic;
-            EntraRadio.IsChecked = settings.AuthMode == AuthMode.Entra;
+            PopulateContextGroups();
+            ApplySettings();
 
             if (!AppSettings.IsConfigured(settings.CloudInterop.Url))
             {
-                Log(LogKind.Error, "Set cloudInterop.url in appsettings.json to the url HERE gave you before connecting.");
+                Log(LogKind.Info, "Click Settings to enter the Cloud Interop url HERE gave you before connecting.");
             }
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // Settings: appsettings.json supplies the defaults, the Settings window can change them
+        // ---------------------------------------------------------------------------------------------
+
+        private void OnSettingsClick(object sender, RoutedEventArgs e)
+        {
+            ShowSettingsWindow();
+        }
+
+        private bool ShowSettingsWindow()
+        {
+            var window = new SettingsWindow(_settings.Clone()) { Owner = this };
+            if (window.ShowDialog() != true || window.Result == null)
+            {
+                return false;
+            }
+
+            _settings = window.Result;
+
+            // The client is created with the url, platform id and source id, so start again with the new ones.
+            DisposeCloudInterop();
+            _entra?.Dispose();
+            _entra = null;
+            UpdateEntraStatus();
+
+            ApplySettings();
+            Log(LogKind.Info, $"Settings saved: {_settings.CloudInterop.Url} as {_settings.CloudInterop.SourceId} on platform {_settings.CloudInterop.PlatformId}");
+            return true;
+        }
+
+        private void ApplySettings()
+        {
+            var options = _settings.CloudInterop;
+            Title = $"HERE Cloud Interop OMS - {options.SourceId}";
+            HeaderText.Text = $"HERE Cloud Interop OMS  |  {options.SourceId}";
+            UsernameBox.Text = _settings.Basic.Username;
+            BasicRadio.IsChecked = _settings.AuthMode == AuthMode.Basic;
+            EntraRadio.IsChecked = _settings.AuthMode == AuthMode.Entra;
+
+            GroupCombo.SelectedItem = GroupCombo.Items.OfType<ComboBoxItem>()
+                .FirstOrDefault(item => string.Equals(item.Tag as string, options.DefaultContextGroup, StringComparison.OrdinalIgnoreCase))
+                ?? GroupCombo.Items[0];
         }
 
         // ---------------------------------------------------------------------------------------------
@@ -107,15 +145,26 @@ namespace CloudInteropOms
                 context => OnUiAsync(() => ShowOrdersForOrganization(context, fromIntent: true)));
         }
 
+        private void DisposeCloudInterop()
+        {
+            _intents?.Dispose();
+            _channel?.Dispose();
+            _connection?.Dispose();
+            _intents = null;
+            _channel = null;
+            _connection = null;
+        }
+
         // ---------------------------------------------------------------------------------------------
         // Connecting: basic authentication or a JWT from Entra ID
         // ---------------------------------------------------------------------------------------------
 
         private async void OnConnectClick(object sender, RoutedEventArgs e)
         {
-            if (!AppSettings.IsConfigured(_settings.CloudInterop.Url))
+            if (!AppSettings.IsConfigured(_settings.CloudInterop.Url)
+                && (!ShowSettingsWindow() || !AppSettings.IsConfigured(_settings.CloudInterop.Url)))
             {
-                Log(LogKind.Error, "Set cloudInterop.url in appsettings.json to the url HERE gave you.");
+                Log(LogKind.Error, "Enter the Cloud Interop url HERE gave you in Settings before connecting.");
                 return;
             }
 
@@ -131,7 +180,7 @@ namespace CloudInteropOms
                 {
                     if (!AppSettings.IsConfigured(_settings.Entra.AuthenticationId))
                     {
-                        throw new InvalidOperationException("Set entra.authenticationId in appsettings.json to the id HERE gave you.");
+                        throw new InvalidOperationException("Enter the Entra authentication id HERE gave you in Settings.");
                     }
 
                     var entra = await SignInToEntraAsync();
@@ -191,7 +240,7 @@ namespace CloudInteropOms
         {
             if (!AppSettings.IsConfigured(_settings.Entra.ClientId))
             {
-                throw new InvalidOperationException("Set entra.clientId in appsettings.json to the client id of your app registration.");
+                throw new InvalidOperationException("Enter the client id of your Entra app registration in Settings.");
             }
 
             _entra ??= new EntraTokenProvider(_settings.Entra, message => OnUi(() => Log(LogKind.Info, message)));
@@ -515,6 +564,7 @@ namespace CloudInteropOms
             DisconnectButton.IsEnabled = connected;
             BasicRadio.IsEnabled = !connected;
             EntraRadio.IsEnabled = !connected;
+            SettingsButton.IsEnabled = !connected;
         }
 
         private void UpdateEntraStatus()
@@ -526,7 +576,7 @@ namespace CloudInteropOms
             SignOutButton.IsEnabled = _entra?.IsSignedIn == true;
         }
 
-        private void PopulateContextGroups(string defaultGroup)
+        private void PopulateContextGroups()
         {
             GroupCombo.Items.Add(new ComboBoxItem { Content = "(none)" });
             foreach (var group in ContextGroups)
@@ -534,18 +584,7 @@ namespace CloudInteropOms
                 var content = new StackPanel { Orientation = Orientation.Horizontal };
                 content.Children.Add(new Ellipse { Width = 10, Height = 10, Fill = new SolidColorBrush(group.Color), Margin = new Thickness(0, 0, 6, 0) });
                 content.Children.Add(new TextBlock { Text = group.Name });
-
-                var item = new ComboBoxItem { Content = content, Tag = group.Name };
-                GroupCombo.Items.Add(item);
-                if (string.Equals(group.Name, defaultGroup, StringComparison.OrdinalIgnoreCase))
-                {
-                    GroupCombo.SelectedItem = item;
-                }
-            }
-
-            if (GroupCombo.SelectedItem == null)
-            {
-                GroupCombo.SelectedIndex = 0;
+                GroupCombo.Items.Add(new ComboBoxItem { Content = content, Tag = group.Name });
             }
         }
 
@@ -578,9 +617,7 @@ namespace CloudInteropOms
 
         protected override void OnClosed(EventArgs e)
         {
-            _intents?.Dispose();
-            _channel?.Dispose();
-            _connection?.Dispose();
+            DisposeCloudInterop();
             _entra?.Dispose();
             base.OnClosed(e);
         }

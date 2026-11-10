@@ -3,14 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using CloudInteropOms.Auth;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace CloudInteropOms
 {
     /// <summary>
-    /// The settings for the sample, read from appsettings.json next to the executable.
+    /// The settings for the sample. appsettings.json next to the executable supplies the defaults,
+    /// the settings saved from the Settings window replace them, and command line arguments win over both.
     /// </summary>
     public sealed class AppSettings
     {
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Converters = { new StringEnumConverter() },
+            ObjectCreationHandling = ObjectCreationHandling.Replace,
+            Formatting = Formatting.Indented
+        };
+
         public AuthMode AuthMode { get; set; } = AuthMode.Basic;
 
         public CloudInteropOptions CloudInterop { get; set; } = new CloudInteropOptions();
@@ -19,16 +30,30 @@ namespace CloudInteropOms
 
         public EntraOptions Entra { get; set; } = new EntraOptions();
 
+        public static string DefaultsPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
+
         /// <summary>
-        /// Load appsettings.json and apply any command line overrides, for example
-        /// <c>--sourceId oms-2 --contextGroup purple</c> so that two instances can run side by side.
+        /// Where the Settings window saves, so that values entered in the UI are remembered between runs.
+        /// </summary>
+        public static string SavedPath => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HERE", "CloudInterop.Oms", "settings.json");
+
+        /// <summary>
+        /// The settings in appsettings.json, ignoring anything saved from the UI.
+        /// </summary>
+        public static AppSettings LoadDefaults()
+        {
+            return Read(DefaultsPath) ?? new AppSettings();
+        }
+
+        /// <summary>
+        /// Load the saved settings (or appsettings.json if nothing has been saved) and apply any command
+        /// line overrides, for example <c>--sourceId oms-2 --contextGroup purple</c> so that two instances
+        /// can run side by side.
         /// </summary>
         public static AppSettings Load(string[] args)
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json");
-            var settings = File.Exists(path)
-                ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(path)) ?? new AppSettings()
-                : new AppSettings();
+            var settings = Read(SavedPath) ?? LoadDefaults();
 
             for (var i = 0; i < args.Length - 1; i++)
             {
@@ -51,6 +76,27 @@ namespace CloudInteropOms
             }
 
             return settings;
+        }
+
+        /// <summary>
+        /// Save these settings for the next run. The password is never part of the settings.
+        /// </summary>
+        public void Save()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(SavedPath)!);
+            File.WriteAllText(SavedPath, JsonConvert.SerializeObject(this, JsonSettings));
+        }
+
+        public AppSettings Clone()
+        {
+            return JsonConvert.DeserializeObject<AppSettings>(JsonConvert.SerializeObject(this, JsonSettings), JsonSettings)!;
+        }
+
+        private static AppSettings? Read(string path)
+        {
+            return File.Exists(path)
+                ? JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(path), JsonSettings)
+                : null;
         }
 
         /// <summary>

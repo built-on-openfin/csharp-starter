@@ -38,7 +38,7 @@ Cloud Interop is a hosted service, so you need the following from HERE:
 | [CloudInterop/IntentService.cs](./CloudInterop.Oms/CloudInterop/IntentService.cs) | Raises intents (discover, raise, await the result) and handles the intents this app supports. |
 | [CloudInterop/Fdc3.cs](./CloudInterop.Oms/CloudInterop/Fdc3.cs) | Builds and reads `fdc3.instrument`, `fdc3.contact`, `fdc3.organization` and `fdc3.order` contexts. |
 | [Auth/EntraTokenProvider.cs](./CloudInterop.Oms/Auth/EntraTokenProvider.cs) | Signs in to Entra ID with MSAL.NET and supplies the ID token to Cloud Interop. |
-| [Settings.cs](./CloudInterop.Oms/Settings.cs) and [appsettings.json](./CloudInterop.Oms/appsettings.json) | Configuration and command line overrides. |
+| [Settings.cs](./CloudInterop.Oms/Settings.cs), [appsettings.json](./CloudInterop.Oms/appsettings.json) and [SettingsWindow.xaml.cs](./CloudInterop.Oms/SettingsWindow.xaml.cs) | Default settings, the Settings window that edits and saves them, and command line overrides. |
 | [MainWindow.xaml.cs](./CloudInterop.Oms/MainWindow.xaml.cs) | The OMS window, which wires the classes above to the UI. |
 
 ```mermaid
@@ -280,7 +280,7 @@ HERE validates the token against the `iss`, `aud` and `jwks_uri` you register wi
 Entra ID token acquired for jane@contoso.com: iss=https://login.microsoftonline.com/<tid>/v2.0, aud=<client id>, tid=<tid>, jwks_uri=https://login.microsoftonline.com/<tid>/discovery/v2.0/keys
 ```
 
-Send those to HERE, and put the `authenticationId` they give you back into `appsettings.json`.
+Send those to HERE, and enter the `authenticationId` they give you back in **Settings**.
 
 > **_:warning: This is an example, not a production auth design:_** review it against your own app registration, Conditional Access policies and security requirements before using anything like it in production. Keep configuration out of source control and never commit a token, password or secret.
 
@@ -288,7 +288,24 @@ Send those to HERE, and put the `authenticationId` they give you back into `apps
 
 ### Configure
 
-Edit [CloudInterop.Oms/appsettings.json](./CloudInterop.Oms/appsettings.json). Values still wrapped in angle brackets are treated as not configured.
+You don't have to edit any files. Click **Settings...** in the window, or click **Connect** before a url is set, and enter:
+
+- the service url, platform id and source id
+- the default context group and authentication mode
+- the username
+- the Entra ID client id, tenant id, authentication id, scopes, login hint, and whether to use WAM
+
+![The Settings window](settings.png)
+
+**Save** stores the values for your user in `%LOCALAPPDATA%\HERE\CloudInterop.Oms\settings.json`, and the app loads them on every run. The password is typed into the main window and never saved. Settings can't be changed while connected, and saving them starts a fresh client with the new values.
+
+The values in [CloudInterop.Oms/appsettings.json](./CloudInterop.Oms/appsettings.json) are the defaults. The app uses them until you save from the Settings window, and **Reset to appsettings.json** puts them back in the form. Values still wrapped in angle brackets are treated as not configured.
+
+Settings are applied in this order, and later ones win:
+
+1. `appsettings.json`
+2. the settings saved from the Settings window
+3. command line arguments
 
 ```json
 {
@@ -309,8 +326,6 @@ Edit [CloudInterop.Oms/appsettings.json](./CloudInterop.Oms/appsettings.json). V
   }
 }
 ```
-
-The password is typed into the window and never stored.
 
 ### Build
 
