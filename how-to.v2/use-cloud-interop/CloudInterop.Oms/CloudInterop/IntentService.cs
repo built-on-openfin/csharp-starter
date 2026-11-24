@@ -66,10 +66,17 @@ namespace CloudInteropOms.CloudInterop
             _appTitle = appTitle;
 
             _api.AggregateIntentDetails += OnAggregateIntentDetails;
+            _api.IntentDetails += OnIntentDetails;
             _api.IntentResult += OnIntentResult;
             _api.ReportIntents += OnReportIntents;
             _api.RaiseIntent += OnRaiseIntent;
         }
+
+        /// <summary>
+        /// A step by step description of what the service is doing (registering handlers, discovery,
+        /// raising, results and incoming requests), for showing in a log while learning or debugging.
+        /// </summary>
+        public event EventHandler<string>? Trace;
 
         /// <summary>
         /// Raised when the handling side fails, for example when a report or a result cannot be sent.
@@ -90,7 +97,9 @@ namespace CloudInteropOms.CloudInterop
         /// </summary>
         public void AddIntentHandler(string intent, string displayName, IEnumerable<string> contextTypes, Func<Context, Task<Context?>> handler)
         {
-            _handlers[intent] = new IntentHandler(intent, displayName, contextTypes.ToList(), handler);
+            var registration = new IntentHandler(intent, displayName, contextTypes.ToList(), handler);
+            _handlers[intent] = registration;
+            OnTrace($"Registered handler for {intent} ({string.Join(", ", registration.ContextTypes)}) as app {_appId}");
         }
 
         /// <summary>
@@ -108,17 +117,30 @@ namespace CloudInteropOms.CloudInterop
                 _pendingDiscovery = discovery;
 
                 var findOptions = new FindIntentOptions.FindByIntent(intent, context);
+                var started = DateTime.UtcNow;
+                OnTrace($"Discovery started for {intent} with {context?.Type ?? "no context"} (timeout {DiscoveryTimeoutMs} ms)");
                 await _api.StartIntentDiscoveryAsync(new StartIntentDiscoveryOptions(findOptions, DiscoveryTimeoutMs), cancellationToken).ConfigureAwait(false);
 
                 // The aggregate event fires once every session has answered or the timeout is reached.
                 var aggregate = await discovery.Task.ConfigureAwait(false);
 
-                return aggregate.Responses
+                var apps = aggregate.Responses
                     .SelectMany(response => response.Intents ?? new List<AppIntent>())
                     .Where(appIntent => string.Equals(appIntent.Intent?.Name, intent, StringComparison.OrdinalIgnoreCase))
                     .SelectMany(appIntent => appIntent.Apps ?? new List<AppIntent.AppMetadata>())
                     .Where(app => !string.IsNullOrEmpty(app.AppId))
                     .ToList();
+
+                // Finishing almost immediately with no answers means the service said no other session was
+                // part of the discovery, so nobody was asked.
+                var elapsedMs = (int)(DateTime.UtcNow - started).TotalMilliseconds;
+                var hint = aggregate.Responses.Count == 0 && elapsedMs < DiscoveryTimeoutMs / 2
+                    ? " - finished at once, so the service did not ask any other session"
+                    : "";
+                OnTrace($"Discovery finished for {intent} after {elapsedMs} ms: {aggregate.Responses.Count} answer(s), " +
+                        $"{apps.Count} app(s){(apps.Count > 0 ? ": " + string.Join(", ", apps.Select(app => app.AppId)) : "")}{hint}");
+
+                return apps;
             }
             finally
             {
@@ -151,6 +173,7 @@ namespace CloudInteropOms.CloudInterop
             // The app id from discovery is a cloud app id: appId::sourceId::sessionId. The session part is
             // how the result is matched back to this request.
             var targetSessionId = AppIdUtils.ParseCloudAppId(app.AppId).SessionId;
+            OnTrace($"Raising {intent} at {app.AppId} (session {targetSessionId}) with {Fdc3.Describe(context)}");
             var pendingResult = new TaskCompletionSource<IntentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
             _pendingResults[targetSessionId] = pendingResult;
 
@@ -163,6 +186,7 @@ namespace CloudInteropOms.CloudInterop
                 if (completed != pendingResult.Task)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
+                    OnTrace($"No result for {intent} from session {targetSessionId} within {ResultTimeout.TotalSeconds:0} s");
                     throw new TimeoutException($"{app.Title ?? app.AppId} did not return a result for {intent}.");
                 }
 
@@ -183,6 +207,7 @@ namespace CloudInteropOms.CloudInterop
         public void Dispose()
         {
             _api.AggregateIntentDetails -= OnAggregateIntentDetails;
+            _api.IntentDetails -= OnIntentDetails;
             _api.IntentResult -= OnIntentResult;
             _api.ReportIntents -= OnReportIntents;
             _api.RaiseIntent -= OnRaiseIntent;
@@ -193,16 +218,38 @@ namespace CloudInteropOms.CloudInterop
             _pendingDiscovery?.TrySetResult(e);
         }
 
+        /// <summary>
+        /// One session's answer to our discovery. They are also collected into the aggregate event.
+        /// </summary>
+        private void OnIntentDetails(object? sender, IntentDetailsEvent e)
+        {
+            var reported = (e.Intents ?? new List<AppIntent>())
+                .Select(appIntent => $"{appIntent.Intent?.Name} by {string.Join(", ", (appIntent.Apps ?? new List<AppIntent.AppMetadata>()).Select(app => app.AppId))}")
+                .ToList();
+
+            OnTrace($"Discovery answer from {DescribeSource(e.Source)}: " +
+                    (reported.Count == 0 ? "handles nothing" : string.Join("; ", reported)));
+        }
+
         private void OnIntentResult(object? sender, IntentResultEvent e)
         {
             var handlingSessionId = e.Source?.SessionId
                 ?? AppIdUtils.ParseCloudAppId(e.Result?.Source as string).SessionId;
 
+            var outcome = e.Result == null ? "no result"
+                : e.Result.IsError ? $"error {e.Result.Error}"
+                : Fdc3.Describe(e.Result.GetResult);
+
             if (handlingSessionId != null
                 && e.Result != null
                 && _pendingResults.TryGetValue(handlingSessionId, out var pendingResult))
             {
+                OnTrace($"Result for {e.Result.Intent} from {DescribeSource(e.Source)}: {outcome}");
                 pendingResult.TrySetResult(e.Result);
+            }
+            else
+            {
+                OnTrace($"Ignored a result from {DescribeSource(e.Source)} that matches no pending intent: {outcome}");
             }
         }
 
@@ -219,12 +266,21 @@ namespace CloudInteropOms.CloudInterop
 
             try
             {
+                var find = e.FindOptions;
+                OnTrace($"Discovery request from {DescribeSource(e.Source)} ({find?.Type}) for " +
+                        $"{(string.IsNullOrEmpty(find?.Intent) ? "any intent" : find!.Intent)} with {find?.Context?.Type ?? "no context"} " +
+                        $"({e.SessionCount} session(s) in the discovery)");
+
                 var appIntents = _handlers.Values
                     .Where(handler => handler.Matches(e.FindOptions))
                     .Select(handler => handler.ToAppIntent(_appId, _appTitle))
                     .ToList();
 
                 await _api.ReportAppIntentsAsync(e.DiscoveryId, appIntents).ConfigureAwait(false);
+
+                OnTrace(appIntents.Count == 0
+                    ? $"Reported no matching intents (registered: {string.Join(", ", _handlers.Keys)})"
+                    : $"Reported {string.Join(", ", appIntents.Select(appIntent => appIntent.Intent?.Name))} as app {_appId}");
             }
             catch (Exception ex)
             {
@@ -248,33 +304,55 @@ namespace CloudInteropOms.CloudInterop
                 IntentReceived?.Invoke(this, e);
 
                 var options = e.RaiseOptions;
+                OnTrace($"Intent request from {DescribeSource(e.Source)} ({options?.Type}): " +
+                        $"{options?.Intent ?? "by context"} with {Fdc3.Describe(options?.Context)}");
+
                 var handler = options?.Intent != null
                     ? (_handlers.TryGetValue(options.Intent, out var byName) ? byName : null)
                     : _handlers.Values.FirstOrDefault(candidate => candidate.HandlesContext(options?.Context?.Type));
 
                 if (handler == null || options?.Context == null)
                 {
+                    OnTrace($"No handler for {options?.Intent ?? options?.Context?.Type} (registered: {string.Join(", ", _handlers.Keys)})");
                     result = IntentResult.OfError("NoAppsFound");
                 }
                 else
                 {
                     var returned = await handler.Handler(options.Context).ConfigureAwait(false);
+                    OnTrace($"Handler for {handler.Intent} returned {(returned == null ? "no result" : Fdc3.Describe(returned))}");
                     result = IntentResult.OfResolution(handler.Intent, _appId, null, returned);
                 }
             }
             catch (Exception ex)
             {
+                OnTrace($"Handler failed: {ex.Message}");
                 result = IntentResult.OfError(ex.Message);
             }
 
             try
             {
                 await _api.SendIntentResultAsync(e.InitiatingSessionId, result).ConfigureAwait(false);
+                OnTrace($"Sent {(result.IsError ? "error " + result.Error : "result")} back to session {e.InitiatingSessionId}");
             }
             catch (Exception ex)
             {
                 Error?.Invoke(this, ex);
             }
+        }
+
+        private void OnTrace(string message)
+        {
+            Trace?.Invoke(this, message);
+        }
+
+        /// <summary>
+        /// Who a message came from, including the user and organization the service assigned to the session.
+        /// </summary>
+        private static string DescribeSource(Source? source)
+        {
+            return source == null
+                ? "an unknown session"
+                : $"{source.SourceId} (session {source.SessionId}, user {source.UserId}, org {source.OrgId})";
         }
 
         private sealed class IntentHandler

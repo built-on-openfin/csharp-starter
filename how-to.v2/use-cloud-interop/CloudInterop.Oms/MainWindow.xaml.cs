@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -102,8 +104,8 @@ namespace CloudInteropOms
         private void ApplySettings()
         {
             var options = _settings.CloudInterop;
-            Title = $"HERE Cloud Interop OMS - {options.SourceId}";
-            HeaderText.Text = $"HERE Cloud Interop OMS  |  {options.SourceId}";
+            Title = $"HERE Cloud Interop OMS - {options.SourceId} [nolocal-off-1]";
+            HeaderText.Text = $"HERE Cloud Interop OMS  |  {options.SourceId}  [nolocal-off-1]";
             UsernameBox.Text = _settings.Basic.Username;
             BasicRadio.IsChecked = _settings.AuthMode == AuthMode.Basic;
             EntraRadio.IsChecked = _settings.AuthMode == AuthMode.Entra;
@@ -131,9 +133,12 @@ namespace CloudInteropOms
 
             _channel = new ContextChannel(_connection.Api);
             _channel.ContextReceived += (_, e) => OnUi(() => OnContextReceived(e));
+            _channel.ContextIgnored += (_, e) => OnUi(() => Log(LogKind.Info,
+                $"Ignored context on group '{e.ContextGroup}' (joined '{_channel?.CurrentGroup}') from {e.Source?.SourceId}: {Fdc3.Describe(e.Context)}"));
 
             _intents = new IntentService(_connection.Api, options.SourceId, $"HERE .NET OMS ({options.SourceId})");
             _intents.Error += (_, error) => OnUi(() => Log(LogKind.Error, error.Message));
+            _intents.Trace += (_, message) => OnUi(() => Log(LogKind.Intent, message));
             _intents.IntentReceived += (_, e) => OnUi(() =>
                 Log(LogKind.Received, $"Intent {e.RaiseOptions?.Intent} from {e.Source?.SourceId}: {Fdc3.Describe(e.RaiseOptions?.Context)}"));
 
@@ -186,6 +191,26 @@ namespace CloudInteropOms
                     var entra = await SignInToEntraAsync();
                     await _connection!.ConnectWithJwtAsync(entra.GetToken, _settings.Entra.AuthenticationId);
                 }
+
+                // How the service identified this session. Intent discovery and context are scoped by these.
+                var session = _connection.Api.SessionDetails;
+                Log(LogKind.Info, $"Session {session?.SessionId}: user (sub) {session?.Sub}, org {session?.OrgId}, " +
+                                  $"source {session?.SourceId}, platform {session?.PlatformId}, topic root {session?.SessionRootTopic}");
+                // #region agent log
+                AgentDebug.Log("C", "MainWindow.OnConnectClick", "connected", new
+                {
+                    session = session?.SessionId,
+                    sub = session?.Sub,
+                    org = session?.OrgId,
+                    source = session?.SourceId,
+                    platform = session?.PlatformId,
+                    topicRoot = session?.SessionRootTopic
+                });
+                if (_channel != null)
+                {
+                    await _channel.AttachMqttProbe();
+                }
+                // #endregion
 
                 JoinSelectedGroup();
             }
@@ -320,6 +345,14 @@ namespace CloudInteropOms
         {
             if (_channel?.CurrentGroup == null || _connection?.IsConnected != true)
             {
+                // #region agent log
+                AgentDebug.Log("D", "MainWindow.BroadcastAsync", "broadcast skipped", new
+                {
+                    group = _channel?.CurrentGroup,
+                    connected = _connection?.IsConnected == true,
+                    type = context.Type
+                });
+                // #endregion
                 Log(LogKind.Info, $"Not broadcast (connect and join a context group first): {Fdc3.Describe(context)}");
                 return;
             }
@@ -327,10 +360,26 @@ namespace CloudInteropOms
             try
             {
                 await _channel.BroadcastAsync(context);
+                // #region agent log
+                AgentDebug.Log("C", "MainWindow.BroadcastAsync", "broadcast accepted", new
+                {
+                    group = _channel.CurrentGroup,
+                    type = context.Type,
+                    session = _connection.SessionId
+                });
+                // #endregion
                 Log(LogKind.Sent, $"{_channel.CurrentGroup}: {Fdc3.Describe(context)}");
             }
             catch (Exception ex)
             {
+                // #region agent log
+                AgentDebug.Log("C", "MainWindow.BroadcastAsync", "broadcast failed", new
+                {
+                    group = _channel.CurrentGroup,
+                    type = context.Type,
+                    error = DescribeError(ex)
+                });
+                // #endregion
                 Log(LogKind.Error, $"Broadcast failed: {DescribeError(ex)}");
             }
         }
@@ -338,7 +387,18 @@ namespace CloudInteropOms
         private void OnContextReceived(ContextEvent e)
         {
             var context = e.Context!;
-            Log(LogKind.Received, $"{e.ContextGroup} from {e.Source?.SourceId}: {Fdc3.Describe(context)}");
+            // #region agent log
+            AgentDebug.Log("B", "MainWindow.OnContextReceived", "ui received context", new
+            {
+                group = e.ContextGroup,
+                type = context.Type,
+                ticker = Fdc3.GetId(context, "ticker"),
+                source = e.Source?.SourceId,
+                sourceSession = e.Source?.SessionId,
+                ownSession = _connection?.SessionId
+            });
+            // #endregion
+            Log(LogKind.Received, $"{e.ContextGroup} from {e.Source?.SourceId} (user {e.Source?.UserId}, org {e.Source?.OrgId}): {Fdc3.Describe(context)}");
             LastContextText.Text = $"{Fdc3.Describe(context)}\nfrom {e.Source?.SourceId} ({e.Source?.PlatformId}) on {e.ContextGroup}";
 
             if (Fdc3.IsType(context, Fdc3.ContextTypes.Instrument))
@@ -594,6 +654,48 @@ namespace CloudInteropOms
             if (_log.Count > 500)
             {
                 _log.RemoveAt(_log.Count - 1);
+            }
+        }
+
+        private void OnCopyLogCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = LogList.SelectedItems.Count > 0;
+        }
+
+        private void OnCopyLogExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            CopyLog(LogList.SelectedItems.Cast<LogEntry>());
+        }
+
+        private void OnCopyAllLogClick(object sender, RoutedEventArgs e)
+        {
+            CopyLog(_log);
+        }
+
+        private void OnClearLogClick(object sender, RoutedEventArgs e)
+        {
+            _log.Clear();
+        }
+
+        /// <summary>
+        /// Copies entries oldest first, the order they happened in.
+        /// </summary>
+        private void CopyLog(IEnumerable<LogEntry> entries)
+        {
+            var lines = entries.OrderBy(entry => entry.Time).Select(entry => entry.ToString()).ToList();
+            if (lines.Count == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                Clipboard.SetText(string.Join(Environment.NewLine, lines));
+            }
+            catch (Exception ex)
+            {
+                // Another process can hold the clipboard open.
+                Log(LogKind.Error, $"Copy failed: {ex.Message}");
             }
         }
 
