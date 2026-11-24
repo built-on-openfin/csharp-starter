@@ -302,7 +302,15 @@ namespace CloudInteropOms
                 throw new InvalidOperationException("Enter the client id of your Entra app registration in Settings.");
             }
 
-            _entra ??= new EntraTokenProvider(_settings.Entra, message => OnUi(() => Log(LogKind.Info, message)));
+            if (_entra == null)
+            {
+                _entra = new EntraTokenProvider(_settings.Entra, message => OnUi(() => Log(LogKind.Info, message)));
+                _entra.TokenStateChanged += (_, _) => OnUi(() =>
+                {
+                    UpdateEntraStatus();
+                    UpdateButtons();
+                });
+            }
 
             if (forceSignIn || !_entra.IsSignedIn || _entra.IsTokenExpired)
             {
@@ -537,6 +545,11 @@ namespace CloudInteropOms
 
             if (fromIntent)
             {
+                if (WindowState == WindowState.Minimized)
+                {
+                    WindowState = WindowState.Normal;
+                }
+
                 Activate();
             }
 

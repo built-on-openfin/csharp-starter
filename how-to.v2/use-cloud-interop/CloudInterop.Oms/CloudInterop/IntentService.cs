@@ -39,6 +39,7 @@ namespace CloudInteropOms.CloudInterop
         private TaskCompletionSource<AggregateIntentDetailsEvent>? _pendingDiscovery;
         private TaskCompletionSource<IntentResult>? _pendingResult;
         private string? _pendingResultSessionId;
+        private string? _pendingResultIntent;
         private volatile bool _disposed;
 
         /// <param name="api">The client, connected or not yet connected.</param>
@@ -120,6 +121,7 @@ namespace CloudInteropOms.CloudInterop
                 var pendingResult = new TaskCompletionSource<IntentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
                 _pendingResult = pendingResult;
                 _pendingResultSessionId = AppIdUtils.ParseCloudAppId(app.AppId).SessionId;
+                _pendingResultIntent = intent;
                 var raise = new RaiseIntentOptions.RaiseByIntent(intent, context);
                 await _api.RaiseIntentAsync(new RaiseIntentAPIOptions(raise, app.AppId!), linked.Token).ConfigureAwait(false);
 
@@ -153,6 +155,7 @@ namespace CloudInteropOms.CloudInterop
                 _pendingDiscovery = null;
                 _pendingResult = null;
                 _pendingResultSessionId = null;
+                _pendingResultIntent = null;
                 _raiseLock.Release();
             }
         }
@@ -188,8 +191,17 @@ namespace CloudInteropOms.CloudInterop
         /// </summary>
         private void OnIntentResult(object? sender, IntentResultEvent e)
         {
-            var fromSessionId = e.Source?.SessionId ?? AppIdUtils.ParseCloudAppId(e.Result?.Source as string).SessionId;
-            if (e.Result != null && fromSessionId == _pendingResultSessionId)
+            if (e.Result == null)
+            {
+                return;
+            }
+
+            // The Cloud Interop protocol has no per-raise request id, so match both the target session and intent name.
+            var fromSessionId = e.Source?.SessionId ?? AppIdUtils.ParseCloudAppId(e.Result.Source as string).SessionId;
+            var intentMatches = e.Result.IsError
+                || string.Equals(e.Result.Intent, _pendingResultIntent, StringComparison.OrdinalIgnoreCase);
+
+            if (fromSessionId == _pendingResultSessionId && intentMatches)
             {
                 _pendingResult?.TrySetResult(e.Result);
             }

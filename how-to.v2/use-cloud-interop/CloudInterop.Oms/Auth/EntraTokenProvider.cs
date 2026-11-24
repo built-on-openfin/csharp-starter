@@ -108,6 +108,11 @@ namespace CloudInteropOms.Auth
         public EntraTokenDetails? TokenDetails { get; private set; }
 
         /// <summary>
+        /// Raised on a background thread when a token is refreshed or expires after a failed refresh.
+        /// </summary>
+        public event EventHandler? TokenStateChanged;
+
+        /// <summary>
         /// The <c>jwtRequestCallback</c> for Cloud Interop: the cached raw ID token (header.payload.signature).
         /// </summary>
         public string GetToken()
@@ -234,6 +239,7 @@ namespace CloudInteropOms.Auth
             }
 
             _log($"Entra ID token acquired for {result.Account?.Username}: {details}");
+            TokenStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ScheduleRefresh(DateTimeOffset expiresAt, int generation)
@@ -243,6 +249,24 @@ namespace CloudInteropOms.Auth
 
             StopRefreshTimer();
             _refreshTimer = new Timer(_ => { _ = RefreshAsync(generation); }, null, dueIn, Timeout.InfiniteTimeSpan);
+        }
+
+        private void ScheduleExpiryNotification(DateTimeOffset expiresAt, int generation)
+        {
+            var dueIn = expiresAt - DateTimeOffset.UtcNow;
+            StopRefreshTimer();
+            _refreshTimer = new Timer(_ =>
+            {
+                lock (_gate)
+                {
+                    if (_disposed || generation != _generation)
+                    {
+                        return;
+                    }
+                }
+
+                TokenStateChanged?.Invoke(this, EventArgs.Empty);
+            }, null, dueIn > TimeSpan.Zero ? dueIn : TimeSpan.Zero, Timeout.InfiniteTimeSpan);
         }
 
         /// <summary>
@@ -278,6 +302,11 @@ namespace CloudInteropOms.Auth
                     if (_disposed || generation != _generation)
                     {
                         return;
+                    }
+
+                    if (_expiresAt.HasValue)
+                    {
+                        ScheduleExpiryNotification(_expiresAt.Value, generation);
                     }
                 }
 
