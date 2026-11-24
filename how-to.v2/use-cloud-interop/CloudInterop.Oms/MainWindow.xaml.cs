@@ -46,6 +46,7 @@ namespace CloudInteropOms
         private EntraTokenProvider? _entra;
         private Predicate<Order>? _filter;
         private bool _suppressBroadcast;
+        private bool _isBusy;
 
         public MainWindow(AppSettings settings)
         {
@@ -108,9 +109,20 @@ namespace CloudInteropOms
             BasicRadio.IsChecked = _settings.AuthMode == AuthMode.Basic;
             EntraRadio.IsChecked = _settings.AuthMode == AuthMode.Entra;
 
-            GroupCombo.SelectedItem = GroupCombo.Items.OfType<ComboBoxItem>()
-                .FirstOrDefault(item => string.Equals(item.Tag as string, options.DefaultContextGroup, StringComparison.OrdinalIgnoreCase))
-                ?? GroupCombo.Items[0];
+            var configuredGroup = options.DefaultContextGroup?.Trim();
+            ComboBoxItem? match = null;
+            if (!string.IsNullOrEmpty(configuredGroup))
+            {
+                match = GroupCombo.Items.OfType<ComboBoxItem>()
+                    .FirstOrDefault(item => string.Equals(item.Tag as string, configuredGroup, StringComparison.OrdinalIgnoreCase));
+                if (match == null)
+                {
+                    match = new ComboBoxItem { Content = configuredGroup, Tag = configuredGroup };
+                    GroupCombo.Items.Add(match);
+                }
+            }
+
+            GroupCombo.SelectedItem = match ?? GroupCombo.Items[0];
         }
 
         // ---------------------------------------------------------------------------------------------
@@ -168,6 +180,11 @@ namespace CloudInteropOms
 
         private async void OnConnectClick(object sender, RoutedEventArgs e)
         {
+            if (_isBusy)
+            {
+                return;
+            }
+
             if (!AppSettings.IsConfigured(_settings.CloudInterop.Url)
                 && (!ShowSettingsWindow() || !AppSettings.IsConfigured(_settings.CloudInterop.Url)))
             {
@@ -177,7 +194,8 @@ namespace CloudInteropOms
 
             EnsureCloudInterop();
             JoinSelectedGroup();
-            ConnectButton.IsEnabled = false;
+            _isBusy = true;
+            UpdateButtons();
             try
             {
                 if (BasicRadio.IsChecked == true)
@@ -201,48 +219,83 @@ namespace CloudInteropOms
             }
             finally
             {
+                _isBusy = false;
                 UpdateButtons();
             }
         }
 
         private async void OnDisconnectClick(object sender, RoutedEventArgs e)
         {
-            if (_connection != null)
+            if (_isBusy || _connection == null)
+            {
+                return;
+            }
+
+            _isBusy = true;
+            UpdateButtons();
+            try
             {
                 await _connection.DisconnectAsync();
+            }
+            finally
+            {
+                _isBusy = false;
+                UpdateButtons();
             }
         }
 
         private async void OnSignInClick(object sender, RoutedEventArgs e)
         {
+            if (_isBusy)
+            {
+                return;
+            }
+
+            _isBusy = true;
+            UpdateButtons();
             try
             {
-                await SignInToEntraAsync();
+                await SignInToEntraAsync(forceSignIn: true);
             }
             catch (Exception ex)
             {
                 Log(LogKind.Error, $"Entra sign in failed: {ex.Message}");
             }
+            finally
+            {
+                _isBusy = false;
+                UpdateButtons();
+            }
         }
 
         private async void OnSignOutClick(object sender, RoutedEventArgs e)
         {
-            if (_entra == null)
+            if (_isBusy || _entra == null)
             {
                 return;
             }
 
-            if (_connection?.IsConnected == true && EntraRadio.IsChecked == true)
+            _isBusy = true;
+            UpdateButtons();
+            try
             {
-                await _connection.DisconnectAsync();
-            }
+                if (_connection?.IsConnected == true && EntraRadio.IsChecked == true)
+                {
+                    await _connection.DisconnectAsync();
+                }
 
-            await _entra.SignOutAsync();
-            Log(LogKind.Info, "Signed out of Entra ID");
-            UpdateEntraStatus();
+                await _entra.SignOutAsync();
+                Log(LogKind.Info, "Signed out of Entra ID");
+            }
+            finally
+            {
+                _isBusy = false;
+                UpdateEntraStatus();
+                UpdateButtons();
+            }
         }
 
-        private async Task<EntraTokenProvider> SignInToEntraAsync()
+        private async Task<EntraTokenProvider> SignInToEntraAsync(bool forceSignIn = false)
         {
             if (!AppSettings.IsConfigured(_settings.Entra.ClientId))
             {
@@ -251,7 +304,7 @@ namespace CloudInteropOms
 
             _entra ??= new EntraTokenProvider(_settings.Entra, message => OnUi(() => Log(LogKind.Info, message)));
 
-            if (!_entra.IsSignedIn)
+            if (forceSignIn || !_entra.IsSignedIn || _entra.IsTokenExpired)
             {
                 Log(LogKind.Info, "Signing in to Entra ID...");
                 await _entra.SignInAsync(new WindowInteropHelper(this).Handle);
@@ -565,20 +618,28 @@ namespace CloudInteropOms
         private void UpdateButtons()
         {
             var connected = _connection?.IsConnected == true;
-            ConnectButton.IsEnabled = !connected;
-            DisconnectButton.IsEnabled = connected;
-            BasicRadio.IsEnabled = !connected;
-            EntraRadio.IsEnabled = !connected;
-            SettingsButton.IsEnabled = !connected;
+            var signedIn = _entra?.IsSignedIn == true;
+            var hasValidToken = signedIn && !_entra!.IsTokenExpired;
+            ConnectButton.IsEnabled = !_isBusy && !connected;
+            DisconnectButton.IsEnabled = !_isBusy && connected;
+            BasicRadio.IsEnabled = !_isBusy && !connected;
+            EntraRadio.IsEnabled = !_isBusy && !connected;
+            UsernameBox.IsEnabled = !_isBusy && !connected;
+            PasswordBox.IsEnabled = !_isBusy && !connected;
+            SettingsButton.IsEnabled = !_isBusy && !connected;
+            SignInButton.IsEnabled = !_isBusy && !hasValidToken;
+            SignOutButton.IsEnabled = !_isBusy && signedIn;
         }
 
         private void UpdateEntraStatus()
         {
+            var signedIn = _entra?.IsSignedIn == true;
             var details = _entra?.TokenDetails;
-            EntraAccountText.Text = _entra?.IsSignedIn == true
-                ? $"{_entra.AccountName}  (iss {details?.Issuer}, aud {details?.Audience})"
+            EntraAccountText.Text = signedIn
+                ? $"{_entra!.AccountName}  (iss {details?.Issuer}, aud {details?.Audience})"
                 : "Not signed in";
-            SignOutButton.IsEnabled = _entra?.IsSignedIn == true;
+            SignInButton.IsEnabled = !_isBusy && !(signedIn && !_entra!.IsTokenExpired);
+            SignOutButton.IsEnabled = !_isBusy && signedIn;
         }
 
         private void PopulateContextGroups()

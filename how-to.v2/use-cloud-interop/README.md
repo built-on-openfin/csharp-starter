@@ -297,7 +297,7 @@ You don't have to edit any files. Click **Settings...** in the window, or click 
 
 ![The Settings window](settings.png)
 
-**Save** stores the values for your user in `%LOCALAPPDATA%\HERE\CloudInterop.Oms\settings.json`, and the app loads them on every run. The password is typed into the main window and never saved. Settings can't be changed while connected, and saving them starts a fresh client with the new values.
+**Save** stores the values for your user in `%LOCALAPPDATA%\HERE\Samples\CSharp\CloudInterop.Oms\settings.json`, and the app loads them on every run. The password is typed into the main window and never saved. Settings can't be changed while connected, and saving them starts a fresh client with the new values.
 
 The values in [CloudInterop.Oms/appsettings.json](./CloudInterop.Oms/appsettings.json) are the defaults. The app uses them until you save from the Settings window, and **Reset to appsettings.json** puts them back in the form. Values still wrapped in angle brackets are treated as not configured.
 

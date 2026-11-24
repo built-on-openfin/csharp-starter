@@ -52,9 +52,13 @@ namespace CloudInteropOms.Auth
         private readonly string[] _scopes;
         private readonly IPublicClientApplication _msal;
         private readonly Action<string> _log;
+        private readonly object _gate = new object();
         private volatile string _idToken = "";
         private IAccount? _account;
+        private DateTimeOffset? _expiresAt;
         private Timer? _refreshTimer;
+        private int _generation;
+        private bool _disposed;
 
         public EntraTokenProvider(EntraOptions options, Action<string> log)
         {
@@ -79,7 +83,27 @@ namespace CloudInteropOms.Auth
 
         public bool IsSignedIn => _idToken.Length > 0;
 
-        public string? AccountName => _account?.Username;
+        public bool IsTokenExpired
+        {
+            get
+            {
+                lock (_gate)
+                {
+                    return _expiresAt.HasValue && DateTimeOffset.UtcNow >= _expiresAt.Value;
+                }
+            }
+        }
+
+        public string? AccountName
+        {
+            get
+            {
+                lock (_gate)
+                {
+                    return _account?.Username;
+                }
+            }
+        }
 
         public EntraTokenDetails? TokenDetails { get; private set; }
 
@@ -98,13 +122,29 @@ namespace CloudInteropOms.Auth
         /// <param name="parentWindow">The window handle to parent the WAM dialog to.</param>
         public async Task SignInAsync(IntPtr parentWindow, CancellationToken cancellationToken = default)
         {
+            int generation;
+            bool forceRefresh;
+            lock (_gate)
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException(nameof(EntraTokenProvider));
+                }
+
+                generation = _generation;
+                forceRefresh = _expiresAt.HasValue && DateTimeOffset.UtcNow >= _expiresAt.Value;
+            }
+
             AuthenticationResult result;
             try
             {
                 var account = (await _msal.GetAccountsAsync().ConfigureAwait(false)).FirstOrDefault()
                     ?? (_options.UseBroker ? PublicClientApplication.OperatingSystemAccount : null);
 
-                result = await _msal.AcquireTokenSilent(_scopes, account).ExecuteAsync(cancellationToken).ConfigureAwait(false);
+                result = await _msal.AcquireTokenSilent(_scopes, account)
+                    .WithForceRefresh(forceRefresh)
+                    .ExecuteAsync(cancellationToken)
+                    .ConfigureAwait(false);
             }
             catch (MsalUiRequiredException)
             {
@@ -124,7 +164,7 @@ namespace CloudInteropOms.Auth
                 result = await interactive.ExecuteAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            CacheToken(result);
+            CacheToken(result, generation);
         }
 
         /// <summary>
@@ -132,73 +172,115 @@ namespace CloudInteropOms.Auth
         /// </summary>
         public async Task SignOutAsync()
         {
-            StopRefreshTimer();
-            _idToken = "";
-            TokenDetails = null;
+            lock (_gate)
+            {
+                _generation++;
+                StopRefreshTimer();
+                _idToken = "";
+                _account = null;
+                _expiresAt = null;
+                TokenDetails = null;
+            }
 
             foreach (var account in await _msal.GetAccountsAsync().ConfigureAwait(false))
             {
                 await _msal.RemoveAsync(account).ConfigureAwait(false);
             }
-
-            _account = null;
         }
 
         public void Dispose()
         {
-            StopRefreshTimer();
+            lock (_gate)
+            {
+                _disposed = true;
+                _generation++;
+                StopRefreshTimer();
+                _idToken = "";
+                _account = null;
+                _expiresAt = null;
+                TokenDetails = null;
+            }
         }
 
-        private void CacheToken(AuthenticationResult result)
+        private void CacheToken(AuthenticationResult result, int generation)
         {
             if (string.IsNullOrEmpty(result.IdToken))
             {
                 throw new InvalidOperationException("MSAL returned an empty ID token. Ensure openid is among the scopes.");
             }
 
-            _idToken = result.IdToken;
-            _account = result.Account;
-
             var claims = ReadJwtPayload(result.IdToken);
-            TokenDetails = new EntraTokenDetails(
+            var details = new EntraTokenDetails(
                 claims.Value<string>("iss"),
                 claims.Value<string>("aud"),
                 claims.Value<string>("tid"));
+            var expiresAtUnixSeconds = claims.Value<long?>("exp");
+            var expiresAt = expiresAtUnixSeconds.HasValue
+                ? DateTimeOffset.FromUnixTimeSeconds(expiresAtUnixSeconds.Value)
+                : DateTimeOffset.UtcNow + FallbackLifetime;
 
-            _log($"Entra ID token acquired for {_account?.Username}: {TokenDetails}");
+            lock (_gate)
+            {
+                if (_disposed || generation != _generation)
+                {
+                    return;
+                }
 
-            ScheduleRefresh(claims.Value<long?>("exp"));
+                _idToken = result.IdToken;
+                _account = result.Account;
+                _expiresAt = expiresAt;
+                TokenDetails = details;
+                ScheduleRefresh(expiresAt, generation);
+            }
+
+            _log($"Entra ID token acquired for {result.Account?.Username}: {details}");
         }
 
-        private void ScheduleRefresh(long? expiresAtUnixSeconds)
+        private void ScheduleRefresh(DateTimeOffset expiresAt, int generation)
         {
-            var lifetime = expiresAtUnixSeconds.HasValue
-                ? DateTimeOffset.FromUnixTimeSeconds(expiresAtUnixSeconds.Value) - DateTimeOffset.UtcNow
-                : FallbackLifetime;
-
+            var lifetime = expiresAt - DateTimeOffset.UtcNow;
             var dueIn = TimeSpan.FromMilliseconds(Math.Max(lifetime.TotalMilliseconds * RefreshAtLifetimeRatio, 0));
 
             StopRefreshTimer();
-            _refreshTimer = new Timer(state => { _ = RefreshAsync(); }, null, dueIn, Timeout.InfiniteTimeSpan);
+            _refreshTimer = new Timer(_ => { _ = RefreshAsync(generation); }, null, dueIn, Timeout.InfiniteTimeSpan);
         }
 
         /// <summary>
         /// Refresh silently only: if it fails the previous token is kept and the failure is logged, and
         /// the user can sign in again.
         /// </summary>
-        private async Task RefreshAsync()
+        private async Task RefreshAsync(int generation)
         {
+            IAccount? account;
+            lock (_gate)
+            {
+                if (_disposed || generation != _generation || _account == null)
+                {
+                    return;
+                }
+
+                account = _account;
+            }
+
             try
             {
-                var result = await _msal.AcquireTokenSilent(_scopes, _account)
+                var result = await _msal.AcquireTokenSilent(_scopes, account)
                     .WithForceRefresh(true)
                     .ExecuteAsync()
                     .ConfigureAwait(false);
 
-                CacheToken(result);
+                CacheToken(result, generation);
             }
             catch (Exception ex)
             {
+                lock (_gate)
+                {
+                    if (_disposed || generation != _generation)
+                    {
+                        return;
+                    }
+                }
+
                 _log($"Failed to refresh the Entra ID token, keeping the previous token: {ex.Message}");
             }
         }

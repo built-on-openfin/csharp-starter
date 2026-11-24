@@ -35,9 +35,11 @@ namespace CloudInteropOms.CloudInterop
 
         // The client runs one discovery at a time, so this service raises one intent at a time.
         private readonly SemaphoreSlim _raiseLock = new SemaphoreSlim(1, 1);
+        private readonly CancellationTokenSource _disposeCts = new CancellationTokenSource();
         private TaskCompletionSource<AggregateIntentDetailsEvent>? _pendingDiscovery;
         private TaskCompletionSource<IntentResult>? _pendingResult;
         private string? _pendingResultSessionId;
+        private volatile bool _disposed;
 
         /// <param name="api">The client, connected or not yet connected.</param>
         /// <param name="appId">The app id reported to other sessions. The client adds this session to it.</param>
@@ -76,15 +78,36 @@ namespace CloudInteropOms.CloudInterop
         /// <exception cref="TimeoutException">The handling app did not reply in time.</exception>
         public async Task<(string App, Context? Result)> RaiseIntentAsync(string intent, Context context, CancellationToken cancellationToken = default)
         {
-            await _raiseLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(nameof(IntentService));
+            }
+
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _disposeCts.Token);
             try
             {
+                await _raiseLock.WaitAsync(linked.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (_disposed && !cancellationToken.IsCancellationRequested)
+            {
+                throw new ObjectDisposedException(nameof(IntentService));
+            }
+
+            try
+            {
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException(nameof(IntentService));
+                }
+
                 // 1. Discover. Listen before starting: with no other sessions the answer arrives before
                 // StartIntentDiscoveryAsync returns.
-                _pendingDiscovery = new TaskCompletionSource<AggregateIntentDetailsEvent>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var discovery = new TaskCompletionSource<AggregateIntentDetailsEvent>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _pendingDiscovery = discovery;
+                using var cancelDiscovery = linked.Token.Register(() => discovery.TrySetCanceled(linked.Token));
                 var find = new FindIntentOptions.FindByIntent(intent, context);
-                await _api.StartIntentDiscoveryAsync(new StartIntentDiscoveryOptions(find, DiscoveryTimeoutMs), cancellationToken).ConfigureAwait(false);
-                var answers = await _pendingDiscovery.Task.ConfigureAwait(false);
+                await _api.StartIntentDiscoveryAsync(new StartIntentDiscoveryOptions(find, DiscoveryTimeoutMs), linked.Token).ConfigureAwait(false);
+                var answers = await discovery.Task.ConfigureAwait(false);
 
                 var app = answers.Responses
                     .SelectMany(response => response.Intents ?? new List<AppIntent>())
@@ -94,26 +117,36 @@ namespace CloudInteropOms.CloudInterop
                     ?? throw new InvalidOperationException($"NoAppsFound: nothing on the platform handles {intent}.");
 
                 // 2. Raise. The app id is appId::sourceId::sessionId, and the session part identifies the reply.
-                _pendingResult = new TaskCompletionSource<IntentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var pendingResult = new TaskCompletionSource<IntentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _pendingResult = pendingResult;
                 _pendingResultSessionId = AppIdUtils.ParseCloudAppId(app.AppId).SessionId;
                 var raise = new RaiseIntentOptions.RaiseByIntent(intent, context);
-                await _api.RaiseIntentAsync(new RaiseIntentAPIOptions(raise, app.AppId!), cancellationToken).ConfigureAwait(false);
+                await _api.RaiseIntentAsync(new RaiseIntentAPIOptions(raise, app.AppId!), linked.Token).ConfigureAwait(false);
 
                 // 3. Wait for the result.
-                var finished = await Task.WhenAny(_pendingResult.Task, Task.Delay(ResultTimeout, cancellationToken)).ConfigureAwait(false);
-                if (finished != _pendingResult.Task)
+                var finished = await Task.WhenAny(pendingResult.Task, Task.Delay(ResultTimeout, linked.Token)).ConfigureAwait(false);
+                if (finished != pendingResult.Task)
                 {
+                    if (_disposed && !cancellationToken.IsCancellationRequested)
+                    {
+                        throw new ObjectDisposedException(nameof(IntentService));
+                    }
+
                     cancellationToken.ThrowIfCancellationRequested();
                     throw new TimeoutException($"{app.Title ?? app.AppId} did not return a result for {intent}.");
                 }
 
-                var result = _pendingResult.Task.Result;
+                var result = await pendingResult.Task.ConfigureAwait(false);
                 if (result.IsError)
                 {
                     throw new InvalidOperationException(result.Error);
                 }
 
                 return (app.Title ?? app.AppId!, result.GetResult);
+            }
+            catch (OperationCanceledException) when (_disposed && !cancellationToken.IsCancellationRequested)
+            {
+                throw new ObjectDisposedException(nameof(IntentService));
             }
             finally
             {
@@ -126,10 +159,20 @@ namespace CloudInteropOms.CloudInterop
 
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
             _api.AggregateIntentDetails -= OnAggregateIntentDetails;
             _api.IntentResult -= OnIntentResult;
             _api.ReportIntents -= OnReportIntents;
             _api.RaiseIntent -= OnRaiseIntent;
+            _disposeCts.Cancel();
+            _pendingDiscovery?.TrySetCanceled();
+            _pendingResult?.TrySetCanceled();
+            _disposeCts.Dispose();
         }
 
         /// <summary>

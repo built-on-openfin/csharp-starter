@@ -36,7 +36,8 @@ namespace CloudInteropOms
         /// Where the Settings window saves, so that values entered in the UI are remembered between runs.
         /// </summary>
         public static string SavedPath => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HERE", "CloudInterop.Oms", "settings.json");
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "HERE", "Samples", "CSharp", "CloudInterop.Oms", "settings.json");
 
         /// <summary>
         /// The settings in appsettings.json, ignoring anything saved from the UI.
@@ -62,15 +63,19 @@ namespace CloudInteropOms
                 {
                     case "sourceid":
                         settings.CloudInterop.SourceId = value;
+                        i++;
                         break;
                     case "contextgroup":
                         settings.CloudInterop.DefaultContextGroup = value;
+                        i++;
                         break;
                     case "authmode":
                         settings.AuthMode = (AuthMode)Enum.Parse(typeof(AuthMode), value, ignoreCase: true);
+                        i++;
                         break;
                     case "username":
                         settings.Basic.Username = value;
+                        i++;
                         break;
                 }
             }

@@ -17,7 +17,7 @@ namespace CloudInteropOms
 
             AuthModeBox.ItemsSource = Enum.GetValues(typeof(AuthMode));
             ContextGroupBox.ItemsSource = MainWindow.ContextGroups.Select(group => group.Name).ToList();
-            SavedPathText.Text = @"Saved for your user in %LOCALAPPDATA%\HERE\CloudInterop.Oms\settings.json. The password is never saved.";
+            SavedPathText.Text = @"Saved for your user in %LOCALAPPDATA%\HERE\Samples\CSharp\CloudInterop.Oms\settings.json. The password is never saved.";
             SavedPathText.ToolTip = AppSettings.SavedPath;
 
             ShowSettings(current);
