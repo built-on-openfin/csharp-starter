@@ -7,7 +7,6 @@ namespace CloudInteropOms.Oms
         Info,
         Sent,
         Received,
-        Intent,
         Error
     }
 
@@ -27,10 +26,5 @@ namespace CloudInteropOms.Oms
         public LogKind Kind { get; }
 
         public string Message { get; }
-
-        public override string ToString()
-        {
-            return $"{Time:HH:mm:ss.fff} {Kind,-8} {Message}";
-        }
     }
 }

@@ -122,7 +122,9 @@ namespace CloudInteropOms.CloudInterop
                 throw;
             }
 
-            OnStatusChanged(ConnectionStatus.Connected, $"Connected, session {SessionId}");
+            var topic = Api.SessionDetails?.SessionRootTopic;
+            var details = string.IsNullOrEmpty(topic) ? $"session {SessionId}" : $"session {SessionId}, topic {topic}";
+            OnStatusChanged(ConnectionStatus.Connected, $"Connected, {details}");
         }
 
         private void OnStatusChanged(ConnectionStatus status, string message)

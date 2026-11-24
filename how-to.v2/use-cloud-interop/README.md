@@ -194,11 +194,11 @@ await api.RaiseIntentAsync(new RaiseIntentAPIOptions(new RaiseIntentOptions.Rais
 var intentResult = await result.Task;   // intentResult.GetResult is the returned context, if any
 ```
 
-[IntentService.cs](./CloudInterop.Oms/CloudInterop/IntentService.cs) wraps all of this as one call. It matches each result to its request and adds a timeout:
+[IntentService.cs](./CloudInterop.Oms/CloudInterop/IntentService.cs) wraps all of this as one call. It raises at the first app found, checks that the result comes from that app's session, and adds a timeout. It raises one intent at a time, because the client runs one discovery at a time:
 
 ```csharp
-IntentResolution resolution = await intents.RaiseIntentAsync(Fdc3.Intents.ViewInstrument, Fdc3.Instrument("AAPL"));
-Console.WriteLine($"Handled by {resolution.App.Title}, returned {Fdc3.Describe(resolution.Result)}");
+var (app, result) = await intents.RaiseIntentAsync(Fdc3.Intents.ViewInstrument, Fdc3.Instrument("AAPL"));
+Console.WriteLine($"Handled by {app}, returned {Fdc3.Describe(result)}");
 ```
 
 ### Handle an intent
@@ -231,7 +231,7 @@ api.RaiseIntent += async (s, e) =>
 With `IntentService` that becomes one registration per intent. The returned context, or `null`, is sent back as the result:
 
 ```csharp
-intents.AddIntentHandler(Fdc3.Intents.ViewInstrument, "View Instrument", new[] { Fdc3.ContextTypes.Instrument },
+intents.AddIntentHandler(Fdc3.Intents.ViewInstrument, Fdc3.ContextTypes.Instrument,
     context => Task.FromResult<Context?>(Fdc3.Order("ORD-1001", context)));
 ```
 
