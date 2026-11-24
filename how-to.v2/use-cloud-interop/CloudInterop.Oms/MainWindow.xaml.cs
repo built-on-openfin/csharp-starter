@@ -491,8 +491,9 @@ namespace CloudInteropOms
         {
             var email = Fdc3.GetId(context, "email");
             var match = ShowMatchingOrders(order =>
-                    string.Equals(order.TraderEmail, email, StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(order.TraderName, context.Name, StringComparison.OrdinalIgnoreCase),
+                    !string.IsNullOrEmpty(email)
+                        ? string.Equals(order.TraderEmail, email, StringComparison.OrdinalIgnoreCase)
+                        : string.Equals(order.TraderName, context.Name, StringComparison.OrdinalIgnoreCase),
                 $"Orders for trader {context.Name ?? email}", fromIntent);
 
             return match == null ? null : Fdc3.Order(match.OrderId, Fdc3.Instrument(match.Ticker, match.InstrumentName));
@@ -502,8 +503,9 @@ namespace CloudInteropOms
         {
             var lei = Fdc3.GetId(context, "LEI");
             var match = ShowMatchingOrders(order =>
-                    string.Equals(order.CounterpartyLei, lei, StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(order.CounterpartyName, context.Name, StringComparison.OrdinalIgnoreCase),
+                    !string.IsNullOrEmpty(lei)
+                        ? string.Equals(order.CounterpartyLei, lei, StringComparison.OrdinalIgnoreCase)
+                        : string.Equals(order.CounterpartyName, context.Name, StringComparison.OrdinalIgnoreCase),
                 $"Orders with {context.Name ?? lei}", fromIntent);
 
             return match == null ? null : Fdc3.Order(match.OrderId, Fdc3.Instrument(match.Ticker, match.InstrumentName));
