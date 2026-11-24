@@ -104,7 +104,7 @@ namespace CloudInteropOms.CloudInterop
                 // StartIntentDiscoveryAsync returns.
                 var discovery = new TaskCompletionSource<AggregateIntentDetailsEvent>(TaskCreationOptions.RunContinuationsAsynchronously);
                 _pendingDiscovery = discovery;
-                using var cancelDiscovery = linked.Token.Register(() => discovery.TrySetCanceled(linked.Token));
+                using var cancelDiscovery = linked.Token.Register(() => discovery.TrySetCanceled());
                 var find = new FindIntentOptions.FindByIntent(intent, context);
                 await _api.StartIntentDiscoveryAsync(new StartIntentDiscoveryOptions(find, DiscoveryTimeoutMs), linked.Token).ConfigureAwait(false);
                 var answers = await discovery.Task.ConfigureAwait(false);
