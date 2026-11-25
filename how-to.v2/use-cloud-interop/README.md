@@ -174,7 +174,7 @@ var discovered = new TaskCompletionSource<AggregateIntentDetailsEvent>();
 api.AggregateIntentDetails += (s, e) => discovered.TrySetResult(e);
 
 var find = new FindIntentOptions.FindByIntent("ViewInstrument", instrument);
-await api.StartIntentDiscoveryAsync(new StartIntentDiscoveryOptions(find, timeoutMs: 3000));
+await api.StartIntentDiscoveryAsync(new StartIntentDiscoveryOptions(find, timeoutMs: 5000));
 
 var apps = (await discovered.Task).Responses
     .SelectMany(r => r.Intents)

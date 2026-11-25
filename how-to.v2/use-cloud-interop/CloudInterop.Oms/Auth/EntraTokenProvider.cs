@@ -40,13 +40,17 @@ namespace CloudInteropOms.Auth
     /// </summary>
     /// <remarks>
     /// The Cloud Interop <c>jwtRequestCallback</c> is synchronous and is called for every request, so the
-    /// token is acquired up front, kept in memory and refreshed silently in the background at 80% of its
-    /// lifetime. <see cref="GetToken"/> only ever returns the cached value.
+    /// token is acquired up front, kept in memory and refreshed silently in the background shortly before it
+    /// expires. <see cref="GetToken"/> only ever returns the cached value.
     /// </remarks>
     public sealed class EntraTokenProvider : IDisposable
     {
-        private const double RefreshAtLifetimeRatio = 0.8;
+        private static readonly TimeSpan RefreshBeforeExpiry = TimeSpan.FromMinutes(5);
         private static readonly TimeSpan FallbackLifetime = TimeSpan.FromHours(1);
+
+        // Checked against the wall clock rather than waiting on one long timer, because a timer can fire late
+        // or not at all while the machine sleeps, leaving an expired token in use after it wakes.
+        private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(30);
 
         private readonly EntraOptions _options;
         private readonly string[] _scopes;
@@ -56,7 +60,10 @@ namespace CloudInteropOms.Auth
         private volatile string _idToken = "";
         private IAccount? _account;
         private DateTimeOffset? _expiresAt;
-        private Timer? _refreshTimer;
+        private Timer? _checkTimer;
+        private Task? _refreshing;
+        private bool _refreshFailed;
+        private bool _expiryReported;
         private int _generation;
         private bool _disposed;
 
@@ -121,6 +128,18 @@ namespace CloudInteropOms.Auth
         }
 
         /// <summary>
+        /// Refresh the token now if it is due, so that a request made right after the machine wakes does not
+        /// carry an expired token. A failed refresh is logged rather than thrown.
+        /// </summary>
+        public Task EnsureFreshTokenAsync()
+        {
+            lock (_gate)
+            {
+                return IsRefreshDue() ? StartRefresh() : _refreshing ?? Task.CompletedTask;
+            }
+        }
+
+        /// <summary>
         /// Sign in, silently if MSAL already has an account (or WAM has a Windows account), otherwise
         /// interactively in the system browser or the WAM dialog.
         /// </summary>
@@ -179,12 +198,7 @@ namespace CloudInteropOms.Auth
         {
             lock (_gate)
             {
-                _generation++;
-                StopRefreshTimer();
-                _idToken = "";
-                _account = null;
-                _expiresAt = null;
-                TokenDetails = null;
+                ClearToken();
             }
 
             foreach (var account in await _msal.GetAccountsAsync().ConfigureAwait(false))
@@ -198,13 +212,21 @@ namespace CloudInteropOms.Auth
             lock (_gate)
             {
                 _disposed = true;
-                _generation++;
-                StopRefreshTimer();
-                _idToken = "";
-                _account = null;
-                _expiresAt = null;
-                TokenDetails = null;
+                ClearToken();
             }
+        }
+
+        private void ClearToken()
+        {
+            _generation++;
+            _checkTimer?.Dispose();
+            _checkTimer = null;
+            _refreshing = null;
+            _refreshFailed = false;
+            _idToken = "";
+            _account = null;
+            _expiresAt = null;
+            TokenDetails = null;
         }
 
         private void CacheToken(AuthenticationResult result, int generation)
@@ -234,58 +256,64 @@ namespace CloudInteropOms.Auth
                 _idToken = result.IdToken;
                 _account = result.Account;
                 _expiresAt = expiresAt;
+                _expiryReported = false;
                 TokenDetails = details;
-                ScheduleRefresh(expiresAt, generation);
+                _checkTimer ??= new Timer(_ => OnCheckTimer(), null, CheckInterval, CheckInterval);
             }
 
-            _log($"Entra ID token acquired for {result.Account?.Username}: {details}");
+            _log($"Entra ID token acquired for {result.Account?.Username}, expires {expiresAt.ToLocalTime():HH:mm:ss}: {details}");
             TokenStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void ScheduleRefresh(DateTimeOffset expiresAt, int generation)
+        private void OnCheckTimer()
         {
-            var lifetime = expiresAt - DateTimeOffset.UtcNow;
-            var dueIn = TimeSpan.FromMilliseconds(Math.Max(lifetime.TotalMilliseconds * RefreshAtLifetimeRatio, 0));
-
-            StopRefreshTimer();
-            _refreshTimer = new Timer(_ => { _ = RefreshAsync(generation); }, null, dueIn, Timeout.InfiniteTimeSpan);
-        }
-
-        private void ScheduleExpiryNotification(DateTimeOffset expiresAt, int generation)
-        {
-            var dueIn = expiresAt - DateTimeOffset.UtcNow;
-            StopRefreshTimer();
-            _refreshTimer = new Timer(_ =>
-            {
-                lock (_gate)
-                {
-                    if (_disposed || generation != _generation)
-                    {
-                        return;
-                    }
-                }
-
-                TokenStateChanged?.Invoke(this, EventArgs.Empty);
-            }, null, dueIn > TimeSpan.Zero ? dueIn : TimeSpan.Zero, Timeout.InfiniteTimeSpan);
-        }
-
-        /// <summary>
-        /// Refresh silently only: if it fails the previous token is kept and the failure is logged, and
-        /// the user can sign in again.
-        /// </summary>
-        private async Task RefreshAsync(int generation)
-        {
-            IAccount? account;
+            bool reportExpiry;
             lock (_gate)
             {
-                if (_disposed || generation != _generation || _account == null)
+                if (_disposed || _account == null)
                 {
                     return;
                 }
 
-                account = _account;
+                if (IsRefreshDue())
+                {
+                    StartRefresh();
+                }
+
+                reportExpiry = !_expiryReported && _expiresAt.HasValue && DateTimeOffset.UtcNow >= _expiresAt.Value;
+                _expiryReported |= reportExpiry;
             }
 
+            if (reportExpiry)
+            {
+                TokenStateChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        // Callers hold _gate.
+        private bool IsRefreshDue()
+        {
+            return !_disposed
+                && _account != null
+                && _refreshing == null
+                && _expiresAt.HasValue
+                && DateTimeOffset.UtcNow >= _expiresAt.Value - RefreshBeforeExpiry;
+        }
+
+        // Callers hold _gate.
+        private Task StartRefresh()
+        {
+            return _refreshing = RefreshAsync(_generation, _account!);
+        }
+
+        /// <summary>
+        /// Refresh silently only: if it fails the previous token is kept, the failure is logged once and the
+        /// check timer tries again. The user can also sign in again.
+        /// </summary>
+        private async Task RefreshAsync(int generation, IAccount account)
+        {
+            // Let StartRefresh record this task before it can complete.
+            await Task.Yield();
             try
             {
                 var result = await _msal.AcquireTokenSilent(_scopes, account)
@@ -294,30 +322,35 @@ namespace CloudInteropOms.Auth
                     .ConfigureAwait(false);
 
                 CacheToken(result, generation);
+                lock (_gate)
+                {
+                    _refreshFailed = false;
+                }
             }
             catch (Exception ex)
             {
+                bool firstFailure;
                 lock (_gate)
                 {
-                    if (_disposed || generation != _generation)
-                    {
-                        return;
-                    }
-
-                    if (_expiresAt.HasValue)
-                    {
-                        ScheduleExpiryNotification(_expiresAt.Value, generation);
-                    }
+                    firstFailure = !_refreshFailed && generation == _generation;
+                    _refreshFailed |= firstFailure;
                 }
 
-                _log($"Failed to refresh the Entra ID token, keeping the previous token: {ex.Message}");
+                if (firstFailure)
+                {
+                    _log($"Failed to refresh the Entra ID token, will keep retrying: {ex.Message}");
+                }
             }
-        }
-
-        private void StopRefreshTimer()
-        {
-            _refreshTimer?.Dispose();
-            _refreshTimer = null;
+            finally
+            {
+                lock (_gate)
+                {
+                    if (generation == _generation)
+                    {
+                        _refreshing = null;
+                    }
+                }
+            }
         }
 
         private static JObject ReadJwtPayload(string jwt)

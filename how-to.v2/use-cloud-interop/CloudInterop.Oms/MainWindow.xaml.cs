@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -146,6 +147,7 @@ namespace CloudInteropOms
 
             _intents = new IntentService(_connection.Api, options.SourceId, $"HERE .NET OMS ({options.SourceId})");
             _intents.Error += (_, error) => OnUi(() => Log(LogKind.Error, error.Message));
+            _intents.DiscoveryAnswered += (_, message) => OnUi(() => Log(LogKind.Info, message));
 
             _intents.AddIntentHandler(Fdc3.Intents.ViewInstrument, Fdc3.ContextTypes.Instrument,
                 context => OnUiAsync(() => HandleIntent(Fdc3.Intents.ViewInstrument, context, ShowOrdersForInstrument)));
@@ -330,6 +332,11 @@ namespace CloudInteropOms
             return _entra;
         }
 
+        private Task EnsureFreshTokenAsync()
+        {
+            return EntraRadio.IsChecked == true && _entra != null ? _entra.EnsureFreshTokenAsync() : Task.CompletedTask;
+        }
+
         // ---------------------------------------------------------------------------------------------
         // Context groups: joining, broadcasting and reacting to context
         // ---------------------------------------------------------------------------------------------
@@ -401,6 +408,7 @@ namespace CloudInteropOms
 
             try
             {
+                await EnsureFreshTokenAsync();
                 await _channel.BroadcastAsync(context);
                 Log(LogKind.Sent, $"{_channel.CurrentGroup}: {Fdc3.Describe(context)}");
             }
@@ -469,6 +477,7 @@ namespace CloudInteropOms
             try
             {
                 Log(LogKind.Sent, $"Raising {intent} with {Fdc3.Describe(context)}");
+                await EnsureFreshTokenAsync();
                 var (app, result) = await _intents.RaiseIntentAsync(intent, context);
                 Log(LogKind.Received, $"{intent} handled by {app}, {(result == null ? "no result" : Fdc3.Describe(result))}");
             }
@@ -658,9 +667,11 @@ namespace CloudInteropOms
         {
             var signedIn = _entra?.IsSignedIn == true;
             var details = _entra?.TokenDetails;
-            EntraAccountText.Text = signedIn
-                ? $"{_entra!.AccountName}  (iss {details?.Issuer}, aud {details?.Audience})"
-                : "Not signed in";
+            EntraAccountText.Text = !signedIn
+                ? "Not signed in"
+                : _entra!.IsTokenExpired
+                    ? $"{_entra.AccountName}  (token expired, sign in again)"
+                    : $"{_entra.AccountName}  (iss {details?.Issuer}, aud {details?.Audience})";
             SignInButton.IsEnabled = !_isBusy && !(signedIn && !_entra!.IsTokenExpired);
             SignOutButton.IsEnabled = !_isBusy && signedIn;
         }
@@ -684,6 +695,20 @@ namespace CloudInteropOms
             {
                 _log.RemoveAt(_log.Count - 1);
             }
+        }
+
+        private void OnCopyLogExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            var lines = LogList.SelectedItems
+                .Cast<LogEntry>()
+                .OrderBy(entry => _log.IndexOf(entry))
+                .Select(entry => $"{entry.Time:HH:mm:ss}  {entry.Kind,-8}  {entry.Message}");
+            Clipboard.SetText(string.Join(Environment.NewLine, lines));
+        }
+
+        private void OnCopyLogCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = LogList.SelectedItems.Count > 0;
         }
 
         private static string DescribeError(Exception ex)

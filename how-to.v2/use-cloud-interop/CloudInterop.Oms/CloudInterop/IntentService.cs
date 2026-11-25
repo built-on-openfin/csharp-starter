@@ -24,7 +24,9 @@ namespace CloudInteropOms.CloudInterop
     /// </remarks>
     public sealed class IntentService : IDisposable
     {
-        private const int DiscoveryTimeoutMs = 3000;
+        // Every session must answer within this time to be found, including the first request after a quiet period,
+        // which can be slow while a new HTTPS connection is set up.
+        private const int DiscoveryTimeoutMs = 5000;
         private static readonly TimeSpan ResultTimeout = TimeSpan.FromSeconds(15);
 
         private readonly CloudInteropAPI _api;
@@ -69,6 +71,12 @@ namespace CloudInteropOms.CloudInterop
         /// Raised when handling a request from another session fails, for example when the reply cannot be sent.
         /// </summary>
         public event EventHandler<Exception>? Error;
+
+        /// <summary>
+        /// Raised when this session answers another session's intent discovery, describing who asked, what was
+        /// answered and how long the answer took to send.
+        /// </summary>
+        public event EventHandler<string>? DiscoveryAnswered;
 
         /// <summary>
         /// Handle <paramref name="intent"/> for contexts of <paramref name="contextType"/>. The context the
@@ -294,10 +302,13 @@ namespace CloudInteropOms.CloudInterop
                 return;
             }
 
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var wantedIntent = e.FindOptions?.Intent;
+            var wantedContextType = e.FindOptions?.Context?.Type;
+            var request = $"discovery from {e.Source?.SourceId ?? e.InitiatingSessionId} for {wantedIntent ?? "any intent"}"
+                + (wantedContextType == null ? "" : $" with {wantedContextType}");
             try
             {
-                var wantedIntent = e.FindOptions?.Intent;
-                var wantedContextType = e.FindOptions?.Context?.Type;
 
                 var appIntents = _handlers
                     .Where(handler => string.IsNullOrEmpty(wantedIntent) || string.Equals(handler.Key, wantedIntent, StringComparison.OrdinalIgnoreCase))
@@ -308,10 +319,13 @@ namespace CloudInteropOms.CloudInterop
                     .ToList();
 
                 await _api.ReportAppIntentsAsync(e.DiscoveryId, appIntents).ConfigureAwait(false);
+                var answer = appIntents.Count == 0 ? "nothing" : string.Join(", ", appIntents.Select(appIntent => appIntent.Intent?.Name));
+                DiscoveryAnswered?.Invoke(this, $"Answered {request} with {answer} in {stopwatch.ElapsedMilliseconds} ms");
             }
             catch (Exception ex)
             {
-                Error?.Invoke(this, ex);
+                Error?.Invoke(this, new InvalidOperationException(
+                    $"Answering {request} failed after {stopwatch.ElapsedMilliseconds} ms: {ex.Message}", ex));
             }
         }
 

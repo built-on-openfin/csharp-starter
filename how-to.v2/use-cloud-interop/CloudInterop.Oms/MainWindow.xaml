@@ -154,7 +154,17 @@
         <!-- Activity log -->
         <DockPanel Grid.Row="4" Background="{StaticResource PanelBrush}">
             <TextBlock DockPanel.Dock="Top" Text="Activity" FontWeight="SemiBold" Margin="8,4" />
-            <ListBox x:Name="LogList" FontFamily="Consolas" FontSize="12" BorderThickness="0" Margin="4,0,4,4">
+            <ListBox x:Name="LogList" FontFamily="Consolas" FontSize="12" BorderThickness="0" Margin="4,0,4,4"
+                     SelectionMode="Extended">
+                <ListBox.CommandBindings>
+                    <CommandBinding Command="ApplicationCommands.Copy" Executed="OnCopyLogExecuted" CanExecute="OnCopyLogCanExecute" />
+                </ListBox.CommandBindings>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="ApplicationCommands.Copy" />
+                        <MenuItem Command="ApplicationCommands.SelectAll" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
