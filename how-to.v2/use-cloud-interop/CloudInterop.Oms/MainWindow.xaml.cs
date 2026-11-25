@@ -237,6 +237,10 @@ namespace CloudInteropOms
             {
                 await _connection.DisconnectAsync();
             }
+            catch (Exception ex)
+            {
+                Log(LogKind.Error, $"Disconnect failed: {ex.Message}");
+            }
             finally
             {
                 _isBusy = false;
@@ -286,6 +290,10 @@ namespace CloudInteropOms
 
                 await _entra.SignOutAsync();
                 Log(LogKind.Info, "Signed out of Entra ID");
+            }
+            catch (Exception ex)
+            {
+                Log(LogKind.Error, $"Entra sign out failed: {ex.Message}");
             }
             finally
             {

@@ -42,6 +42,13 @@ namespace CloudInteropOms.CloudInterop
         private string? _pendingResultIntent;
         private volatile bool _disposed;
 
+        // The protocol has no per-raise request id, so a reply that arrives after a raise was abandoned could be
+        // mistaken for the reply to the next raise at the same session. Sessions with an unanswered raise are
+        // blocked until that reply arrives or the hold expires.
+        private static readonly TimeSpan AbandonedRaiseHold = TimeSpan.FromSeconds(60);
+        private readonly object _abandonedLock = new object();
+        private readonly Dictionary<string, DateTime> _abandonedSessions = new Dictionary<string, DateTime>();
+
         /// <param name="api">The client, connected or not yet connected.</param>
         /// <param name="appId">The app id reported to other sessions. The client adds this session to it.</param>
         /// <param name="appTitle">The title other sessions can show for this app.</param>
@@ -118,17 +125,35 @@ namespace CloudInteropOms.CloudInterop
                     ?? throw new InvalidOperationException($"NoAppsFound: nothing on the platform handles {intent}.");
 
                 // 2. Raise. The app id is appId::sourceId::sessionId, and the session part identifies the reply.
+                var targetSessionId = AppIdUtils.ParseCloudAppId(app.AppId).SessionId;
+                if (IsAwaitingAbandonedReply(targetSessionId))
+                {
+                    throw new InvalidOperationException(
+                        $"{app.Title ?? app.AppId} has not answered an earlier request yet. Try again shortly.");
+                }
+
                 var pendingResult = new TaskCompletionSource<IntentResult>(TaskCreationOptions.RunContinuationsAsynchronously);
                 _pendingResult = pendingResult;
-                _pendingResultSessionId = AppIdUtils.ParseCloudAppId(app.AppId).SessionId;
+                _pendingResultSessionId = targetSessionId;
                 _pendingResultIntent = intent;
                 var raise = new RaiseIntentOptions.RaiseByIntent(intent, context);
                 await _api.RaiseIntentAsync(new RaiseIntentAPIOptions(raise, app.AppId!), linked.Token).ConfigureAwait(false);
 
                 // 3. Wait for the result.
-                var finished = await Task.WhenAny(pendingResult.Task, Task.Delay(ResultTimeout, linked.Token)).ConfigureAwait(false);
+                Task finished;
+                try
+                {
+                    finished = await Task.WhenAny(pendingResult.Task, Task.Delay(ResultTimeout, linked.Token)).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    MarkAbandoned(targetSessionId);
+                    throw;
+                }
+
                 if (finished != pendingResult.Task)
                 {
+                    MarkAbandoned(targetSessionId);
                     if (_disposed && !cancellationToken.IsCancellationRequested)
                     {
                         throw new ObjectDisposedException(nameof(IntentService));
@@ -178,6 +203,41 @@ namespace CloudInteropOms.CloudInterop
             _disposeCts.Dispose();
         }
 
+        private void MarkAbandoned(string sessionId)
+        {
+            lock (_abandonedLock)
+            {
+                _abandonedSessions[sessionId] = DateTime.UtcNow + AbandonedRaiseHold;
+            }
+        }
+
+        private bool IsAwaitingAbandonedReply(string sessionId)
+        {
+            lock (_abandonedLock)
+            {
+                if (!_abandonedSessions.TryGetValue(sessionId, out var holdUntil))
+                {
+                    return false;
+                }
+
+                if (DateTime.UtcNow < holdUntil)
+                {
+                    return true;
+                }
+
+                _abandonedSessions.Remove(sessionId);
+                return false;
+            }
+        }
+
+        private bool TryDrainAbandonedReply(string sessionId)
+        {
+            lock (_abandonedLock)
+            {
+                return _abandonedSessions.Remove(sessionId);
+            }
+        }
+
         /// <summary>
         /// Raising, step 1: every session has answered our discovery, or the timeout was reached.
         /// </summary>
@@ -198,6 +258,11 @@ namespace CloudInteropOms.CloudInterop
 
             // The Cloud Interop protocol has no per-raise request id, so match both the target session and intent name.
             var fromSessionId = e.Source?.SessionId ?? AppIdUtils.ParseCloudAppId(e.Result.Source as string).SessionId;
+            if (fromSessionId != null && TryDrainAbandonedReply(fromSessionId))
+            {
+                return;
+            }
+
             var intentMatches = e.Result.IsError
                 || string.Equals(e.Result.Intent, _pendingResultIntent, StringComparison.OrdinalIgnoreCase);
 

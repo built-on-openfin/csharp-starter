@@ -138,7 +138,7 @@
                         <Label Grid.Row="3" Content="Quantity" />
                         <TextBox Grid.Row="3" Grid.Column="1" x:Name="TicketQuantity" Text="100" Margin="0,2" />
                         <Label Grid.Row="4" Content="Price" />
-                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="TicketPrice" Text="100.00" Margin="0,2" />
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="TicketPrice" Text="100" Margin="0,2" />
                         <Button Grid.Row="5" Grid.Column="1" Content="Create order" Click="OnCreateOrderClick"
                                 HorizontalAlignment="Right" Margin="0,6,0,0" />
                     </Grid>
