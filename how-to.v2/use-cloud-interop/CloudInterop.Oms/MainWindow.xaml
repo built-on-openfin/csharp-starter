@@ -1,0 +1,180 @@
+<Window x:Class="CloudInteropOms.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="HERE Cloud Interop OMS"
+        Icon="favicon.ico"
+        Width="1280" Height="800" MinWidth="960" MinHeight="600"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="180" />
+        </Grid.RowDefinitions>
+
+        <!-- Header and connection status -->
+        <DockPanel Grid.Row="0" Background="{StaticResource HeaderBrush}">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="12,8" VerticalAlignment="Center">
+                <Ellipse x:Name="StatusLight" Width="12" Height="12" Fill="Gray" Margin="0,0,8,0" />
+                <TextBlock x:Name="StatusText" Foreground="White" Text="Disconnected" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock x:Name="HeaderText" Text="HERE Cloud Interop OMS" Foreground="White" FontSize="18"
+                       FontWeight="SemiBold" Margin="12,8" VerticalAlignment="Center" />
+        </DockPanel>
+
+        <!-- Authentication and connect -->
+        <Border Grid.Row="1" Background="{StaticResource PanelBrush}" Padding="8" BorderBrush="#DDD" BorderThickness="0,0,0,1">
+            <WrapPanel VerticalAlignment="Center">
+                <Label Content="Authenticate with:" FontWeight="SemiBold" />
+                <RadioButton x:Name="BasicRadio" Content="Username and password" GroupName="Auth" Checked="OnAuthModeChanged" />
+                <RadioButton x:Name="EntraRadio" Content="Microsoft Entra ID (JWT)" GroupName="Auth" Checked="OnAuthModeChanged" />
+
+                <StackPanel x:Name="BasicPanel" Orientation="Horizontal" Margin="8,0">
+                    <Label Content="Username" />
+                    <TextBox x:Name="UsernameBox" Width="160" />
+                    <Label Content="Password" />
+                    <PasswordBox x:Name="PasswordBox" Width="140" />
+                </StackPanel>
+
+                <StackPanel x:Name="EntraPanel" Orientation="Horizontal" Margin="8,0" Visibility="Collapsed">
+                    <Button x:Name="SignInButton" Content="Sign in" Click="OnSignInClick" />
+                    <Button x:Name="SignOutButton" Content="Sign out" Click="OnSignOutClick" IsEnabled="False" />
+                    <TextBlock x:Name="EntraAccountText" Text="Not signed in" VerticalAlignment="Center" Margin="4,0" />
+                </StackPanel>
+
+                <Button x:Name="ConnectButton" Content="Connect" Click="OnConnectClick" FontWeight="SemiBold" Margin="12,0,4,0" />
+                <Button x:Name="DisconnectButton" Content="Disconnect" Click="OnDisconnectClick" IsEnabled="False" />
+                <Button x:Name="SettingsButton" Content="Settings..." Click="OnSettingsClick" Margin="12,0,4,0"
+                        ToolTip="Service url, platform id, source id and Entra ID settings" />
+            </WrapPanel>
+        </Border>
+
+        <!-- Context group and the current filter -->
+        <Border Grid.Row="2" Padding="8" BorderBrush="#DDD" BorderThickness="0,0,0,1">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <Label Content="Context group:" FontWeight="SemiBold" />
+                    <ComboBox x:Name="GroupCombo" Width="140" SelectionChanged="OnGroupChanged" />
+                    <CheckBox x:Name="BroadcastOnSelectCheck" Content="Broadcast instrument when an order is selected"
+                              IsChecked="True" VerticalAlignment="Center" Margin="12,0" />
+                </StackPanel>
+                <StackPanel x:Name="FilterPanel" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
+                    <TextBlock x:Name="FilterText" VerticalAlignment="Center" Margin="4,0" FontStyle="Italic" />
+                    <Button Content="Clear filter" Click="OnClearFilterClick" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Blotter and side panel -->
+        <Grid Grid.Row="3" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <DataGrid x:Name="OrdersGrid" Grid.Column="0" AutoGenerateColumns="False" IsReadOnly="True"
+                      SelectionMode="Single" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                      HorizontalGridLinesBrush="#EEE" SelectionChanged="OnOrderSelected">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource HighlightBrush}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Broadcast instrument (fdc3.instrument)" Click="OnShareInstrumentClick" />
+                        <MenuItem Header="Broadcast trader (fdc3.contact)" Click="OnShareContactClick" />
+                        <MenuItem Header="Broadcast counterparty (fdc3.organization)" Click="OnShareOrganizationClick" />
+                        <Separator />
+                        <MenuItem Header="Raise ViewInstrument" Click="OnRaiseViewInstrumentClick" />
+                        <MenuItem Header="Raise ViewContact" Click="OnRaiseViewContactClick" />
+                        <MenuItem Header="Raise ViewOrganization" Click="OnRaiseViewOrganizationClick" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Order" Binding="{Binding OrderId}" />
+                    <DataGridTextColumn Header="Side" Binding="{Binding Side}" />
+                    <DataGridTextColumn Header="Ticker" Binding="{Binding Ticker}" FontWeight="SemiBold" />
+                    <DataGridTextColumn Header="Instrument" Binding="{Binding InstrumentName}" Width="*" />
+                    <DataGridTextColumn Header="Quantity" Binding="{Binding Quantity, StringFormat=N0}" />
+                    <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=N2}" />
+                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" />
+                    <DataGridTextColumn Header="Trader" Binding="{Binding TraderName}" />
+                    <DataGridTextColumn Header="Counterparty" Binding="{Binding CounterpartyName}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                <GroupBox Header="Last context received">
+                    <TextBlock x:Name="LastContextText" Text="Nothing yet" TextWrapping="Wrap" />
+                </GroupBox>
+
+                <GroupBox Header="New order ticket">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Row="0" Content="Ticker" />
+                        <TextBox Grid.Row="0" Grid.Column="1" x:Name="TicketTicker" Margin="0,2" />
+                        <Label Grid.Row="1" Content="Name" />
+                        <TextBox Grid.Row="1" Grid.Column="1" x:Name="TicketName" Margin="0,2" />
+                        <Label Grid.Row="2" Content="Side" />
+                        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="TicketSide" Margin="0,2" />
+                        <Label Grid.Row="3" Content="Quantity" />
+                        <TextBox Grid.Row="3" Grid.Column="1" x:Name="TicketQuantity" Text="100" Margin="0,2" />
+                        <Label Grid.Row="4" Content="Price" />
+                        <TextBox Grid.Row="4" Grid.Column="1" x:Name="TicketPrice" Text="100" Margin="0,2" />
+                        <Button Grid.Row="5" Grid.Column="1" Content="Create order" Click="OnCreateOrderClick"
+                                HorizontalAlignment="Right" Margin="0,6,0,0" />
+                    </Grid>
+                </GroupBox>
+
+                <TextBlock TextWrapping="Wrap" Foreground="#666" Margin="2,0">
+                    Select an order to broadcast its instrument, or right click it to share the trader or
+                    counterparty or to raise an intent. Context received on the joined group filters the blotter.
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <!-- Activity log -->
+        <DockPanel Grid.Row="4" Background="{StaticResource PanelBrush}">
+            <TextBlock DockPanel.Dock="Top" Text="Activity" FontWeight="SemiBold" Margin="8,4" />
+            <ListBox x:Name="LogList" FontFamily="Consolas" FontSize="12" BorderThickness="0" Margin="4,0,4,4"
+                     SelectionMode="Extended">
+                <ListBox.CommandBindings>
+                    <CommandBinding Command="ApplicationCommands.Copy" Executed="OnCopyLogExecuted" CanExecute="OnCopyLogCanExecute" />
+                </ListBox.CommandBindings>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="ApplicationCommands.Copy" />
+                        <MenuItem Command="ApplicationCommands.SelectAll" />
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Time, StringFormat=HH:mm:ss}" Foreground="#888" Width="70" />
+                            <TextBlock Text="{Binding Kind}" Width="70" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Message}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Grid>
+</Window>
